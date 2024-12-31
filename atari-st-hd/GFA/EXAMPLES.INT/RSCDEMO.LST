@@ -1,0 +1,43 @@
+.he RSC-DEMO
+.n5
+RESERVE -1000  !Reserved for small Resource file
+LET dialog1&=0 !RSC_TREE
+LET titel&=1   !Obj in #0
+LET name&=2    !Obj in #0
+LET strasse&=3 !Obj in #0
+LET ort&=4     !Obj in #0
+LET abbruch&=5 !Obj in #0
+LET ok&=6      !Obj in #0
+IF RSRC_LOAD("A:\EXAMPLES.INT\DEMO.RCS")=0
+  ~FORM_ALERT(1,"[1][Resource file DEMO.RCS|not found][Abort]")
+  END
+ENDIF
+~RSRC_GADDR(0,dialog1&,dia%)
+~FORM_CENTER(dia%,x&,y&,w&,h&)
+n$=""
+s$=""
+o$=""
+CHAR{{OB_SPEC(dia%,name&)}}=n$
+CHAR{{OB_SPEC(dia%,strasse&)}}=s$
+CHAR{{OB_SPEC(dia%,ort&)}}=o$
+DO
+  ~OBJC_DRAW(dia%,0,7,x&,y&,w&,h&)
+  a%=FORM_DO(dia%,0)
+  SELECT BCLR(a%,15)   ! double click
+  CASE ok&
+    n$=CHAR{{OB_SPEC(dia%,name&)}}
+    s$=CHAR{{OB_SPEC(dia%,strasse&)}}
+    o$=CHAR{{OB_SPEC(dia%,ort&)}}
+    PRINT n$
+    PRINT s$
+    PRINT o$
+    OB_STATE(dia%,ok&)=BCLR(OB_STATE(dia%,ok&),0)
+  CASE abbruch&
+    CHAR{{OB_SPEC(dia%,name&)}}=n$
+    CHAR{{OB_SPEC(dia%,strasse&)}}=s$
+    CHAR{{OB_SPEC(dia%,ort&)}}=o$
+    OB_STATE(dia%,abbruch&)=BCLR(OB_STATE(dia%,abbruch&),0)
+  ENDSELECT
+LOOP UNTIL BTST(MOUSEK,1)
+~RSRC_FREE()
+RESERVE

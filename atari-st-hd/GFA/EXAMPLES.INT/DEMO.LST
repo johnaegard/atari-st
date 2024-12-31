@@ -1,0 +1,7 @@
+LET dialog1&=0  !RSC_TREE
+LET titel&=1    !Obj in #0
+LET name&=2     !Obj in #0
+LET strasse&=3  !Obj in #0
+LET ort&=4      !Obj in #0
+LET abbruch&=5  !Obj in #0
+LET ok&=6       !Obj in #0

@@ -1,0 +1,49 @@
+$m12800
+ap_id&=APPL_INIT()
+IF ap_id&=0
+  ALERT 1,"Program|as Accessory.",1," Return ",a|
+  END
+ENDIF
+'
+IF RSRC_LOAD("dial_acc.rsc")=0
+  DO                  !In case RSC-File not found ,
+    ~EVNT_TIMER(-1)   !then wait.
+  LOOP
+ENDIF
+'
+' Object numbers from the Resource Construction-Set
+LET dialog&=0 !RSC_TREE
+LET text&=8 !Obj in #0
+LET abbruch&=2 !Obj in #0
+LET return&=3 !Obj in #0
+LET radio1&=5 !Obj in #0
+LET radio2&=6 !Obj in #0
+LET radio3&=7 !Obj in #0
+'
+~RSRC_GADDR(0,dialog&,dialog_adr%)
+CHAR{{OB_SPEC(dialog_adr%,text&)}}="Testtext"
+me_id&=MENU_REGISTER(ap_id&,"  Dialog-ACC ")
+'
+DO
+  ~EVNT_MESAG(0)
+  IF MENU(1)=40
+    ~FORM_CENTER(dialog_adr%,x&,y&,b&,h&)
+    GET x&-4,y&-4,x&+b&+4,y&+b&+4,rette$        ! For Redraw.
+    ~OBJC_DRAW(dialog_adr%,0,3,x&,y&,b&,h&)
+    ex&=FORM_DO(dialog_adr%,0)
+    ~OBJC_CHANGE(dialog_adr%,ex&,0,x&,y&,b&,h&,0,0)
+    PUT x&-4,y&-4,rette$                        ! Redraw.
+    '
+    t$=CHAR{{OB_SPEC(dialog_adr%,text&)}}
+    IF BTST(OB_STATE(dialog_adr%,radio1&),0)
+      r$="1"
+    ELSE IF BTST(OB_STATE(dialog_adr%,radio2&),0)
+      r$="2"
+    ELSE IF BTST(OB_STATE(dialog_adr%,radio3&),0)
+      r$="3"
+    ENDIF
+    '
+    a$="Text: "+t$+"|Radio-Button: "+r$+"|Exit-Button: "+STR$(ex&)
+    ALERT 1,a$,1," Ok ",a|
+  ENDIF
+LOOP
