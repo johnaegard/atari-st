@@ -1,0 +1,1009 @@
+CLEAR
+DEFLIST 2
+ON BREAK GOSUB breaker
+ON ERROR GOSUB breaker
+scroll_setup
+one_time_variable_setup
+page_flipping_setup
+interface_screen_setup
+put_setup
+screen_setup
+joystick_setup
+constant_setup
+trig_table_setup
+phaser_table_setup
+phaser_beam_setup
+' interface
+clip_setup
+main_loop
+'
+' **** Interface Procedures ****
+'
+> PROCEDURE interface
+  scroll_setup
+  EVERY 20 GOSUB scroller
+  DEFTEXT 1,0,0,13
+  GRAPHMODE 3
+  BOUNDARY 0
+  CLIP OFF
+  s%=1
+  current_button#=1
+  DO
+    SPUT interface_screen$
+    get_controllers
+    IF stick_neutral!
+      SELECT stick#
+      CASE 1 ! up
+        stick_neutral!=FALSE
+        DEC current_button#
+        IF current_button#<1
+          current_button#=num_buttons#
+        ENDIF
+      CASE 2 ! down
+        stick_neutral!=FALSE
+        INC current_button#
+        IF current_button#>num_buttons#
+          current_button#=1
+        ENDIF
+      ENDSELECT
+    ENDIF
+    IF stick#=0
+      stick_neutral!=TRUE
+    ENDIF
+    PBOX buttonx1#(current_button#),buttony1#(current_button#),buttonx2#(current_button#),buttony2#(current_button#)
+    PRINT AT(1,24);MID$(scroll$,scroll_counter#,80);
+    swap_screens
+  LOOP
+RETURN
+> PROCEDURE scroller
+  INC scroll_counter#
+  IF scroll_counter#=>LEN(scroll$)
+    scroll_counter#=1
+  ENDIF
+RETURN
+' **** Main Loop Procedures ****
+'
+> PROCEDURE breaker
+  STICK 0
+  a#=MAX(screen_1#,screen_2#)
+  VOID XBIOS(5,L:a#,L:a#,-1)
+  WAVE 0,0
+  stop_sound
+  game_end%=TIMER
+  game_duration%=game_end%-game_start%
+  @output_profile
+  IF ERR<>0
+    PRINT ERR$(ERR)
+  ENDIF
+  VOID INP(2)
+  EDIT
+RETURN
+> PROCEDURE main_loop
+  game_start%=TIMER
+  frame_counter%=0
+  DO
+    frame_start%=TIMER
+    FOR s%=1 TO 2
+      IF NOT ship_destroyed!(s%)
+        now%=TIMER
+        get_controllers
+        ADD profile%(1),TIMER-now%
+        now%=TIMER
+        IF (stick% AND 1)=1 AND power%(s%)>0
+          thrust(s%)
+        ELSE IF thrust_on!(s%)
+          thrust_on!(s%)=FALSE
+          stop_sound
+        ENDIF
+        ADD profile%(2),TIMER-now%
+        now%=TIMER
+        IF (stick% AND 2)=2
+          IF button_change!(s%)=FALSE
+            button_change!(s%)=TRUE
+            INC button#(s%)
+            IF button#(s%)>3
+              button#(s%)=1
+            ENDIF
+          ENDIF
+        ELSE
+          button_change!(s%)=FALSE
+        ENDIF
+        ADD profile%(3),TIMER-now%
+        now%=TIMER
+        checkrot(s%)
+        IF (stick% AND 4)=4
+          SUB rot#(s%),rot_rate#
+          checkrot(s%)
+        ENDIF
+        IF (stick% AND 8)=8
+          ADD rot#(s%),rot_rate#
+          checkrot(s%)
+        ENDIF
+        ADD profile%(4),TIMER-now%
+        IF (button! AND power%(s%)>0) AND (stick% AND 2)<>2
+          SELECT button#(s%)
+          CASE 1
+            now%=TIMER
+            phaser_handler(s%)
+            ADD profile%(5),TIMER-now%
+            now%=TIMER
+            IF hit!(target%)
+              resolve_damage(target%,phaser_damage%)
+              hit!(target%)=FALSE
+              flash_panel!(target%)=TRUE
+            ENDIF
+            ADD profile%(6),TIMER-now%
+          CASE 2
+            fire_photon(s%)
+          CASE 3
+            charge_shields(s%)
+          ENDSELECT
+        ELSE IF (NOT button!) AND photon_damage#(s%)>0 AND NOT photon_fired!(s%,1)
+          photon_charging!(s%)=FALSE
+          photon_ready!(s%)=TRUE
+        ENDIF
+        IF button! AND photon_ready!(s%)=TRUE AND photon_damage#(s%)>0 AND (NOT photon_fired!(s%,1)) AND (button#(s%)=2)
+          photon_ready!(s%)=FALSE
+          fire_charged_photon(s%)
+        ENDIF
+        IF photon_charging!(s%) OR photon_ready!(s%)
+          show_charging_photon(s%)
+        ENDIF
+        now%=TIMER
+        move_ship(s%)
+        ADD profile%(8),TIMER-now%
+        now%=TIMER
+      ENDIF
+    NEXT s%
+    IF frame_counter% MOD compute_bearings_interval%=0
+      compute_bearings
+    ENDIF
+    FOR s%=1 TO 2
+      ADD profile%(9),TIMER-now%
+      now%=TIMER
+      IF shield!(s%)
+        shield!(s%)=FALSE
+        shields_on(s%)
+      ENDIF
+      ADD profile%(10),TIMER-now%
+      IF NOT ship_destroyed!(s%)
+        now%=TIMER
+        draw(s%)
+        ADD profile%(11),TIMER-now%
+      ELSE
+        explode(s%)
+      ENDIF
+      ' move_photons(ship)
+      now%=TIMER
+      recharge(s%)
+      ADD profile%(13),TIMER-now%
+      now%=TIMER
+    NEXT s%
+    INC frame_counter%
+    now%=TIMER
+    IF game_over!
+      IF winner#=1
+        PRINT AT(10,23);"KLINGON WINS"
+      ELSE
+        PRINT AT(10,23);"ENTERPRISE WINS"
+      ENDIF
+    ENDIF
+    ADD profile%(15),TIMER-now%
+    now%=TIMER
+    swap_screens
+    ADD profile%(16),TIMER-now%
+    now%=TIMER
+    draw_background
+    ADD profile%(17),TIMER-now%
+    ' update_gauges
+    frame_duration%=TIMER-frame_start%
+    IF lock_fps!
+      now%=TIMER
+      PRINT AT(10,2);desired_frame_duration_ticks%
+      PRINT AT(10,3);frame_duration%
+      IF frame_duration%<desired_frame_duration_ticks% THEN
+        pause_duration_ticks%=desired_frame_duration_ticks%-frame_duration%-1
+        PRINT AT(10,4);pause_duration_ticks%
+        pause_until_tick%=TIMER+pause_duration_ticks%
+        WHILE TIMER<pause_until_tick%
+        WEND
+      ENDIF
+      ADD profile%(22),TIMER-now%
+    ENDIF
+    IF display_fps!
+      display_fps
+    ENDIF
+  LOOP UNTIL game_over!
+  game_end%=TIMER
+  game_duration%=game_end%-game_start%
+  @breaker
+RETURN
+> PROCEDURE draw_background
+  now%=TIMER
+  IF flash_panel!(1)=FALSE AND flash_panel!(2)=FALSE
+    SPUT background$(1)
+  ELSE IF flash_panel!(1)=TRUE AND flash_panel!(2)=FALSE
+    SPUT background$(2)
+  ELSE IF flash_panel!(1)=FALSE AND flash_panel!(2)=TRUE
+    SPUT background$(3)
+  ELSE IF flash_panel!(1)=TRUE AND flash_panel!(2)=TRUE
+    SPUT background$(4)
+  ENDIF
+  flash_panel!(1)=FALSE
+  flash_panel!(2)=FALSE
+  ADD profile%(17),TIMER-now%
+RETURN
+> PROCEDURE display_fps
+  dtime%=TIMER
+  cycle%=frame_counter% MOD fps_frames_interval%
+  PRINT AT(74,24);USING "##.#",fps#;
+  IF cycle%=0
+    fps#=(frame_counter%-interval_start_frame%)/(TIMER-interval_start_tick%)*200
+    interval_start_frame%=frame_counter%
+    interval_start_tick%=TIMER
+  ENDIF
+  ADD profile%(14),TIMER-dtime%
+RETURN
+> PROCEDURE output_profile
+  fps#=frame_counter%/(game_duration%/200)
+  PRINT AT(47,1);frame_counter%
+  PRINT AT(53,1);game_duration%
+  PRINT AT(60,1);fps#
+  FOR i%=1 TO 22
+    PRINT AT(25,i%+2);profile_name$(i%)
+    PRINT AT(50,i%+2);i%
+    PRINT AT(53,i%+2);profile%(i%)
+    PRINT AT(60,i%+2);100*profile%(i%)/game_duration%
+  NEXT i%
+RETURN
+> PROCEDURE compute_bearings
+  LOCAL mark%
+  mark%=TIMER
+  dx%=(x%(2)-x%(1))
+  dy%=(y%(2)-y%(1))
+  IF dx%=0 AND dy%>0
+    '  PRINT AT(50,8);"S"
+    bearing%(1)=180
+  ELSE IF dx%=0 AND dy%<0
+    '  PRINT AT(50,8);"N"
+    bearing%(1)=0
+  ELSE IF dy%=0 AND dx%<0
+    '  PRINT AT(50,8);"W"
+    bearing%(1)=270
+  ELSE IF dy%=0 AND dx%>0
+    '  PRINT AT(50,8);"E"
+    bearing%(1)=90
+  ELSE IF dy%=0 AND dx%=0
+    '  PRINT AT(50,8);"X"
+    bearing%(1)=180
+  ELSE
+    bearing%(1)=(DEG(ATN(dy%/dx%)))
+    '   PRINT AT(50,7);bearing%(1)
+    IF dx%>0 AND dy%>0
+      ' PRINT AT(50,8);"SE"
+      bearing%(1)=90+bearing%(1)
+    ELSE IF dx%>0 AND dy%<0
+      ' PRINT AT(50,8);"NE"
+      bearing%(1)=90+bearing%(1)
+    ELSE IF dx%<0 AND dy%>0
+      ' PRINT AT(50,8);"SW"
+      bearing%(1)=270+bearing%(1)
+    ELSE IF dx%<0 AND dy%<0
+      ' PRINT AT(50,8);"NW"
+      bearing%(1)=270+bearing%(1)
+    ENDIF
+  ENDIF
+  bearing%(2)=(180+bearing%(1)) MOD 360
+  ADD profile%(12),TIMER-mark%
+RETURN
+'
+' **** Setup Procedures ****
+'
+> PROCEDURE interface_screen_setup
+  swap_screens
+  CLS
+  LINE 0,384,639,384
+  LINE 0,366,639,366
+  DEFTEXT 1,9,0,13
+  TEXT 1,20,"Deepspace Duel Game Options:"
+  interface_button_setup
+  DEFTEXT 1,1,0,6
+  TEXT 1,40,"MOVEMENT:"
+  TEXT 1,55,"BOUNCE:       "
+  TEXT 1,85,"COLLISIONS:    "
+  DEFTEXT 1,0,0,6
+  TEXT 1,65," -BOUNCE FACTOR"
+  TEXT 1,95," -DAMAGE FACTOR"
+  TEXT 1,115,"THRUST   "
+  TEXT 1,125,"FRICTION "
+  TEXT 1,135,"THRUST COST    "
+  TEXT 1,145,"SPEED LIMIT    "
+  SGET interface_screen$
+  '  poll_mouse
+  CLS
+RETURN
+> PROCEDURE interface_button_setup
+  num_buttons#=8
+  DIM button_title$(num_buttons#)
+  DIM buttonx1#(num_buttons#),buttonx2#(num_buttons#),buttony1#(num_buttons#),buttony2#(num_buttons#)
+  DIM button_type#(num_buttons#)
+  DIM value#(num_buttons#)
+  FOR i#=1 TO num_buttons#
+    READ button_title$(i#)
+    READ buttonx1#(i#),buttony1#(i#),buttonx2#(i#),buttony2#(i#)
+    READ button_type#(i#)
+    READ value#(i#)
+    TEXT buttonx1#(i#)+1,buttony1#(i#)+8,button_title$(i#)
+  NEXT i#
+  DATA "BOUNCE",0,47,58,57,1,0
+  DATA "-BOUNCE FACTOR",8,57,121,67,2,0.8
+  DATA "COLLISIONS",0,77,89,87,1,0
+  DATA "-DAMAGE FACTOR",8,87,121,97,2,1
+  DATA "THRUST",0,107,49,117,2,1.5
+  DATA "FRICTION",0,117,68,127,2,0.1
+  DATA "THRUST COST",0,127,89,137,2,0.5
+  DATA "SPEED LIMIT",0,137,89,147,2,30
+RETURN
+> PROCEDURE scroll_setup
+  scroll$="                                                                              Light In The Tunnel Studios Proudly Presents .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  D E E P S P A C E   D U E L"
+  scroll$=scroll$+" .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  Programmed by John Aegard.  Graphics by Jan Morrison and Jason Aho.  Reality checking by Jan Morrison.  Playtested by John Aegard, Jason Aho, Jan Morrison,"
+  scroll$=scroll$+" James E. Duggan, Joe Duggan, James Ristola, Jamie Nichols, and C. Josef Beale.  If you enjoy this program, please send $10 CDN to Light In The Tunnel Studios, 317 Van Norman Street, Thunder Bay, Ontario, Canada.  P7A 4C1."
+  scroll$=scroll$+"                                                                              "
+RETURN
+> PROCEDURE joystick_setup
+  STICK 1
+RETURN
+> PROCEDURE put_setup
+  swap_screens
+  CLS
+  DIM ship$(3,25)
+  DIM explosion$(25)
+  DIM photon$(6)
+  FOR i#=25 TO 125 STEP 25
+    DEFLINE 1,2
+    CIRCLE i#,i#,i#
+    GET 0,0,i#*2,i#*2,explosion$((i#)/25)
+    CLS
+  NEXT i#
+  CLS
+  CIRCLE 25,25,25
+  GET 0,0,50,50,shield$
+  CLS
+  DEFFILL 1,2,8
+  PBOX 4,0,64,14
+  GET 4,0,64,14,button$
+  CLS
+  OPEN "i",#1,"c:\gfa\dsduel\dsduel.pi3"
+  null$=INPUT$(34,#1)
+  pic$=INPUT$(32000,#1)
+  SPUT pic$
+  pic$=""
+  FOR row#=1 TO 2
+    FOR col#=1 TO 12
+      INC frame#
+      GET (col#-1)*50+1,(row#-1)*49+1,(col#-1)*50+49,(row#-1)*49+48,ship$(1,frame#)
+    NEXT col#
+  NEXT row#
+  frame#=0
+  FOR row#=3 TO 4
+    FOR col#=1 TO 12
+      INC frame#
+      GET (col#-1)*50+1,(row#-1)*49+1,(col#-1)*50+49,(row#-1)*49+48,ship$(3,frame#)
+    NEXT col#
+  NEXT row#
+  frame#=0
+  FOR row#=7 TO 8
+    FOR col#=1 TO 12
+      INC frame#
+      GET (col#-1)*50+1,(row#-1)*49+1,(col#-1)*50+49,(row#-1)*49+48,ship$(2,frame#)
+    NEXT col#
+  NEXT row#
+  FOR col#=1 TO 6
+    GET 601,(col#-1)*18+1,617,(col#-1)*18+17,photon$(col#)
+  NEXT col#
+  '  poll_mouse
+  CLS
+  PBOX 4,5,66,395
+  GET 4,5,66,395,internal_damage_flash$
+  CLS
+RETURN
+> PROCEDURE screen_setup
+  SETCOLOR 0,0
+  CLS
+  FOR i#=1 TO 150
+    cornerx#=RANDOM(507)
+    cornery#=RANDOM(399)
+    IF RANDOM(2)
+      BOX cornerx#+66,cornery#,cornerx#+67,cornery#+1
+    ELSE
+      PLOT cornerx#+66,cornery#
+    ENDIF
+  NEXT i#
+  DEFLINE 1,3
+  BOX 0,1,639,399
+  DEFLINE 1,1
+  BOX 4,5,635,395
+  PRINT AT(2,14);"E S T H"
+  PRINT AT(73,14);"E S T H"
+  FOR i#=9 TO 57 STEP 16
+    BOX i#,208,i#+6,8
+  NEXT i#
+  FOR i#=577 TO 625 STEP 16
+    BOX i#,208,i#+6,8
+  NEXT i#
+  PRINT AT(2,15);"Phasers"
+  PRINT AT(2,16);"Photons"
+  PRINT AT(2,17);"Shields"
+  PRINT AT(73,15);"Phasers"
+  PRINT AT(73,16);"Photons"
+  PRINT AT(73,17);"Shields"
+  BOX 4,224,66,272
+  FOR i#=224 TO 272 STEP 16
+    LINE 4,i#,66,i#
+    LINE 573,i#,635,i#
+  NEXT i#
+  BOUNDARY TRUE
+  LINE 66,5,66,395
+  LINE 573,5,573,395
+  SGET background$(1)
+  GRAPHMODE 3
+  PBOX 4,5,68,395
+  SGET background$(2)
+  PBOX 571,5,635,395
+  SGET background$(4)
+  SPUT background$(1)
+  PBOX 571,5,635,395
+  SGET background$(3)
+  clip_setup
+RETURN
+> PROCEDURE clip_setup
+  CLIP 66,5 TO 573,395
+RETURN
+> PROCEDURE one_time_variable_setup
+  DIM x%(2),y%(2)
+  DIM vx%(2),vy%(2),speed#(2)
+  DIM rot#(2)
+  DIM rot%(2),power%(2),shields%(2),button#(2)
+  DIM shield!(2),button_change!(2),thrust_on!(2),phaser!(2),hit!(2),ship_destroyed!(2)
+  DIM flash_panel!(2)
+  DIM expl_counter#(2)
+  DIM target%(2)
+  DIM profile%(24)
+  DIM profile_name$(24)
+  DIM background$(4)
+  DIM bearing%(2)
+  '
+  DIM damage%(2,5)
+  '
+  ' 1=THRUSTER
+  ' 2=SHIELDS
+  ' 3=PHOTONS
+  ' 4=PHASERS
+  ' 5=MANEUVER
+  '
+  ARRAYFILL damage%(),0
+  DIM hull%(2)
+  x%(1)=300
+  y%(1)=200
+  x%(2)=400
+  y%(2)=200
+  rot#(1)=7
+  rot#(2)=19
+  vx%(1)=0
+  vx%(2)=0
+  target%(1)=2
+  target%(2)=1
+  profile_name$(5)="phaser_handler"
+  profile_name$(6)="resolve_damage"
+  profile_name$(7)="phaser test for-loop"
+  profile_name$(8)="move_ship"
+  profile_name$(9)="flash_panel_put"
+  profile_name$(10)="flash_panel_pbox"
+  profile_name$(11)="draw ship"
+  profile_name$(12)="compute_bearing"
+  profile_name$(14)="display_fps"
+  profile_name$(16)="swap_screens"
+  profile_name$(17)="sput"
+  profile_name$(19)="check_phaser_faster"
+  profile_name$(20)="get_starsquare"
+  profile_name$(21)="draw phaser"
+  profile_name$(22)="fps pause"
+RETURN
+PROCEDURE constant_setup
+  '
+  ' ** display constants **
+  '
+  display_fps!=FALSE
+  fps_frames_interval%=4
+  interval_start_frame%=0
+  interval_start_time%=TIMER
+  '
+  lock_fps!=FALSE
+  desired_fps%=25
+  desired_frame_duration_ms%=1000/desired_fps%
+  desired_frame_duration_ticks%=desired_frame_duration_ms%/5
+  '
+  ' **  movement constants  **
+  '
+  compute_bearings_interval%=5
+  rot_rate#=0.5
+  bounce!=FALSE
+  bounce_factor#=0.8
+  thrust#=0.5
+  friction#=0.1
+  thrust_cost%=1
+  speed_limit#=10
+  collision!=FALSE
+  collision_damage_factor#=1
+  '
+  ' **  static photon constants **
+  '
+  ' **  NOTE: If using dynamic photons set num_photons = 1
+  '
+  num_photons#=1
+  DIM photonx#(2,num_photons#),photony#(2,num_photons#),photon_fired!(2,num_photons#),photonvx#(2,num_photons#),photonvy#(2,num_photons#),photon_damage#(2),photon_charging!(2),photon_ready!(2)
+  photon_cost#=20
+  photon_damage#=25
+  photon_speed#=30
+  photon_bounce!=FALSE
+  photon_friction#=1
+  '
+  ' ** phaser constants **
+  '
+  phaserange%=125
+  phaser_damage%=5
+  phaser_cost%=3
+  '
+  ' ** meter constants **
+  '
+  recharge_rate%=1
+  power_ceiling%=195
+  shield_ceiling%=195
+  shield_power_rate%=2
+  shield_power_cost%=3
+  starting_power%=100
+  starting_shields%=100
+  starting_hull%=195
+  '
+  ' ** dynamic photon constants **
+  '
+  charge_photons!=TRUE
+  photon_initial_cost#=10
+  photon_initial_damage#=10
+  photon_charge_rate#=5
+  photon_charge_cost#=5
+  photon_ceiling#=100
+  '
+  ARRAYFILL power%(),starting_power%
+  ARRAYFILL shields%(),starting_shields%
+  ARRAYFILL button#(),1
+  ARRAYFILL hull%(),starting_hull%
+RETURN
+> PROCEDURE page_flipping_setup
+  DIM screen%(32255/4)
+  screen_1#=XBIOS(3)
+  screen_2#=VARPTR(screen%(0))+255 AND &HFFFF00
+RETURN
+> PROCEDURE trig_table_setup
+  DIM thrust_sin_table#(24)
+  DIM thrust_cos_table#(24)
+  DIM sin_table#(24)
+  DIM cos_table#(24)
+  FOR i%=1 TO 24
+    theta#=RAD((i%-1)*15)
+    thrust_sin_table#(i%)=thrust#*SIN(theta#)
+    thrust_cos_table#(i%)=thrust#*COS(theta#)*-1
+    sin_table#(i%)=SIN(theta#)
+    cos_table#(i%)=COS(theta#)
+  NEXT i%
+RETURN
+> PROCEDURE phaser_table_setup
+  DIM phaser_miss_table_x%(24)
+  DIM phaser_miss_table_y%(24)
+  FOR i%=1 TO 24
+    phaser_miss_table_y%(i%)=24-phaserange%*cos_table#(i%)
+    phaser_miss_table_x%(i%)=25+phaserange%*sin_table#(i%)
+  NEXT i%
+  DIM phaser_check_matrix_x%(3,24)
+  DIM phaser_check_matrix_y%(3,24)
+  FOR range|=1 TO 3
+    FOR rotation|=1 TO 24
+      s_factor#=range|/3
+      phaser_check_matrix_x%(range|,rotation|)=25+phaserange%*s_factor#*sin_table#(rotation|)
+      phaser_check_matrix_y%(range|,rotation|)=24-phaserange%*s_factor#*cos_table#(rotation|)
+    NEXT rotation|
+  NEXT range|
+RETURN
+> PROCEDURE phaser_beam_setup
+  num_phaser_frames%=20
+  phaser_boost%=&X1100110011001100
+  DIM phaser_frame%(num_phaser_frames%)
+  FOR i%=1 TO num_phaser_frames%
+    phaser_frame%(i%)=-1*(RAND(65535) OR phaser_boost%)
+  NEXT i%
+RETURN
+'
+' **** Phaser Procedures ****
+'
+> PROCEDURE phaser_handler(ship%)
+  time2%=TIMER
+  SUB power%(ship%),phaser_cost%
+  target%=target%(ship%)
+  hit!(target%)=FALSE
+  ADD profile%(18),TIMER-time2%
+  time2%=TIMER
+  ' check_phaser
+  check_phaser_faster(ship%)
+  ADD profile%(19),TIMER-time2%
+  time2%=TIMER
+  GET x%(target%),y%(target%),x%(target%)+50,y%(target%)+50,starsquare$
+  ADD profile%(20),TIMER-time2%
+  time2%=TIMER
+  sx%=x%(ship%)+25+vx%(ship%)
+  sy%=y%(ship%)+24+vy%(ship%)
+  IF (NOT hit!(target%)) OR ship_destroyed!(target%)
+    fx%=x%(ship%)+vx%(ship%)+phaser_miss_table_x%(rot%(ship%))
+    fy%=y%(ship%)+vy%(ship%)+phaser_miss_table_y%(rot%(ship%))
+  ELSE
+    fx%=x%(target%)+20+RANDOM(3)
+    fy%=y%(target%)+19+RANDOM(3)
+  ENDIF
+  framediv%=(frame_counter% MOD num_phaser_frames%)+1
+  DEFLINE phaser_frame%(framediv%),2,2,2
+  LINE sx%,sy%,fx%,fy%
+  ADD profile%(21),TIMER-time2%
+RETURN
+> PROCEDURE check_phaser_faster(s%)
+  heading%=(rot%(s%)-1)*15
+  offangle%=ABS(heading%-bearing%(s%))
+  IF range#<phaserange%+25 AND offangle%<=16
+    hit!(target%)=TRUE
+  ENDIF
+RETURN
+> PROCEDURE check_phaser
+  IF range#<phaserange%+25
+    temp_phaserange%=0
+    time3%=TIMER
+    FOR s|=3 DOWNTO 1
+      xt#=x%(s%)+phaser_check_matrix_x%(s|,rot%(s%))
+      yt#=y%(s%)+phaser_check_matrix_y%(s|,rot%(s%))
+      IF (xt#>x%(target%)+4) AND (xt#<(46+x%(target%))) AND (yt#>y%(target%)+4) AND (yt#<(45+y%(target%)))
+        hit!(target%)=TRUE
+        temp_phaserange%=phaserange%/s|
+      ENDIF
+      EXIT IF hit!(target%)
+    NEXT s|
+    ADD profile%(7),TIMER-time3%
+    IF temp_phaserange%=0
+      temp_phaserange%=phaserange%
+    ENDIF
+  ELSE
+    temp_phaserange%=phaserange%
+  ENDIF
+RETURN
+'
+' **** Sound Procedures ****
+'
+> PROCEDURE phaser_sound
+  thrust_on!(1)=FALSE
+  thrust_on!(2)=FALSE
+  WAVE 0,0
+  '  FOR i=8 DOWNTO 1
+  SOUND 1,15,8,6
+  SOUND 2,15,7,6
+  WAVE 7,7,8,200
+  ' NEXT i
+RETURN
+> PROCEDURE thrust_sound
+  '  WAVE 8,1,11,ship*100
+RETURN
+> PROCEDURE stop_sound
+  WAVE 0,0
+RETURN
+'
+' **** Shield Procedures ****
+'
+> PROCEDURE charge_shields(s%)
+  IF power%(s%)>shield_power_rate% AND shields%(s%)<shield_ceiling%
+    ADD shields%(s%),shield_power_rate%
+    SUB power%(s%),shield_power_cost%
+    GET x%(s%),y%(s%),x%(s%)+50,y%(s%)+50,starsquare$
+    shield!(s%)=TRUE
+  ENDIF
+RETURN
+> PROCEDURE shields_on(s%)
+  PUT x%(s%)-1,y%(s%)-1,shield$,7
+  ' PUT x(s),y(s),starsquare$,7
+RETURN
+'
+' **** Damage Procedures ****
+'
+> PROCEDURE flash_panel_pbox(t%)
+  CLIP OFF
+  GRAPHMODE 3
+  IF t%=1
+    PBOX 4,5,50,395
+  ELSE
+    PBOX 589,5,635,395
+  ENDIF
+  GRAPHMODE 1
+  clip_setup
+RETURN
+> PROCEDURE resolve_damage(t%,damage#)
+  IF shields%(t%)>0
+    shield!(t%)=TRUE
+    SUB shields%(t%),damage#
+    hull_damage#=damage#/5
+    IF shields%(t%)<0
+      shields%(t%)=0
+    ENDIF
+  ELSE
+    hull_damage#=damage#*2
+    fpptime%=TIMER
+    ' flash_panel_put(t%)
+    ADD profile%(9),TIMER-fpptime%
+  ENDIF
+  SUB hull%(t%),hull_damage#
+  IF hull%(t%)<=0
+    hull%(t%)=0
+    ship_destroyed!(t%)=TRUE
+  ENDIF
+RETURN
+> PROCEDURE explode(s%)
+  INC expl_counter#(s%)
+  IF expl_counter#(s%)<6
+    PUT x%(s%)-25*(expl_counter#(s%)-1),y%(s%)-25*(expl_counter#(s%)-1),explosion$(expl_counter#(s%)),7
+  ELSE
+    game_over!=TRUE
+    IF s%=1
+      winner#=2
+    ELSE
+      winner#=1
+    ENDIF
+  ENDIF
+RETURN
+> PROCEDURE flash_panel_put(s%)
+  CLIP OFF
+  PUT 4+569*(s%-1),5,internal_damage_flash$,6
+  clip_setup
+RETURN
+'
+' **** Movement Procedures ****
+'
+PROCEDURE move_ship(s%)
+  ADD x%(s%),vx%(s%)
+  ADD y%(s%),vy%(s%)
+  @wraparound(s%)
+  '  IF collision!
+  IF s%=2
+    xrange#=ABS(x%(1)-x%(2))
+    yrange#=ABS(y%(1)-y%(2))
+    range#=SQR((xrange#^2)+(yrange#^2))
+  ENDIF
+  '  IF range<=50
+  ' collision(s)
+  ' ENDIF
+  ' ENDIF
+  '  IF NOT bounce!
+  '  wraparound(s)
+  ' ELSE
+  '  bounce(s)
+  ' ENDIF
+  '  SUB vx(s),friction*(SGN(vx(s)))
+  '  SUB vy(s),friction*(SGN(vy(s)))
+RETURN
+> PROCEDURE wraparound(s%)
+  IF x%(s%)>523
+    x%(s%)=66+x%(s%)-523
+  ELSE IF x%(s%)<66
+    x%(s%)=523-(66-x%(s%))
+  ELSE IF y%(s%)>352
+    y%(s%)=5+y%(s%)-352
+  ELSE IF y%(s%)<5
+    y%(s%)=352-(5-y%(s%))
+  ENDIF
+RETURN
+> PROCEDURE bounce(s%)
+  IF y%(s%)<5
+    y%(s%)=5
+    vx%(s%)=bounce_factor#*vx%(s%)
+    vy%(s%)=-bounce_factor#*vy%(s%)
+  ELSE IF y%(s%)>348
+    y%(s%)=348
+    vx%(s%)=bounce_factor#*vx%(s%)
+    vy%(s%)=-bounce_factor#*vy%(s%)
+  ELSE IF x%(s%)>523
+    x%(s%)=523
+    vx%(s%)=-bounce_factor#*vx%(s%)
+    vy%(s%)=bounce_factor#*vy%(s%)
+  ELSE IF x%(s%)<66
+    x%(s%)=66
+    vx%(s%)=-bounce_factor#*vx%(s%)
+    vy%(s%)=bounce_factor#*vy%(s%)
+  ENDIF
+RETURN
+> PROCEDURE thrust(s%)
+  IF power%(s%)>thrust_cost%
+    SUB power%(s%),thrust_cost%
+    ADD vx%(s%),thrust_sin_table#(rot%(s%))
+    ADD vy%(s%),thrust_cos_table#(rot%(s%))
+    ' speed(s)=(vx(s)^2+vy(s)^2)^0.5
+  ENDIF
+RETURN
+> PROCEDURE collision(s%)
+  SWAP vx%(1),vx%(2)
+  SWAP vy%(1),vy%(2)
+  vx_diff#=ABS(vx%(1)-vx%(2))
+  vy_diff#=ABS(vy%(1)-vy%(2))
+  v_combined#=SQR(vx_diff#^2+vy_diff#^2)
+  collision_damage#=v_combined#*collision_damage_factor#
+  resolve_damage(1,collision_damage#)
+  resolve_damage(2,collision_damage#)
+RETURN
+> PROCEDURE checkrot(s%)
+  rot%(s%)=rot#(s%)
+  IF rot%(s%)>24
+    rot#(s%)=1
+    rot%(s%)=1
+  ELSE IF rot%(s%)<1
+    rot%(s%)=24
+    rot#(s%)=24
+  ENDIF
+RETURN
+'
+' **** Maintainence Procedures ****
+'
+> PROCEDURE update_button(s%)
+  PUT 5+(s%-1)*569,209+16*button#(s%),button$,6
+RETURN
+> PROCEDURE swap_screens
+  '  VSYNC
+  SWAP screen_1#,screen_2#
+  VOID XBIOS(5,L:screen_1#,L:screen_2#,-1)
+  '  VSYNC
+RETURN
+> PROCEDURE update_gauges
+  CLIP OFF
+  DEFLINE 1,6,0,0
+  LINE 9,206-power%(1),15,206-power%(1)
+  LINE 25,206-shields%(1),31,206-shields%(1)
+  LINE 41,206-photon_damage#(1),47,206-photon_damage#(1)
+  LINE 57,206-hull%(1),63,206-hull%(1)
+  LINE 577,206-power%(2),583,206-power%(2)
+  LINE 593,206-shields%(2),599,206-shields%(2)
+  LINE 609,206-photon_damage#(2),615,206-photon_damage#(2)
+  LINE 625,206-hull%(2),631,206-hull%(2)
+  clip_setup
+RETURN
+> PROCEDURE get_controllers
+  stick%=STICK(s%-1)
+  button!=STRIG(s%-1)
+RETURN
+> PROCEDURE recharge(s%)
+  IF power%(s%)<=power_ceiling%
+    ADD power%(s%),recharge_rate%
+  ENDIF
+RETURN
+> PROCEDURE draw(s%)
+  PUT x%(s%),y%(s%),ship$(s%,rot%(s%)),7
+RETURN
+> PROCEDURE poll_mouse
+  DEFMOUSE 5
+  DO
+    IF MOUSEK
+      PRINT AT(20,20);MOUSEX;"    ";MOUSEY;"    "
+    ENDIF
+  LOOP
+RETURN
+'
+' **** Photon Procedures ****
+'
+> PROCEDURE fire_photon(s%)
+  IF charge_photons!
+    charge_photon(s%)
+  ELSE
+    FOR p#=1 TO num_photons#
+      EXIT IF NOT photon_fired!(s%,p#)
+    NEXT p#
+    IF p#<=num_photons# AND power%(s%)>photon_cost#
+      IF NOT photon_fired!(s%,p#)
+        theta#=RAD((rot%(s%)-1)*15)
+        photonx#(s%,p#)=x#(s%)+16+vx#(s%)
+        photony#(s%,p#)=y%(s%)+16+vy%(s%)
+        photonvx#(s%,p#)=photon_speed#*SIN(theta#)
+        photonvy#(s%,p#)=-photon_speed#*COS(theta#)
+        photon_fired!(s%,p#)=TRUE
+        SUB power%(s%),photon_cost#
+      ENDIF
+    ENDIF
+  ENDIF
+RETURN
+> PROCEDURE move_photons(s%)
+  t#=target%(s%)
+  FOR p#=1 TO num_photons#
+    IF (photonx#(s%,p#)+10=>x#(t#) AND photonx#(s%,p#)+10<=x#(t#)+50) AND (photony#(s%,p#)+10=>y#(t#) AND photony#(s%,p#)+10<=y#(t#)+50) AND photon_fired!(s%,p#)=TRUE
+      photon_fired!(s%,p#)=FALSE
+      IF NOT charge_photons!
+        resolve_damage(t#,photon_damage#)
+      ELSE
+        resolve_damage(t#,photon_damage#(s%))
+        photon_damage#(s%)=0
+      ENDIF
+      ADD vx#(t#),photonvx#(s%,p#)/15
+      ADD vy#(t#),photonvy#(s%,p#)/15
+      SELECT RANDOM(4)
+      CASE 0
+        INC rot%(t#)
+        checkrot(t#)
+      CASE 1
+        DEC rot%(t#)
+        checkrot(t#)
+      ENDSELECT
+    ENDIF
+    IF photon_fired!(s%,p#)
+      SUB photonvx#(s%,p#),friction#*(SGN(photonvx#(s%,p#)))
+      SUB photonvy#(s%,p#),friction#*(SGN(photonvy#(s%,p#)))
+      ADD photonx#(s%,p#),photonvx#(s%,p#)
+      ADD photony#(s%,p#),photonvy#(s%,p#)
+      IF photon_bounce!=TRUE
+        IF photony#(s%,p#)<5
+          photony#(s%,p#)=5
+          photonvx#(s%,p#)=bounce_factor#*photonvx#(s%,p#)
+          photonvy#(s%,p#)=-bounce_factor#*photonvy#(s%,p#)
+        ELSE IF photony#(s%,p#)>348
+          photony#(s%,p#)=348
+          photonvx#(s%,p#)=bounce_factor#*photonvx#(s%,p#)
+          photonvy#(s%,p#)=-bounce_factor#*photonvy#(s%,p#)
+        ELSE IF photonx#(s%,p#)>554
+          photonx#(s%,p#)=554
+          photonvx#(s%,p#)=-bounce_factor#*photonvx#(s%,p#)
+          photonvy#(s%,p#)=bounce_factor#*photonvy#(s%,p#)
+        ELSE IF photonx#(s%,p#)<66
+          photonx#(s%,p#)=66
+          photonvx#(s%,p#)=-bounce_factor#*photonvx#(s%,p#)
+          photonvy#(s%,p#)=bounce_factor#*photonvy#(s%,p#)
+        ENDIF
+      ELSE
+        IF photonx#(s%,p#)<70 OR photonx#(s%,p#)>539 OR photony#(s%,p#)<5 OR photony#(s%,p#)>395 OR (ABS(photonvx#(s%,p#))<1 AND ABS(photonvy#(s%,p#))<1)
+          photon_fired!(s%,p#)=FALSE
+        ENDIF
+      ENDIF
+      photonvy#(s%,p#)=bounce_factor#*photonvy#(s%,p#)
+    ENDIF
+    IF (ABS(photonvx#(s%,p#))<1 AND ABS(photonvy#(s%,p#))<1)
+      photon_fired!(s%,p#)=FALSE
+      photon_damage#(s%)=0
+    ENDIF
+    IF photon_fired!(s%,p#)
+      PUT photonx#(s%,p#),photony#(s%,p#),photon$(RANDOM(5)+1),7
+      PUT photonx#(s%,p#),photony#(s%,p#),photon$(RANDOM(5)+1),7
+    ENDIF
+  NEXT p#
+RETURN
+> PROCEDURE charge_photon(s%)
+  IF NOT photon_fired!(s%,1) AND NOT photon_ready!(s%)
+    IF photon_damage#(s%)=0 AND power%(s%)>photon_initial_cost#
+      photon_damage#(s%)=photon_initial_damage#
+      SUB power%(s%),photon_initial_cost#
+      photon_charging!(s%)=TRUE
+    ELSE IF photon_damage#(s%)>0 AND power%(s%)>photon_charge_cost# AND photon_damage#(s%)<photon_ceiling#
+      ADD photon_damage#(s%),photon_charge_rate#
+      SUB power%(s%),photon_charge_cost#
+    ENDIF
+  ENDIF
+RETURN
+> PROCEDURE fire_charged_photon(s%)
+  photon_charging!(s%)=FALSE
+  p#=1
+  theta#=RAD((rot%(s%)-1)*15)
+  photonx#(s%,p#)=x%(s%)+16+vx%(s%)
+  photony#(s%,p#)=y%(s%)+16+vy%(s%)
+  photonvx#(s%,p#)=photon_speed#*SIN(theta#)
+  photonvy#(s%,p#)=-photon_speed#*COS(theta#)
+  photon_fired!(s%,p#)=TRUE
+RETURN
+> PROCEDURE show_charging_photon(s%)
+  theta#=RAD((rot%(s%)-1)*15)
+  PUT x%(s%)+16+vx%(s%)+22*SIN(theta#),y%(s%)+16+vy%(s%)-22*COS(theta#),photon$(RANDOM(5)+1),7
+  PUT x%(s%)+16+vx%(s%)+22*SIN(theta#),y%(s%)+16+vy%(s%)-22*COS(theta#),photon$(RANDOM(5)+1),7
+RETURN
