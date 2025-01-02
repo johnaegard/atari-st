@@ -50,8 +50,16 @@ void fill(void *buffer, size_t buffer_size, const unsigned char sequence[8])
 
 int main()
 {
-  size_t buffer_size = 32000; // Set the size of the buffer
-  AlignedBuffer screen_ram = align_buffer(buffer_size);
+  const size_t screen_size_bytes = 32000; // Set the size of the buffer
+  AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
+
+Setcolor(0,0);
+//Setcolor(1,0xff0);
+//Setcolor(8,0xf00);
+Setcolor(9, 0xf00);
+//Setcolor(5, 0xf00);
+
+Setcolor(15,0xddd);
 
   if (screen_ram.aligned_ptr)
   {
@@ -64,13 +72,14 @@ int main()
     return 1;
   }
 
+
   void *physbase = Physbase();
   void *logbase = screen_ram.aligned_ptr;
 
   // memset(logbase,255,80);
 
-  unsigned char fill_sequence[8] = {255,255,0,0,255,255,0,0};
-  fill(logbase, 32000, fill_sequence);
+  unsigned char fill_sequence[8] = {64,255,0,0,0,0,64,127};
+  fill(logbase, screen_size_bytes, fill_sequence);
   
   printf("logbase: %p\n", logbase);
   printf("physbase: %p\n", physbase);
