@@ -1,0 +1,72 @@
+Selectric¿ Version 1.10              (c) 1992,93 by Stefan Radermacher
+============================================================================
+
+Selectric¿ is Shareware and may be freely distributed for non-commercial 
+purposes. If you use Selectric¿ regularly you are honour bound to pay a 
+Shareware fee of DM 30 to the author, although I won't object if you send 
+me more...
+
+Selectric¿ is NOT a Freeware Program! PD libraries, magazines or any other 
+organisations may only distribute Selectric¿ with my written permission.
+Any contravention of my wishes will be strongly challenged.
+
+Selectric¿ comprises of the following files:
+     - SLECTRIC.PRG      The program itself (should normally be placed
+                         in the AUTO Folder) 
+     - CALLSLCT.ACC      An Accessory which calls Selectric¿ and can switch 
+                         Selectric¿ On/Off
+     - SLCTCONF.CPX      A CPX Module, which offers the same functions as 
+                         the accessory.  
+     - SLECTRIC.TXT      This documentation 
+     - SLECTRIC.IMG      A labelled screenshot of Selectric¿ main 
+                         functions
+     - CHANGES.TXT       Lists the changes between Versions (IMPORTANT!)
+     - SLCTPROG.TXT      Some information for programmers 
+     - FSEL_INP.C        A universal fsel_(ex)input()-Routine 
+     - FSEL_INP.H        The header file to go with the above 
+     - SAMPLE.C          An example program which utilises some of the
+                         Selectric¿ specific features.
+     - README            Short Info file
+     
+     - FRACT016.PRG      Fractal set for 16 Kb.
+     - FRACTAL.TXT       Instructions for Fractal.
+
+Selectric¿ may only be distributed complete with all the above files.
+
+
+Selectric¿ UK Support and Registration
+============================================================================
+Registered UK users can obtain the latest English Version from Denesh Bhabuta 
+at any time, free of charge, by sending a Stamped Addressed Envelope 
+enclosing an unlabelled formatted floppy disk.
+
+The Shareware fee for Selectric¿ is DM 30, which can either be paid 
+directly into my Bank account or by Eurocheque. UK users can, if they 
+prefer, register their copy of Selectric¿ in the UK as follows:
+
+a) Make a cheque or Postal Order for œ13.00 payable to Denesh Bhabuta
+b) Be sure to include your Surname, Forename and address and e-mail address.
+c) Send cheque to UK Address below
+
+After registration you will be Emailed or posted your personal 'Key'. This 
+'Key' can be used to 'register' the current and future Selectric¿ 
+versions. For more details refer to SLECTRIC.TXT
+
+Contact                              Bank details
+----------------------------------------------------------------------------
+Stefan Radermacher                   Stefan Radermacher
+Unter Krahnenb„umen 52-54            Konto (Account) No: 3140 62-503
+50668 K”ln                           Postgiroamt K”ln
+Germany                              BLZ (Sort code) 370 100 50.
+Email: sr@k.maus.de
+
+CyberSTrider
+PO Box 78
+Manchester
+M21 8SJ
+UK
+Email: dbhabuta@cix.compulink.co.uk
+
+It's not a trick, it's Selectric¿.
+----------------------------------------------------------------------------
+EOF

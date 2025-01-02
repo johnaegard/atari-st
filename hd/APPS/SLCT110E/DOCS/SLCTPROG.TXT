@@ -1,0 +1,196 @@
+                Programmer's Guide to Selectric¿ V1.10
+                --------------------------------------
+
+                            November 1992
+
+                  (c) 1992,93 by Stefan Radermacher
+
+
+Introduction
+---------------------------------------------------------------------------
+Yes, with Selectric¿ you even get a Programmer's Guide, however at the 
+moment it's not so comprehensive as it could be. More will be added as new 
+features are added to Selectric¿. For example so called 'virtual 
+directories', from which folders or files can be selected, but i'd better 
+not let too much out of the bag.
+
+The possibilities
+---------------------------------------------------------------------------
+I will attempt to outline the overall possibilities of Selectric¿ as 
+briefly as possible:
+Selectric¿ installs a Cookie Jar from which the application parameters can 
+be accessed. This provides not only the Options and the Sort mode but also 
+the preset paths and extensions. The structure, although complicated at 
+first glance, is very flexible. Furthermore more than one filename can be 
+returned, which can be accessed via the Cookie Jar.
+
+The Cookie Jar
+---------------------------------------------------------------------------
+Selectric¿ sets up a Cookie named 'FSEL'. The Cookie is checked by calling 
+the fsel_exinput() routine and also when the new File Selector is switched 
+off. The contents of the 'FSEL' Cookie is not fixed, Selectric¿ has the 
+following structure:
+
+typedef struct
+{
+     unsigned long   id;           /* Selectric ID (`SLCT')      */
+     unsigned int    version;      /* version (BCD-Format)       */
+     struct
+     {
+          unsigned           : 7;     /* reserved                   */
+          unsigned todaytime : 1;     /* show time on current items */
+          unsigned pthsav    : 1;     /* save and restore paths     */
+          unsigned stdest    : 1;     /* stay in destination path   */
+          unsigned           : 1;     /* reserved                   */
+          unsigned numsrt    : 1;     /* numsort                    */
+          unsigned lower     : 1;     /* use lowercase letters      */
+          unsigned dclick    : 1;     /* open folder on dclick      */
+          unsigned hidden    : 1;     /* show hidden files          */
+          unsigned onoff     : 1;     /* Selectric¿ ON/OFF          */
+     } config;
+     int       sort;               /* sort-fashion (neg. = rev.)    */
+     int       num_ext;            /* number of extensions       */
+     char      *(*ext)[];          /* preset extensions          */
+     int       num_paths;          /* number of paths            */
+     char      *(*paths)[];        /* preset paths               */
+     int       comm;               /* communication word         */
+     int       in_count;           /* input counter              */
+     void      *in_ptr;            /* input pointer              */
+     int       out_count;          /* output counter             */
+     void      *out_ptr;           /* output pointer             */
+     int       cdecl     (*get_first)(DTA *dta, int attrib);
+     int       cdecl     (*get_next)(DTA *dta);
+     int       cdecl     (*release_dir)(void);
+} SLCT_STR;
+
+
+We can hook into:
+
+id             This is the ID for Selectric¿, also 'SLCT'. It's not enough 
+	       to simply check the 'FSEL' Cookie, ID must also be checked.
+
+version        The Version number in BCD-Format (eg 0x0100 is 1.00).
+
+config.
+       onoff      With this Bit set to one (logical 1) Selectric¿ can be 
+                  turned off.
+       hidden     Controls whether hidden files will be displayed.
+       dclick     Open folder with a double click.
+       lower      Display pathnames, files, folders, etc in lower case.
+       numsrt     Numerical sort switch.
+       stdest     Remain in destination path after Move/Copy operations.
+       pthsav     If this Flag is set Selectric¿ stores the
+                  GEMDOS path replaces it on exit.
+       todaytime  Items which have today's datestamp are shown with
+                  their timestamp instead
+
+sort           Configures the sort criteria depending on the following 
+	       values:
+ 
+               1    Sort by Name
+               2    by Date(s)
+               3    by Size
+               4    by Type (extension)
+               5    No Sort
+
+               If the value is negative, the display order is reversed, eg 
+               -3 sorts by Size and in reverse.
+
+num_ext        This value gives the number of existing preset extensions.
+	       If an application passes over any other extension/s these 
+	       must be taken note of.
+               Selectric¿ V1.0 can handle up to 10 Extensions, if more 
+               extensions are passed then Selectric¿ will reduce these to 
+               10.
+
+*(*ext)[]      This array index holds an index to all the strings. These 
+	       strings contain the preset extensions. If the pointer from 
+	       the application changes then the index (and number) must be 
+	       reset from Selectric¿.
+
+num_paths      Gives the number of preset paths (otherwise see 'num_ext').
+
+*(*paths)[]    This is for the preset paths (see also '*(*ext)[]').
+               Comment: bear in mind that path passing has not yet been 
+               fully implemented yet. In the future Selectric¿ will be able 
+               to save these paths (at the current time Selectric¿ only 
+               saves its own paths/extensions). In spite of this, 
+               extensions and paths passed to Selectric¿ can be edited.
+
+comm           This word is the communication between Selectric¿
+               and the current application. On exit from Selectric¿ this 
+               word is automatically reset to zero. At this time only 
+               the direction from the Application to Slectric is 
+               supported. The individual bits have the following meaning:
+               
+               Bit 0     The program expects more than a single filename 
+               		 (see also *out_ptr). Following the same structure 
+               		 'paths' and 'ext' expects. Folders are denoted by 
+               		 a trailing backslash.
+               Bit 1     This bit is only used in conjunction with bit 0.
+                         If bit 0 is set, then strings separated by space 
+                         characters can be returned in a similar manner to 
+                         using a Command Line. Here also folders can be 
+                         denoted by a trailing backslash character.
+                         
+               The other bits are reserved and should not be changed by the 
+               user.
+               
+in_count       Currently unassigned
+
+*in_ptr        Currently unassigned
+
+out_count      The application uses this to determine how many items have 
+	       been returned. Selectric¿ writes the appropriate number as 
+	       it exits.
+
+out_ptr        This must point to a contigous memory area within the 
+	       application, which Selectric can use to write to. It is 
+	       important that enough memory is allocated.
+
+Version 1.02 introduced three new functions, which provide other ways of 
+passing several filenames back to the application. Following the first/next 
+principle offers the advantage that the main application doesn't need to 
+reserve any memory for the filelist. These are equivalent to the TOS 
+Fsfirst() and Fsnext() routines with the minor difference that the index 
+must always be passed to the DTA Structure.
+
+It is not possible to pass a file mask using get_first(), that the user has 
+not actually selected (??Rubbish!??). After fetching the filenames the 
+release_dir() call must be invoked so that Selectric¿ can free the memory 
+again. The entire action must take place with wind_update() turned on 
+otherwise Selecreic¿ could run into re-entrance problems.
+
+Comment:       The structure is fundamentally compatible with FSELECT 1.2.x 
+	       from Martin Patzel/K”hling, therefore ID, Version number and 
+	       the ON/OFF bit are the same. The rest is specific to 
+	       Selectric¿.
+
+With the quote 'one program says more than a thousand words' I will at 
+this point refer you to the example program.
+
+Finally
+---------------------------------------------------------------------------
+All that remains to say is that there are still things to do! Selectric¿ 
+already offers the most extensive range of commands in the File Selector 
+world.
+Oh yes, the example program hasn't been extensively tested however no 
+major problems have been reported. I am always grateful to receive any bug 
+reports.
+
+Address:
+
+Stefan Radermacher
+Unter Krahnenb„umen 52-54
+50668 K”ln
+Germany 
+
+Telephone: (from the UK) 010 49 221 122268
+
+Email:  MausNet:  Stefan Radermacher @ K
+	InterNet: sr@k.maus.de
+	
+It's not a trick, it's Selectric¿!
+---------------------------------------------------------------------------
+EOF
+

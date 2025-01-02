@@ -1,0 +1,14 @@
+'
+' Mouse-Convert data in string
+let SWORD$=MKI$(0)+MKI$(0)+MKI$(1)
+let SWORD$=SWORD$+MKI$(0)+MKI$(1)
+for i%=1 to 16
+read backgrnd
+let SWORD$=SWORD$+MKI$(backgrnd)
+next i%
+for i%=1 to 16
+read foregrnd
+let SWORD$=SWORD$+MKI$(foregrnd)
+next i%
+data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+data 49152,40960,20480,10240,5120,2560,1280,641,322,172,92,40,124,110,135,259

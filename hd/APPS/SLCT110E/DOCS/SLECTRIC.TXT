@@ -1,0 +1,927 @@
+                              Selectric¿
+                              ---------- 
+ 
+                             Version 1.10 
+                             November 1993 
+ 
+                 (c) 1992, 1993 Stefan Radermacher 
+ 
+ 
+                       Selectric¿ is Shareware 
+ 
+ 
+Introduction 
+============================================================================
+
+Oh no, not another replacement File Selector you're thinking! OK 
+Selectric¿ is a File Selector but it's certainly different offering lots 
+of tasty extras, see for yourself..... Mmmnnnn. (Hey lighten up...)
+ 
+Selectric¿ offers so many indispensable extra features it's more than a 
+replacement File Selector, it's a concept which can revolutionise the way 
+you work with your Atari.
+
+The philosophy
+---------------------------------------------------------------------------- 
+Selectric¿ is designed to appeal to anyone who likes to have everything to 
+hand, that's most of us, right? All the important functions are there ready 
+to use and the less common options are neatly tucked away in BeamUps. It's 
+difficult to please everybody but hopefully I've done enough to ensure 
+Selectric¿ remains on your boot disk, let me know if I haven't.
+ 
+Features 
+---------------------------------------------------------------------------- 
+* Shows not only the filenames, but also the size and datestamps at a 
+  glance. Particularly useful when you've forgotten which version of your 
+  program code or best selling novel was the most recent.
+ 
+* The number of files which can be handled is dynamic, limited only by the 
+  amount of free memory (not static like so many other File Selectors). 
+  Selectric¿ only reserves as much memory as it needs. One little 
+  comparison test you might like to try with other FSs is to try handling 
+  over 1000 files without problems...
+ 
+* In many cases Selectric¿ does the thinking for you. Open up a folder then 
+  close it again and the slider remains where you left it, it doesn't 
+  return to the top again!
+ 
+* The real time slider make's moving through the file list very intuitive, 
+  for many the built-in FS is fast enough but faster is better right?
+ 
+* Nearly all of the main functions can also be accessed from the keyboard. 
+  Installing Let 'em Fly! takes care of the remaining few.
+  
+* The number of files displayed changes automatically depending on the 
+  current screen resolution. This ranges from 8 files in ST high, through 
+  12 files with OverScan up the maximum of 24 files using TT high and some 
+  graphic cards. Each time Selectric¿ is called it checks the current 
+  resolution and displays the appropriate number of files. Ideal for 
+  Autoswitch-OverScan users.
+  
+* Using the optional Auto Locator only the first letter of a filename needs 
+  to be entered,  Selectric¿ will seek out the first matching filename and 
+  select it. Also if an Application passes a filename to Selectric¿ it will 
+  attempt to localise the correct file.
+ 
+* Other selection options are possible, using the Cookie Jar more than one 
+  filename can be opened. Naturally the Application must follow the 
+  protocol, refer to SLCTPROG.TXT for more details.
+    
+* Wildcard entry is fully supported so it is possible to select files using 
+  lines like: '*MOUSE*.[A-Z]??'
+ 
+* Five different Search criteria with two optional switches, reverse and 
+  numerical order.
+
+* Currently ten different file extensions and paths can be stored for rapid 
+  activation. Applications which pass parameters to Selectric¿ can recall 
+  the full path.
+   
+* A wide selection of file operations are available (including Copy). Most 
+  functions work recursively, so it's possible at a single stroke to 
+  copy/delete etc a folder containing files and other folders.
+
+* Let 'em Fly! is supported, to provide keyboard shortcuts and flying 
+  dialogs.
+ 
+* Selectric¿ works on all ST/TT Computer in all resolutions and naturally 
+  with all graphic cards. 
+ 
+**************************************************************************** 
+Selectric¿ is Shareware and may be freely distributed for non-commercial 
+purposes. If you use Selectric¿ regularly you are honour bound to pay a 
+Shareware fee of DM 30 to the author, although I won't object if you send 
+me more...
+
+Selectric¿ is NOT a Freeware Program! PD libraries, magazines or any other 
+organisations may only distribute Selectric¿ with my written permission.
+The following PD/Shareware libraries obtained my permission to carry 
+Selectric¿:
+
+The FaST Club; 7 Musters Road, Nottingham, NG2 7PP, England
+
+Atari ST Review; Issue 23, one off cover disk appearance. This version was 
+packed, please unpack using LHArc.
+
+Any contravention of my wishes will be strongly challenged.
+
+Selectric¿ comprises of the following files: 
+ 
+     - SLECTRIC.PRG      The program itself (should normally be placed
+                         in the AUTO Folder) 
+     - CALLSLCT.ACC      An Accessory which calls Selectric¿ and can switch 
+                         Selectric¿ On/Off
+     - SLCTCONF.CPX      A CPX Module, which offers the same functions as 
+                         the accessory.  
+     - SLECTRIC.TXT      This documentation 
+     - SLECTRIC.IMG      A labelled screenshot of Selectric¿ main 
+                         functions
+     - CHANGES.TXT       Lists the changes between Versions (IMPORTANT!)
+     - SLCTPROG.TXT      Some information for programmers 
+     - FSEL_INP.C        A universal fsel_(ex)input()-Routine 
+     - FSEL_INP.H        The header file to go with the above 
+     - SAMPLE.C          An example program which utilises some of the
+                         Selectric¿ specific features.
+     - README            Short Info file
+     
+     - FRACT016.PRG      Fractal set for 16 Kb.
+     - FRACTAL.TXT       Instructions for Fractal.
+ 
+Selectric¿ may only be distributed complete with all the above files.
+ 
+**************************************************************************** 
+First of all the disclaimer... 
+ 
+I accept no liability or responsibility for any direct or indirect damage 
+that may arise, either financial, material or any other kind from either 
+the use or misuse of Selectric¿
+
+All trademarks mentioned in the Selectric¿ documentation is acknowledged 
+and recognised.
+ 
+The accompanying documentation was put together by Oliver Scheel and then 
+(loosely) translated by Joe Connor so there is plenty of room for 
+misunderstanding, error and omissions, feel free to point them out and ask 
+questions!!!
+
+Getting started
+============================================================================ 
+Selectric¿ (SLECTRIC.PRG) can either be started from the Desktop or 
+automatically each time the computer is started by placing a copy of 
+SELECTRIC.PRG in the AUTO folder.
+
+Some programs take liberties with the Operating System and in these 
+circumstances it's possible the physical execution order of Programs 
+installed in the AUTO folder could cause problems. So far I am not aware of 
+any such problems (apart from other File Selectors).
+
+If you would like to be able to call Selectric¿ on demand there are 
+several options available:
+
+a) To call Selectric¿ as a desktop accessory copy the program CALLSLCT.ACC 
+   into the root directory. On rebooting CALLSLCT will be available from 
+   the Desk drop down menu.
+
+b) To call Selectric from the desktop rename CALLSLCT.ACC to CALLSLCT.PRG 
+   and run it normally from the desktop.
+
+It's possible using CALLSLCT.ACC or CALLSLCT.PRG to switch between the 
+built-in FS and Selectric¿ by holding down either a [Shift] key or the 
+right mouse button whilst selecting CALLSLCT. A dialog box appears from 
+which Selectric¿ can be turned ON/OFF.
+
+c) The remaining option is to use the Atari CPX Control Panel. Copy 
+SLCTCONF.CPX into your CPX folder. On rebooting SLCTCONF.CPX will be 
+installed as a Control Panel module from where Selectric¿ can be switched 
+ON/OFF and called to the screen. If Selectric¿ is switched OFF the built-in 
+FS appears instead.
+
+The File Selector itself 
+============================================================================ 
+A GEM Image 'SLECTRIC.IMG is included in the distribution which labels the 
+main functions of Selectric¿. Ideally the picture should be printed out 
+(use GUCK, 1st Guide/View etc) and studied together with this text file as 
+this document concentrates in depth on particular functions...
+
+General 
+---------------------------------------------------------------------------- 
+Within Selectric¿ the right mouse button and either [Shift] Key are treated 
+the same.
+
+The Individual Elements
+----------------------------------------------------------------------------
+Window close icon (top left); in Selectric¿ this icon is used to move up 
+the directory tree, a single click on the icon moves up a single level (ie 
+out of a folder) whereas a double click moves directly to the root 
+directory.
+
+Window open icon (top right); in Selectric¿ this icon is used to select and 
+deselect files, a single click on this icon selects all folders/files in 
+the selector window (or if ALL the files/folders are already selected 
+deselects them all) Holding down the [Shift] key (or right mouse button) 
+whilst clicking the open icon deselects the selected files and vice versa 
+(a toggle action).
+Holding down the [Control] key whilst clicking on the open icon causes a 
+dialog to appear into which any desired file mask can be entered. (The 
+available file mask options are described later). Any file matches will be 
+selected. Selecting the same file mask again deselects the selected files.
+
+The Slider; all the usual functions are available plus a few extras, the up 
+arrow moves up (where possible) and the down arrow down (where possible). A 
+double click on either arrow moves to the top/bottom of the list.
+The patterned area roughly represents the files not displayed either above 
+or below the actual files displayed, which is represented by the white 
+slider itself.
+The slider can be moved up and down (more or less) in real time, we call it 
+the "Real time slider" anyway. Double click anywhere in the slider area to 
+centre the slider exactly on the selected point.
+
+File and folders; a single click on a folder (or the small box before it) 
+or file will select (and invert) it. If a file is selected the filename 
+will also be copied to the editable File name field.
+A double click on a folder will open the folder and a double click on a 
+file will select the file and exit Selectric¿. It's also possible to force 
+Selectric¿ to behave like the built-in FS and open folders with a single 
+click, to do this select the Options button and clear (uncross) the Extras 
+box 'Open folders with double click' option.
+
+Multiple file selection can be made by holding the left mouse button down 
+and moving up or down through the list, the window scrolls automatically. 
+To select multiple files which are not adjacent to each other in the list 
+select each file individually whilst holding down either [Shift] key (or 
+the right mouse button). If the 'Double click folders to open' option is 
+active multiple folder selection is also possible, otherwise selecting a 
+folder is likely to open it.
+
+The Info Line; (along the bottom of the selection window) reports the total 
+size, in Bytes, of all files selected, unfortunately the contents of 
+folders are not included in the total which does limit the usefulness of 
+the line! Use the 'Info' command from the 'Functions' BeamUp to display the 
+total byte count inside a folder (this is described in more detail later).
+Click and hold down the left button for a report on the free space 
+remaining on the drive and whilst continuing to hold down the left button 
+press the [Shift] key or hold down the right mouse button for a bar graph 
+style display of the remaining free space (especially added for users of 
+'FuzzyClock').
+
+BeamUps; these appear whenever a shadowed box is selected...
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Unknown User: Hey, hold on! What on earth are 'BeamUps'?
+ 
+The Answer:    BeamUps are really just Pop-up menus but since Julian F. 
+               Reschke coined 'JazzUps' I felt the need for my own 
+               jargon... BeamUp = Pop-up
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+BeamUps are comparable to traditional Drop down menus except they appear 
+from within dialogs instead of from the Menu bar. Selection from a BeamUp 
+can be made in several ways:
+
+a) Hold the left mouse button down over a BeamUp to display it, selection 
+   is made by moving the mouse to highlight (invert) the desired option 
+   then releasing the mouse button. The selected option (except for the 
+   Functions button) is displayed as the button text.
+ 
+b) Click once on the BeamUp and the menu will appear and remain until an 
+   option is selected. Again, the selected option (except for the Functions 
+   button) is displayed as the button text.
+ 
+c) BeamUps can also be called via keyboard shortcuts (see keyboard layout 
+   table). Once activated BeamUps can be navigated using the up and down 
+   cursor arrows, [Esc] key which exits without change and the [Return] or 
+   [Enter] key which exits and selects the highlighted (inverted) option.
+   
+The Flying donkey; if Let 'em Fly! is installed you will find a 'donkey 
+ear' at the top right hand corner of Selectric¿ click on and hold down 
+the left mouse button the reposition Selectric¿ as desired. Using Let 'em 
+Fly! V1.16 or later is recommended as the 'donkey ear' is automatically 
+disabled if there is not enough free memory. Most Selectric dialogs and 
+alerts take advantage of the 'Donkey ear' when installed.
+
+Drive/partition change BeamUp; open the BeamUp and select the desired 
+drive/partition (not much clever about that, eh?). Well there is actually, 
+all thanks to Atari's brain dead media change routine! When a Floppy disk 
+or removable hard disk is changed TOS doesn't always recognise the disk has 
+been changed. A 'forced media change' is often necessary to log in the new 
+disk, a double click on the drive/partition button does the trick.
+
+This works fine except in a multitasking environment where any files left 
+open during a media change are unlikely to survive!
+One solution is to install 'CHK_OFLS', this is a small utility which 
+informs Applications (which ulitise the protocol) which files are open. 
+Naturally Selectric¿ follows this protocol.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Unknown User: What's this 'CHK_OFLS' thing again?
+ 
+The Answer:   'CHK_OFLS' is short for 'CHecK Open FiLeS'. It's a resident 
+               program written by Hansi Richstein (The Kolbold programmer), 
+               which maintains a log of all open files, escpecially useful 
+               for Multitasking environments, Selectric¿ uses this 
+               protocol.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+             
+The Extensions (Masks) BeamUp; it is often desirable to display only 
+certain filetypes. This is achieved by setting a file mask which 'filters' 
+the files displayed (eg '*.ACC' only displays active Accessories)
+Selectric¿ can store up to ten user-definable masks in addition to the 
+dummy *.* and the parameter passed by the calling Application. If a 
+parameter is passed to Selectric¿ it appears as the first mask in the 
+BeamUp. Multiple file masks can be selected, up to a maximum of 16 
+characters, and these appear on the line above the selection window, any 
+extra characters are lost. To add file masks first select the BeamUp then 
+hold down the [Shift] key (or right mouse button) and select another mask.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Unknown User: How are the masks in Selectric¿ different?
+
+The answer:   The syntax is borrowed by the *nix world. Unfortunately the 
+              syntax is only partially implemented by TOS (and many other 
+              programs). Anyway, here's how Selectric¿ handles file 
+              masks....
+     
+     ?        Any character (already familiar to TOS users)
+
+     *        Any (or no) characters (again familiar to TOS users). 
+              Selectric¿ however takes this one step further:
+              '*' is equivalent to '*.*' (see examples below..)
+              
+     [...]    Between the square brackets one class of characters can be 
+              specified (eg all numbers or all characters or all apart from 
+              numbers) the valid alternatives can be more strictly defined 
+              than is possible using the '?' option.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+Some examples...
+ 
+'*'           finds everything, same as '*.*'
+'MOUS*'       finds 'MOUSEREF.TXT', 'MOUSE.INF' or simply 'MOUS'
+'*MOUSE*'     finds 'MOUSE2', 'QWKMOUSE' or 'MOUSE.DRV'. 
+'*.AC?'       finds all in/active accessories (same as *.ACC, *.ACX). 
+'*.AC[CX]'    same as the above mask but more concrete, whereas the above 
+              example would also find *.ACT this example would not.
+'TEXT???.*'   finds 'TEXT001', 'TEXTABC' and 'TEXT123.TXT' but not  
+              'TEXTS' or 'TEXT.TXT'. 
+'PROG*.[CHS]' finds 'PROG1.C', 'PROGRAM.S' and 'PROGGER.H' but not,
+              'PROGRAM.CH'. 'PROGRAM.HS or 'PROGRAM.CS, Hmmmnn....
+ 
+An exercise:  Find at least 10 Filenames, which match the following  
+              pattern... 
+ 
+              '*[A-Z]B?[^0-9]*.P?[0-3]' 
+ 
+If you spotted the example has more than 16 characters well done! Did I 
+forget to mention the Selectric¿ search option handles 22 characters? Yes, 
+I thought I did! OK, so the exercise was a bit unfair, but still good 
+practice, CABLE.PI3 would be OK for starters...
+
+Installing the user-definable filemasks; double click on the Extensions 
+BeamUp and a dialog appears. From the dialog the Actual (current) filemask 
+and ten user-definable masks can be edited as desired. If you don't need 
+all ten then you can simply clear the fields, Selectric¿ will tidy up the 
+BeamUp automagically. Applications can, in theory, pass masks to 
+Selectric¿, which can handle up to ten.
+
+The Macro path (Mac-Path) BeamUp; enables easy movement up and down the 
+directory tree. Imagine for example: a file 'WORK.TXT' stored inside a 
+folder called 'OFFICE', stored inside another folder called 'TEXT' and the 
+whole lot is stored inside a folder called 'DATA'. Most of use divide our 
+storage up into similar catagories and this has one major drawback:
+
+In order to move our example file from 'D:\DATA\TEXT\OFFICE\' to 
+'D:\TRANSFER\MODEM\CIX\UPLOAD it's necessary to go all the way up the tree 
+heirarchy and back down again which gets very tedious after a while. 
+
+Selectric¿ offers several improvements over the built-in FS. First of all 
+Selectric¿ can move directly to the root directory by double clicking the 
+close icon as explained earlier. More often than not though you only want 
+to close a couple of folders so going back to the root directory is not the 
+perfect solution. The solution we came up with is the Mac-Path BeamUp. As 
+you move down through the directory tree, opening folders inside folders 
+each sub path is automagically added into the Mac-Path BeamUp which can 
+store a maximum of ten nested folders. So, to move up several levels (ie 
+close folders) simply BeamUp Mac-Path and select the desired level.
+
+Path BeamUp; up to 10 full paths can be stored by the Path BeamUp (across 
+the top of the selection window). To store a path move Selectric¿ to the 
+desired path then call the path BeamUp then holding the [Shift] key (or 
+right mouse button) assign the path to any slot. Assigning a path to an 
+occupied path overwrites the previous path. To move directly to a stored 
+path select the BeamUp and choose the desired path.
+Naturally everything can also be controlled from the keyboard. The actual 
+path can be edited by double clicking (or press [F5]) on the path button 
+which brings up an editable dialog box.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Comment: Garbage pathnames (and non-existant pathnames) will be truncated 
+into suitable entries.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Sorting; diverse filenames demand flexible sorting criteria and Selectric¿ 
+offers five different criteria plus two options to display the 
+files/folders in the selection window. The criteria can be selected from 
+the Sort mode BeamUp button (just to the right of the Extension BeamUp) 
+which displays the currently active sort criteria. Inside the BeamUp the 
+active criteria and options are ticked.
+ 
+'By Name'     Folders then files listed alphabetically (A->Z)
+'By Date'     Folders then files listed in date and time order (new->old) 
+'By Size'     Folders then files listed in Size order (largest->smallest) 
+'By Type'     Folders then files listed alphabetically according to the 
+              extension type, folders/files without extensions are placed
+              first, folders/files with matching extensions are listed in 
+              alphabetical order according to folder/filename
+'No Sort'     The physical order folders/files were stored on the memory 
+              medium, (particularly useful to analyse the execution of 
+              files in the AUTO folder)
+'Reverse'     An optional switch to reverse the order folder/files are
+              displayed
+'Numerical'   An optional switch to take account of numerical order,
+              An example to avoid confusion:
+              Without the 'Numerical' switch... 
+ 
+              MOUSE1.TXT 
+              MOUSE10.TXT 
+              MOUSE2.TXT 
+ 
+              With the 'Numerical' switch (Hocus pocus)... 
+ 
+              MOUSE1.TXT 
+              MOUSE2.TXT 
+              MOUSE10.TXT 
+ 
+The Auto-Locator; has it ever occurred to you whilst scrolling through a 
+long list of files that there ought to be a better way to find a file? 
+Often you even know the approximate filename? Does that sound all to 
+familiar? You can breathe a sigh of relief!
+
+The Auto-Locator performs two functions, first when a filename is passed to 
+Selectric¿ as a parameter (usually from the Application which called the 
+FS) the Auto-Locator trys to find and highlight the filename for your 
+attention. Secondly as you type characters into the editable 'Filename' 
+field the Auto-Locator constantly searches the current directory and 
+refines its selection, sometimes a single letter will be enough! When the 
+desired file is highlighted simply hit the [Return] or [Enter] key or click 
+[OK] and Selectric¿ exits and passes the file to the Application.
+
+If you press [Return] or [Enter] or click [OK] while a folder is 
+highlighted, the folder will be opened. If you enter a selection and the 
+Auto-Locator cannot find an item to go along, the highlight will disappear. 
+The Auto-Locator remains active even after you change directories and will 
+always try to select a file which fits your selection.
+ 
+Auto-Locator example: 
+----------------------------------------------------------------------------
+Consider the following list of files, the sequence is not listed 
+alphabetically to illustrate the way the Auto-Locater works:
+ 
+AUTO   .TXT
+MEDIZIN.TXT     
+MAUS   .TXT     
+MANN   .TXT
+USER   .TXT
+
+Enter     Selection
+----------------------------------------------------------------------------
+M         MEDIZIN.TXT
+MA        MAUS.TXT
+MAN       MANN.TXT
+U         USER.TXT
+
+IMPORTANT: Somtimes you may want to enter a filename on the edit field
+           that cannot be found in the current directory, e.g. when
+           you are creating a new file. Now and then, however, the Auto-
+           Locator will select a file which already exists. For example:
+           you want to save a file called SOURCE.C. There is alreay a
+           file calles SOURCE.CX in the current directory. If you enter
+           SOURCE.C on the edit field, SOURCE.CX will be selected by
+           the Auto-Locator. If you press [Return] or [Enter] now, 
+           SOURCE.CX will get overwritten, which ist not what you want.
+           In this case, you MUST finish the dialog by pressing [Shift]
+           or holding the right mouse button while you press [Return] or
+           [Enter] or click [OK]! If you do this, Selectric¿ will return 
+           with the filname on the edit field instead of the highlighted 
+           one.
+
+
+Special Functions; it's very desirable for a FS to offer more than file 
+selection. In many cases it's handy to be able to rename, delete or 
+move/copy folders/files from within the FS. Selectric¿ provides all these 
+features and more in the best manner possible.
+
+The following functions can be selected from the Functions BeamUp, in some 
+cases functions will be unavailable for selection at that point in time. 
+For example it's not possible to perform a Delete operation if no 
+file/folder has been selected.
+
+New item; a dialog appears from which a file or folder may be created. A 
+file created using this function will have zero bytes.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Joe Connor: What's the point of creating a zero length file?
+
+The Answer: Sometimes programmers use zero length files for test purposes. 
+            Then there are also those programs which insist on having their 
+            own FS, which often cannot be turned off, and these really wind 
+            me up. If you're lucky such applications (eg Tempus, Pure C..) 
+            can be passed parameters from a command line which makes it 
+            possible to pass a zero length file and avoid the FS.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+Info; provides all the usual information for a selected file/folder. With 
+TOS Versions 1.04 or later it's possible to rename folders from the Info 
+box. File attributes are also displayed and can be edited as desired. If 
+more than a single file/folder is selected Selectric¿ displays an Overall 
+dialog detailing the number of files/folders and the total Byte count, this 
+dialog may take a little longer to appear depending on the contents of any 
+folders selected.
+The usual individual Information dialogs for each folder/file selected can 
+be displayed in turn by pressing the 'More' button. If any changes are made 
+when more than one folder/file is selected be careful to use the 'More' 
+button to move to the next dialog without saving any changes and the 'OK' 
+button to move to the next dialog and save the changes. The 'Cancel' button 
+aborts multiple Info dialog display.
+
+Disk Info; provides complete details for the current drive/partition. The 
+drive/partition label may also be changed. The lower third of the dialog 
+shows the occupied space on the drive in bargraph and percentage format.
+
+Note: The following five functions can be aborted using the [Esc] key 
+before the Confirmation dialog box appears.
+
+Delete; use this Function to delete selected files/folders. The contents 
+of any folder/s selected will also be deleted.
+
+Touch; a handy option especially for programmers and TeX users. Changes the 
+time and date stamps for any files/folders selected to the current time and 
+date stamp.
+
+Copy; use this function to copy files/folders (including folder contents). 
+After making then selection and selecting 'Copy' from the BeamUp notice the 
+title line of Selectric¿ changes to reflect the copy operation. It's still 
+possible to use all the functions (except 'Copy' and 'Move') before 
+completing the copy operation. For example, create a new folder, delete 
+some files, use Info and resort the selection window, neat eh?
+
+To cancel the copy operation select the Cancel button, to complete the copy 
+operation press the [OK] button. Another dialog appears offering a last 
+chance to cancel the operation along with the relevant file details and two 
+option switches. 'Warning on Overwrites' if checked (crossed) displays the 
+rename dialog as described below. If the 'Rename item' option is checked 
+(crossed) the rename dialog appears offering options to rename (or replace) 
+the existing file or cancel the copy operation.
+
+Move; similar to the Copy function described above except the original 
+folders/files are deleted. This function is only directly supported with 
+TOS versions 1.04 but Selectric¿ supports the Move function for all TOS 
+versions.
+
+Search; when you've forgotten where you put that file use this function. A 
+dialog appears into which the filename or mask can be entered together with 
+options to search the current folder/drive/partition or all 
+drives/partitions (apart from A & B). If a matching file is found the 
+search routine pauses offering a chance to stop the search or continue to 
+look for another match. After a satisfactory match has been located press 
+[OK] to leave the dialog and the desired file will be automatically 
+highlighted.
+
+Selectric¿ supports the environment variable DRIVEMAP, also supported by 
+the GEMINI replacement Desktop, which specifies which installed 
+drives/partitions/ (apart from A & B) may be utilised. If Selectric¿ cannot 
+find this environmental variable it searches all the available 
+drives/partitions apart from A & B.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+UNKNOWN USER: Yeah, great, but how do I set the environmental variable?
+ 
+The answer   : There are various AUTO folder prgrams which can set 
+               environment variables, the Boot manager JCNBOOT by Jens C 
+               Neffe, for example.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Options; everyone has their habits, in Selectric¿ we offer you can decide 
+these things for yourself...
+ 
+Display
+---------------------------------------------------------------------------- 
+Show hidden files; if this box is checked (crossed) files with the 'Hidden' 
+file attribute set will be displayed in greyed out text. Such files can 
+still susequently be selected like any other file.
+
+Use lower case; implemented to keep *nix enthusiasts happy. Everything 
+becomes lower case except the Filename field.
+
+'Show time for todays items'; this option displays the timestamp instead of 
+the datestamp for any items created on the current day. A small clock 
+symbol denotes such entries.
+
+Number of items; depending on your resolution a BeamUp will offer a choice 
+of items. At resolutions of 1280x1024 or greater it's possible to select 
+between 8, 12, 16 and 24 lines from the BeamUp. If only 8 files can be 
+displayed the option remains greyed out.
+
+Extras 
+----------------------------------------------------------------------------
+Double click to open folders; the built-in FS only needs a single click to 
+open folders but apart from personal preference there are advantages in 
+Selectric¿ for requiring a double click to open folders (refer to the 
+section on multiple file selector).
+     
+Save and restore paths; Normally Selectric¿ modifies the Path settings from 
+the Operating System. Some applications cannot cope hence the ON/OFF switch.
+
+After Copy/Move operation
+----------------------------------------------------------------------------
+
+Stay in destination path; Selectric¿ normally returns to the original 
+pathname. If this box is checked (crossed) Selectric¿ remains in the 
+destination pathname.
+
+Save; all parameters, settings, paths and extensions (except any 
+paths/extensions passed to Selectric¿ by an application) will be saved in 
+a seperate file called SLECTRIC.INF which will be created in the same 
+directory as SLECTRIC.PRG by Selectric¿.
+
+Keyboard layout
+============================================================================
+Selectric¿ can be almost entirely keyboard driven. After the main table a 
+summary is provided:
+
+Basics
+----------------------------------------------------------------------------
+
+   [Return] or      Exits dialogs and from the main Selectric¿ dialog 
+   [Enter]          returns the path and selected filename to the calling 
+                    application. If no filename was selected the content of 
+                    the editable Filename field is returned.
+   [Undo] or        From the main Selectric¿ dialog returns to the calling 
+   [Ctrl]+[U]       application without returning a filename.
+   [Help]           Displays a Copyright/Info dialog.
+   [Alt]+[A-Z]      Changes to the corresponding drive/partition. If the 
+                    selection is unknown to the operating system the entry 
+                    is ignored.
+   [Alt]+[1-0]      Selects the corresponding preset path (1 to 10). 
+                    (Hold down the [Shift] key to save a new path to the 
+                    selected path slot).
+   [Alt]+[Esc]      Selects the 'captured' path.
+   [Ctrl]+[Num 1-0] Selects the corresponding preset extensions (1 to 10)
+                    (Hold down the [Shift] key to append new extension).
+   [Ctrl]+[Num .]   Select the 'captured' extension.
+   [Ctrl]+[Num *]   Selects the '*.*' extension.
+   [Ctrl]+[1-10]    Number of steps up the directory tree
+                    (similar to Mac-Path').
+   [Ctrl]+[A]       Selects (toggles to deselect) all entries.
+   [Ctrl]+[S]       Displays file mask dialog.
+   [Ctrl]+[BS]      Closes the current folder.
+   [Ctrl]+[Space]   Re-reads the current drive/partition. NO media change 
+                    command is forced (refer to media change details).
+   [F1]             Brings up  Drive/part  BeamUp .
+   [F2]             --- " ---  Mac-Path    -- " --.
+   [F3]             --- " ---  Extension   -- " --.
+   [F4]             --- " ---  Sort        -- " --.
+   [F5]             --- " ---  Path        -- " --.
+   [F10]            --- " ---  Functions   -- " --.
+
+   [Shift]+[F1]     Displays Media-Change dialog.
+   [Shift]+[F3]     Displays the extension dialog.
+   [Shift]+[F5]     Displays editable change path dialog
+
+Cursor actions within the selection window
+----------------------------------------------------------------------------
+Selectric¿ supports a myriad of cursor actions. If no file is selected no 
+cursor is available. The behaviour of the cursor varies between different 
+functions. When a file is selected the highlighted (inverse) area 
+represents the cursor and if several files are selected the last selection 
+represents the cursor. Subsequent cursor movement may de-select all 
+entries. The cursor will be lost if the path or drive/partition is changed.
+
+   [CsrUp]          Moves the cursor up the list a single entry. If the 
+                    cursor is not present the last entry within the 
+                    selection window will be selected.
+   [CsrDown]        Moves the cursor down the list a single entry. If the 
+                    cursor is not present the first entry within the 
+                    selection window will be selected.
+   [Shift]+[CsrUp]  The cursor is 'paged' up. Analogous to clicking the 
+                    shaded grey area above the slider in the scroll bar
+   [Shift]+[CsrDwn] The cursor is 'paged' down. Analogous to clicking the 
+                    shaded grey area below the slider in the scroll bar.
+   [CTRL]+[CsrUp]   Moves the list up a single entry. The cursor continues 
+                    to highlight the same entry. Analogous to clicking on 
+                    the up arrow above the slider.
+   [CTRL]+[CsrDwn]  Moves the list down a single entry. The cursor 
+                    continues to highlight the same entry. Analogous to 
+                    clicking on the down arrow below the slider.
+   [Home]           Moves the selection window to display the top of the 
+                    list. Analogous to double cliking the up arrow above 
+                    the slider.
+   [Shift]+[Home]   Moves the selection window to display the bottom of the 
+                    list. Analogous to double cliking the down arrow below 
+                    the slider.
+
+BeamUps
+----------------------------------------------------------------------------
+Within BeamUps the following keys are available:
+
+   [Return]         Closes the BeamUp and selects the highlighted option.
+   [Esc]            Closes the BeamUp without selecting an option.
+   [Undo]           Same as [Esc].
+   [CsrUp]          Moves the cursor up an entry. Pressing the up arrow on 
+                    the first entry wraps the cursor around to the last 
+                    entry. Greyed out entries are always skipped.
+   [CsrDown]        Moves the cursor down an entry. Pressing the down arrow 
+                    on the last entry wraps the cursor around to the first 
+                    entry. Greyed out entries are always skipped.
+   [Home]           Positions the cursor on the first entry.
+   [A] - [Z]        Moves directly to the first occurrence of the 
+   [0] - [9]        letter/number pressed. In cases with more a single 
+                    match the alternatives are cycled through in turn.
+                    Non alphanumeric keys are ignored.
+    
+Functions
+----------------------------------------------------------------------------
+
+     [Ctrl]+[C]     Copy   function.
+     [Ctrl]+[D]     Delete function.
+     [Ctrl]+[F]     Search function.
+     [Ctrl]+[I]     Info function.
+     [Tab]          Same as [Ctrl]+[I] above (especially for Gemini users)
+     [Ctrl]+[M]     Move function.
+     [Ctrl]+[N]     New file/folder creation function.
+     [Ctrl]+[O]     Calls Options dialog.
+     [Ctrl]+[Y]     Disk info function.
+     
+     [Ctrl]+[H]     Sort by Filename.
+     [Ctrl]+[J]     ---"--- Date and time.
+     [Ctrl]+[K]     ---"--- Size.
+     [Ctrl]+[L]     ---"--- Extension.
+     [Ctrl]+[X]     No Sort.
+     [Ctrl]+[R]     Reverse display list option.
+
+
+Overview
+----------------------------------------------------------------------------
+
+Key                 Dialog element      Function 
+---------------------------------------------------------------------------- 
+[Ctrl]+[A]          Window full icon    select/deselect all
+[Ctrl]+[C]          Copy function       copy selected files/folders
+[Ctrl]+[D]          Delete function     delete selected files/folders
+[Ctrl]+[F]          Search function     search for files by file mask/s
+[Ctrl]+[H]          Sort by name        sort files/folders alphabetically
+[Ctrl]+[I]          Info function       displays file/s/folder/s info
+[Ctrl]+[J]          Sort by date        sort folders/files into date order
+[Ctrl]+[K]          Sort by size        sort folders/files into size order
+[Ctrl]+[L]          Sort by type        sort folders/files by extension
+[Ctrl]+[M]          Move function       move selected files/folders
+[Ctrl]+[N]          New item function   create file/folder
+[Ctrl]+[O]          Options button      calls options dialog
+[Ctrl]+[R]          Sort reverse        sort folders/files into reverse
+[Ctrl]+[S]          Window full icon    select by mask/s
+[Ctrl]+[T]          Touch function      touch selected files/folders
+[Ctrl]+[X]          No sort             display physical files/foldersorder
+[Ctrl]+[Y]          Disk info function  drive/partition details
+[Ctrl]+[BackSpace]  Window close icon   close folder
+[Ctrl]+[Space]      ---                 re-reads the the folder. This is 
+                                        NOT a forced media change.
+[Alt]+[A-Z]         ---                 select drive/partition A to Z
+[Alt]+[1-0]         ---                 preset paths 1 to 10
+[Alt]+[Esc]         ---                 select 'captured' path
+[Ctrl]+[Num1-0]     ---                 select extension 1 to 10
+[Ctrl]+[Num  .]     ---                 select 'captured' extension
+[Ctrl]+[Num  *]     ---                 select '*.*' extension
+[Ctrl]+[1 - 10]     ---                 select directory level 1 to 10
+
+[Esc]               ---                 clear edit field in Filename
+[Tab]               Info function       info about selected entries
+[Return]            OK                  exit Selectric¿ and return filename
+[Help]              Info                display info dialog
+[Undo] or           Cancel              abort dialog
+[Ctrl]+[U]          
+[CsrUp]             ---                 move cursor up 
+[CsrDown]           ---                 move cursor down
+
+[Shift]+[CsrUp]     Slider              move cursor up one 'page'
+[Shift]+[CsrDn]     Slider              move cursor down one 'page'
+[Ctrl]+[CsrUp]      Up arrow icon       move cursor up one entry
+[Ctrl]+[CsrDn]      Down arrow icon     move cursor down one entry
+[Home]              2x Up arrow icon    move cursor to start of list
+[Shift]+[Home]      2x Down arrow icon  move cursor to end of list
+
+[F1]                Drive button        BeamUp display
+[F2]                'Mac-Path'          ------ " -----
+[F3]                Extension           ------ " -----
+[F4]                Sort button         ------ " -----
+[F5]                Path button         ------ " -----
+[F10]               Functions           ------ " -----
+
+[Shift]+[F1]        2x Drive button     force media change dialog 
+[Shift]+[F3]        2x Extension        call extension edit dialog 
+[Shift]+[F5]        2x Path button      call editable path dialog
+
+
+Tips & Tricks  
+============================================================================ 
+ 
+This is the place to look if you are having problems using Selectric¿ with 
+other programs or if you are looking for an easier way to perform those 
+tedious chores...
+ 
+Not enough memory; there are still a few programs around that insist on 
+grabbing all the memory for themselves, so when Selectric¿ asks nicely for 
+a few Bytes it is refused. You will have to use the built-in FS. There are 
+two alternative solutions:
+ 
+1. Pester the programmer of the offending program until he/she implements 
+   dynamic memory management or at least frees up some more memory.
+
+2. Unfortunatley there are stubborn programmers! As a consequence I have 
+   created a small utility program which fragments memory. In many cases 
+   this will cure the problem but unfortunately not all. The utility is 
+   called 'Fractal' and is included with Selectric¿. Refer to FRACTAL.TXT 
+   for more details.
+
+MiNT; Selectric¿ supports virtual drives and this raises the possibility of 
+several FS running concurrently! It only remains to say there are some 
+interesting possibilities in store for Selectric¿ users!
+
+Signum!3; is one of the stubborn programs that refuses to call Selectric¿. 
+There's nothing I can do except to suggest you write to Application Systems 
+Heidelberg and ask them to adapt their program to accept the built-in TOS 
+(and consequently Selectric¿) File Selector, good luck!
+
+Internal 
+============================================================================ 
+
+Selectric¿ redirects the AES/VDI vector (Trap #2) and also the BIOS vector 
+(Trap #13) and uses it with XBRA aware 'SLCT'. Additionally a call to the 
+'FSEL Cookie' is made. Using these Cookie entries it is possible to hook 
+into other functions. The 'FSEL Cookie' can be used in order to check 
+whether a replacement FS supports the function fsel_exinput() introduced 
+with TOS 1.04. For further information please refer to the included file 
+SLCTPROG.TXT.
+
+Afterburner (Appendix) 
+============================================================================ 
+Credits; thank you to the steadfast Beta testers, especially me (Hey, I 
+don't need a new FS.... but then again!
+
+Stefan Eissing and Gereon Steffens for the new malloc routines used in 
+Selectric¿ .
+ 
+Thanks also to Wolfgang Wander,  who suggested the Key method of 
+registration.
+
+Thanks to Joe Connor for translating the manual into English.
+
+A special mention also to Oliver Scheel, for all the suggestions many of 
+which Selectric¿ were based on. I wish him good luck and continued success 
+in the future.
+
+
+How to Register Selectric¿ 
+============================================================================
+The Shareware fee for Selectric¿ is DM 30, which can either be paid 
+directly into my Bank account or by cheque, my banking details follow. UK 
+users can, if they prefer, register their copy of Selectric¿ in the UK. 
+Send a cheque or Postal Order for 13 Pounds payable to Denesh Bhabuta 
+to:
+
+CyberSTrider, PO Box 78, Manchester M21 8SJ, UK
+
+Who can also be contacted by Email: dbhabuta@cix.compulink.co.uk
+
+The latest English Version can be obtained from Denesh Bhabuta free of 
+charge by sending a Stamped Addressed Envelope enclosing a formatted floppy
+disk.
+
+----------------------------------------------------------------------------
+Upon registration I will Email/post your personal 'Key'. This 'Key' can be 
+used to 'unlock' the current and future Selectric¿ versions. To convert 
+your Shareware version to a registered version first make sure Selectric¿ 
+is called SLECTRIC.PRG then click on the 'Info' button to call the 
+copyright dialog. Click on the 'Register' button and enter your name and 
+personal 'Key' and voila you now have a Registered version. You no longer 
+have to suffer the 'Ping' as Selectric¿ installs!
+
+Using the 'Key' method will, I hope, suit all users and encourage me to 
+release more frequent upgrades.
+
+Registered users can obtain the latest release version at any time by 
+sending me a SAE including a formatted disk.
+
+============================================================================
+Address: 
+ 
+Stefan Radermacher
+Unter Krahnenb„umen 52-54
+50668 K”ln
+Germany 
+
+Telephone: (from the UK) 010 49 221 122268 Q
+
+Email: sr@k.maus.de 
+
+The latest version of Selectric¿ is always available from:
+BBS: MAUS K”ln; Telephone: (from the UK) 010 49 221 1390008; 8-N-1.
+V32bis (14400 baud/V42bis) even better 16800 and 19200 with ZyXEL modems.
+Guest download is allowed from 0800 to 1800 hours and from 2200 to 0400 
+hours. The BBS is in German!
+
+Bank details: Stefan Radermacher
+Account No: 3140 62-503
+Post giro Koeln 
+Sort Code (BLZ): 370 100 50.
+
+Credit transfer (especially BTX) can cause problems so be sure to include 
+your name and address, telephone number and Email address (a separate 
+postcard or letter or postcard would be ideal) otherwise I have no idea who 
+sent the money or where to send the key to!
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Stefan says: It's not a trick, it's Selectric¿!
+
+Hey! Where's Oliver gone? I've run out of things to do! All that remains 
+for me to say is, enjoy Selectric¿. Someone turn out the lights...
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+EOF

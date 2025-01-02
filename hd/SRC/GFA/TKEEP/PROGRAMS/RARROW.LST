@@ -1,0 +1,14 @@
+'
+' Mouse-Convert data in string
+let RARROW$=MKI$(0)+MKI$(0)+MKI$(1)
+let RARROW$=RARROW$+MKI$(0)+MKI$(1)
+for i%=1 to 16
+read backgrnd
+let RARROW$=RARROW$+MKI$(backgrnd)
+next i%
+for i%=1 to 16
+read foregrnd
+let RARROW$=RARROW$+MKI$(foregrnd)
+next i%
+data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+data 128,192,224,240,248,32764,32766,32767,32766,32764,248,240,224,192,128,0

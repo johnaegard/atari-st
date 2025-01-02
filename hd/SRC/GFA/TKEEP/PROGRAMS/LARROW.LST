@@ -1,0 +1,14 @@
+'
+' Mouse-Convert data in string
+let LARROW$=MKI$(0)+MKI$(0)+MKI$(1)
+let LARROW$=LARROW$+MKI$(0)+MKI$(1)
+for i%=1 to 16
+read backgrnd
+let LARROW$=LARROW$+MKI$(backgrnd)
+next i%
+for i%=1 to 16
+read foregrnd
+let LARROW$=LARROW$+MKI$(foregrnd)
+next i%
+data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+data 256,768,1792,3840,7936,16383,32767,65535,32767,16383,7936,3840,1792,768,256,0

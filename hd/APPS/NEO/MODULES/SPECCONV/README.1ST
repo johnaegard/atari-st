@@ -1,0 +1,12 @@
+This is the new version of the
+SPU loader module for NEOMASTER.
+
+There was a little bug in it which 
+made it bomb out on 99% of all SPU
+pictures, but not on the 1% left (which
+we had).
+
+Hope it works now...
+
+
+

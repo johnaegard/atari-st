@@ -1,0 +1,14 @@
+'
+' Mouse-Convert data in string
+let UPARROW$=MKI$(0)+MKI$(0)+MKI$(1)
+let UPARROW$=UPARROW$+MKI$(0)+MKI$(1)
+for i%=1 to 16
+read backgrnd
+let UPARROW$=UPARROW$+MKI$(backgrnd)
+next i%
+for i%=1 to 16
+read foregrnd
+let UPARROW$=UPARROW$+MKI$(foregrnd)
+next i%
+data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+data 256,896,1984,4064,8176,16376,32764,65534,1984,1984,1984,1984,1984,1984,1984,1984

@@ -1,0 +1,97 @@
+Fractal - The memory fragmenter
+============================================================================
+ 
+Version 0.4  (3rd February 1992) 
+ 
+(c) 1992 by Stefan Radermacher 
+ 
+ 
+Introduction
+---------------------------------------------------------------------------- 
+Unfortunately there are still programs around which grab all the available 
+memory instead of dynamically allocating and releasing memory as they need 
+it. Such programs prevent programs like Selectric, FuzzyClock and Let 'em 
+Fly etc from operating properly.
+
+Fractal partially resolves this problem by taking advantage of the fact 
+that the operating system only allocates ajacent memory blocks to programs. 
+Fractal switches off a user-definable sized memory block which prevents 
+memory grabbing programs from reserving the entire memory. This memory is 
+then available to other Applications.
+
+Naturally this is not the optimum solution to this Problem and there's no 
+guarantee it will work in every situation.
+It would be much better if programmers refrained from this arcane 
+practice. It's not only cleaner but is the only way such programs will 
+ever run sucessfully in a multitasking environment.
+ 
+Fractal consists of the following files: 
+ 
+    FRACT016.PRG       Fractal set to reserve 16 Kilobytes 
+    FRACTAL.TXT        This file 
+ 
+ 
+Distribution and conditions of use 
+---------------------------------------------------------------------------- 
+Fractal is Freeware and can be freely passed between end users. Permission 
+to distribute Fractal over BBSs is given and encouraged.
+PD libraries, magazines or any other organisations may only distribute 
+Selectric¿ with my written permission.
+
+The following PD/Shareware libraries obtained my permission to carry 
+Selectric¿:
+
+The FaST Club; 7 Musters Road, Nottingham, NG2 7PP, England 
+ 
+ 
+Installation 
+---------------------------------------------------------------------------- 
+Simply copy Fractal into the Auto folder on your boot disk/partition and 
+after a reboot the memory will be fragmented.
+The size of the memory block reserved is adjustable between 1 and 999 
+Kilobytes. To change the size of the reserved memory block rename Fractal 
+using the last three characters of the filename to indicate the desired 
+size:
+ 
+FRACT016.PRG     -Reserves 16Kb
+FRACT001.PRG     -Reserves 1Kb
+FRACT128.PRG     -Reserves 128Kb
+FRACT999.PRG     -Reserves 999Kb
+
+Important! Always run Fractal from the AUTO folder and not from the 
+desktop!
+ 
+ 
+Disclaimer 
+---------------------------------------------------------------------------- 
+Neither I, Stefan Radermacher, nor Joe Connor (who loosely translated this 
+documentation) accept no liability or responsibility for any direct or 
+indirect damage that may arise, either financial, material or any other 
+kind from either the use or misuse of Fractal.
+
+ 
+Afterburner (Appendix) 
+=========================================================================== 
+Thanks to Joe Connor for translating the manual into English and providing 
+UK support. He can be contacted at:
+
+Joe Connor, 65 Mill Road, Colchester, Essex, CO4 5LJ
+Email: jconnor@cix.compulink.co.uk
+
+The latest English Version can be obtained from Joe Connor free of charge 
+by sending a Stamped Addressed Envelope enclosing a formatted floppy disk.
+
+--------------------------------------------------------------------------
+My details: 
+ 
+Stefan Radermacher
+Unter Krahnenb„umen 52-54
+50668 K”ln
+Germany 
+
+Telephone: (from the UK) 010 49 221 122268 Q
+
+Email: sr@k.maus.de 
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+EOF

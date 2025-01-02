@@ -1,0 +1,30 @@
+
+#1
+
+A
+2
+1
+T An old wooden sign with elaborate lettering stands here.
+T 
+V WELCOME TO THE CITADEL
+#2
+
+NT
+2
+1
+T Welcome to the Citadel!  
+T Can I help you with anything?
+C
+CITADEL
+T The Citadel is a place for peace, though we insure it with war.
+T No hostility has occurred here since King Yubga was expelled.
+END
+NAME
+T My name is Wil.
+END
+JOB
+T I am the keeper and master of this Citadel.
+END
+DEFAULT
+T I don't understand what you're talking about.
+END

@@ -1,0 +1,165 @@
+Selectric¿ Changes	          Translation by Peter West and Joe Connor
+==========================================================================
+
+Version 1.01
+------------
+- Selectric¿ no longer bombs out if one tries to move the cursor in  
+  an empty directory.
+- If 'Let 'em Fly!' was not installed then the flying corner on the 
+  main page always blinked quickly when it was called, which 
+  naturally wasn't very nice.
+- The percentage display for 'Disk info' should now be more accurate.
+- If fewer than 8 files were visible in the window then an attempt to 
+  jump to the start or end (e.g. by double-clicking on the arrows) 
+  was sure to provoke a crash.
+- If drives from 'P:' upwards were registered then one could suddenly 
+  select drives up to 'Z', which of course was incorrect.
+- The preset extensions can now only be reached via [CTRL]+[Numeric-
+  pad 0-9]. With the old combination [CTRL]+[1-0] one can now move a  
+  given number of directory levels upwards (this was previously done 
+  by [CTRL]+[F1-F10]).
+- Paths input as e.g. "C:*.TXT" are now altered to "C:\*.TXT".
+- When calling the TOS file selector when unable to use Selectric¿ 
+  due to memory shortage, though Selectric¿ was initialised it was
+  not however 'de-initialised', which wasn't very nice.
+- 'Save & restore paths' should now function properly. Through a 
+  GEMDOS error one could get some *VERY* peculiar results...
+- 'Save & restore paths' is now normally switched on.
+- Selectric¿ now re-initialises its resources on a resolution change 
+  from TT-Mid to ST-Mid/Low. With this there should be no display 
+  problems any more.
+
+Version 1.02
+------------
+- After repeated requests from several users one can now 
+  alternatively save the configuration in an INF-file. An existing 
+  INF-file naturally has a higher priority when starting up 
+  Selectric¿ than the settings saved in Selectric¿ itself.
+- During the Search function the environment-variable 'DRIVEMAP' is 
+  now supported, which means that when searching all drives only those
+  that were declared to this variable will be included.
+  Example: DRIVEMAP=CDEFG.
+  It is important that this is included in the AES-environment, as it 
+  otherwise is not visible in a Desk Accessory under Gemini, which 
+  also uses this variable for the same purposes.
+- The Auto-locator now also lends a hand immediately after path- and 
+  drive-changes. We were just too careful earlier, since we thought 
+  that too much could appear to be annoying.
+- During a re-sort any selections are now retained.
+- 'Save TOS paths' now works in a different way: Previously the path 
+  selections of all drives were saved at the start; that way 
+  Selectric¿ was outwardly neutral. Unfortunately this method gave 
+  rise to problems with interchangeable drives without an inserted 
+  medium. Now the path is saved only at each drive change.
+- There are now two new selection possibilities: a) If when selecting 
+  the Fuller (or ^A) one presses the [SHIFT]-key then the selection 
+  will be toggled (i.e. black becomes white and vice versa). b) Via 
+  [CONTROL]+[S] (or [CONTROL]+Fuller) one can select using a mask of 
+  one's choice. For this too the selection will be toggled, and only 
+  files (i.e. no folders) will be taken into consideration.
+- The BeamUps have been extended by a small feature. One can now also 
+  reach an entry directly by pressing a numeric or letter key. For 
+  this the first letter/number in the entry will always be taken 
+  into consideration. Leading 'special' characters (non-alphanumeric)
+  will be ignored. If the key is ambiguous then the next matching 
+  entry will be selected at each repeated key-press.
+- Mag!X from version 1.01 is supported. In this case Selectric¿ no 
+  longer hangs in the traps and is also present when calling 'Load...'
+- The return of a group of file names has been extended by one 
+  procedure. It operates in a similar way to Fsfirst/next.
+- A TT with NVDI appears to be too fast :-). Oh well, following this 
+  discovery some brakes were built into Selectric¿'s slider handling. 
+  If one additionally presses the right mouse key (even afterwards) 
+  then the full-speed mode is re-activated.
+- During manual path input one can input commas, for instance, even 
+  without 'Let 'em Fly!' installed.
+- The attempt to create a new item without a name is now intercepted 
+  immediately, and no longer by TOS itself.
+- Due to a small keying error the minutes in the File/Folder Info 
+  were displayed incorrectly.
+- Sorting 'by Date' now also makes use of the file name if necessary.
+- The Disk-Info bombed out if the partition had a size of 0 Bytes. 
+  This -- actually nonsensical -- value has appeared up to now only 
+  in connection with the virtual drives of MiNT.
+- Under certain condition one could make Selectric¿ crash while 
+  inserting(!) characters into file names.
+- Over-long title lines on the main page are now truncated. 
+  Previously output was only cut short at the edge of the dialog box.
+- If the flags or name was changed via 'Info' then in some cases the 
+  file window was not correctly updated (e.g. if changing a name to 
+  one the mask no longer fits).
+- During the Search function clicking on the 'Interrupt process?' box 
+  unfortunately had no effect, i.e. even with 'Yes' the search 
+  continued.
+- If during 'Copy: Select destination path' a file was also confirmed 
+  with a double-click, then Selectric¿ became 'somewhat' confused. 
+  Now the double-click is ignored, i.e. one must continue 
+  confirmation with 'OK' or RETURN/ENTER.
+- Attempts to Move/Copy a file onto itself will now be intercepted. 
+  Otherwise the file could/would be deleted.
+- Path input without specifying the drive no longer simply takes the 
+  current path and current drive now; instead the path input is 
+  extended by the (current) drive.
+- The testing of non-existent paths has now been made TOS-proof. 
+  Previously it didn't always work properly (see old instructions).
+- New malloc routines (thanks Stefan and Gereon!). With this TT-RAM 
+  is now allocated as a preference. In addition smaller blocks (4K) 
+  are now requested from TOS so that one can work better when memory 
+  is short.
+- The Install-portion has been revised.
+
+Version 1.03
+------------
+- Not much has happened here. In any case, now that Oliver Scheel 
+  has withdrawn from Selectric¿, his name has been mostly removed 
+  from the program at his request.
+- The bug that was responsible for inputs of relative paths with a 
+  drive -- for instance "H:TEXTS\*.TXT" -- not being expanded 
+  correctly has been removed. Now the current path is inserted.
+- In the 'New items' dialog one can no longer input any wild-cards.
+- Also new is the fact that now there is no difference between 
+  registered and unregistered versions. The unregistered version can 
+  now be transformed into a registered version via a dialog that is 
+  accessible via the Info-dialog. For this one only needs a key. 
+  Here I would like to thank Wolfgang "CoNnect" Wander, from whom I 
+  got the idea.
+
+Version 1.03 Maxi
+-----------------
+- This version differs from 1.03 only in that instead of 8 entries 
+  it shows 16.
+  
+
+Version 1.10
+------------
+- The first supported English version.
+- The number of files displayed changes automatically depending on the 
+  current screen resolution. This ranges from 8 files in ST high, through 
+  12 files with OverScan up the maximum of 24 files using TT high and some 
+  graphic cards. Each time Selectric¿ is called it checks the current 
+  resolution and displays the appropriate number of files. Ideal for 
+  Autoswitch-OverScan users.
+- At the request of one of my Beta testers (Hello Dirk!), who couldn't 
+  cope with 24 lines at the same time, the number of lines is now 
+  user-definable in the Options dialog. Depending on your resolution it's 
+  possible to select between 8, 12, 16 and 24 lines.
+- All graphics are now handled by the MultiTOS AES.
+- The Sort by date option has been extended to sort files with the same 
+  datestamp using the timestamp. Previously such files were listed 
+  alphabetically.
+- The Option dialog contains an option to 'Show time for todays items'.
+  When this option is selected any file with todays datestamp will display 
+  the timestamp instead. A small clock symbol denotes such entries.
+- Bug in the Registration dialog removed. Names longer than 26 Bytes could 
+  bomb Selectric¿. The fault was discovered by Johannes G”ttker-Schnetmann
+  8-)
+- Registered users can re-display their key, after it has been entered. 
+  Click on the Name field or press the [HELP] key.
+- The annoying dialog after pressing [CTRL]+[U] has been removed. This 
+  option now exits Selectric¿ as if the 'Cancel' button had been selected. 
+- The Auto locator can no longer be switched off.
+- An error in conjunction with the Mag!X Installation routine fixed.
+- The routine to Save the Options in SLECTRIC.PRG itself has been 
+  scrapped. The Options are now always saved as SLECTRIC.INF.
+--------------------------------------------------------------------------
+EOF

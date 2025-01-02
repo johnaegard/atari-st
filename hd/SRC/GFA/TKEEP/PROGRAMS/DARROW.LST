@@ -1,0 +1,14 @@
+'
+' Mouse-Convert data in string
+let DARROW$=MKI$(0)+MKI$(0)+MKI$(1)
+let DARROW$=DARROW$+MKI$(0)+MKI$(1)
+for i%=1 to 16
+read backgrnd
+let DARROW$=DARROW$+MKI$(backgrnd)
+next i%
+for i%=1 to 16
+read foregrnd
+let DARROW$=DARROW$+MKI$(foregrnd)
+next i%
+data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+data 1984,1984,1984,1984,1984,1984,1984,1984,65534,32764,16376,8176,4064,1984,896,256

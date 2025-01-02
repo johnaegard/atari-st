@@ -1,0 +1,264 @@
+
+   Corrections and Updates
+   to the Degas Elite Manual
+   October 31, 1986
+
+   IMPORTANT: Due to limitations of available memory, the Atari 520ST can
+   normally support only TWO workscreens. You can increase this to three by
+   not booting with GDOS in the AUTO folder, but it also means you can only
+   use the System font in your pictures. The 1040ST can support up to eight
+   workscreens, with full font capability. You can reduce the number of
+   workscreens by booting the program while holding down the Alternate key.
+   Fewer workscreens means more room in memory for fonts.
+
+   Page 56: Booting the Program
+
+   When you turn on your computer, you must have several items on the boot
+   disk:
+
+   The GDOS program in a folder called AUTO
+   The ASSIGN.SYS file in the root directory
+
+   If you don't have these on your boot disk, you will not be able to load
+   any fonts into Degas Elite.
+
+   Any fonts you want to load should be together in a folder or a root
+   directory. Make sure the disk is in the proper drive before you load the
+   Elite program. If you only have one drive, put the font files on the same
+   disk as Degas Elite. Once Degas Elite has loaded, you can remove the disk
+   and replace it with a disk for your pictures, fill patterns, brushes and
+   blocks.
+
+   The ASSIGN.SYS file contains a list of fonts to load. These names should
+   be the same as the font filenames on your disk. If you change the files
+   in the ASSIGN.SYS file, you MUST reboot your computer with GDOS in the
+   AUTO folder to install the fonts in Degas Elite.
+
+   Page 66: Appendix C revision Notes:
+
+   GDOS and ASSIGN.SYS:
+
+   Due to last-minutes changes in GDOS by Atari Corp., the information on
+   the ASSIGN.SYS file in Appendix C is not quite correct. Here are the
+   corrections and a new sample file:
+
+   *  You must put the names of all the font files you want to load, after
+   the screen type descriptor (screen.sys sections 01, 02, 03, 04, shown
+   below) for that resolution. Screen 01 is a default mode (unused in Degas
+   Elite), 02 is low resolution, 03 is medium resolution, 04 is high
+   resolution (monochrome). With this setup, you can set up your ASSIGN.SYS
+   file so that you have specific fonts assigned to each resolution.
+
+   *  The location of the font files must be specified by first specifying a
+   path and folder on the first line.
+
+   *  Comments may be included in the file if prefixed with a semicolon
+   (";").
+
+   Here is the ASSIGN.SYS file that comes on your Degas Elite distribution
+   disk:
+
+   path = a:\fonts\   ;Pathname containing fonts
+   ;
+   01p screen.sys     ;Default screen
+   ;
+   ;
+   02p screen.sys     ;Low-resolution screen
+   ;
+   COMPHS08.FNT
+   COMPSS16.FNT
+   COMPDS32.FNT
+   COMPHD08.FNT
+   COMPSD16.FNT
+   COMPDD32.FNT
+   ;
+   03p screen.sys     ;Medium-resolution screen
+   ;
+   COMPHS08.FNT
+   COMPSS16.FNT
+   COMPDS32.FNT
+   COMPHD08.FNT
+   COMPSD16.FNT
+   COMPDD32.FNT
+   ;
+   04p screen.sys     ;High-resolution screen
+   ;
+   COMPHS08.FNT
+   COMPSS16.FNT
+   COMPDS32.FNT
+   COMPHD08.FNT
+   COMPSD16.FNT
+   COMPDD32.FNT
+   ;
+   21 fx80.sys        ;default printer driver
+   31 META.SYS        ;meta file driver
+   ^Z
+
+   These files were all created by converting a single Degas font file (see
+   below) called COMPUTER.FNT. The font editor creates only a 16 point file,
+   but the converter changes it into separate GEM files for different
+   sizes.
+
+   Any font file not names on this list will not be loaded, even if in the
+   same location as other font files. If two font files share the same id
+   number, only one will load. If you change the ASSIGN.SYS file, you must
+   reboot the computer with GDOS in an AUTO folder in order for your changes
+   to take effect.
+
+   Page 67: The Font Conversion Program:
+
+   Degas-to-GEM Font Converter Version 1.1
+
+   This program converts the special Degas font files into aformat which the
+   GDOS program can use.
+
+   Background.
+
+   The original Degas program used a built-in function which allowed the
+   user to size a font to one of six sizes. This was necessary because at
+   the time Degas was written, there was no way to load GEM font files into
+   the ST. When Atari GDOS became available, we decided to utilize the GDOS
+   font-loading ability. Because there is a large number of Degas fonts
+   available and GDOS will not load them as is, this converter program was
+   written so that the Degas fonts could be used in all new GDOS
+   applications.
+
+   Using a special set of scaling routines, the original Degas could take
+   one font file and display it in six sizes (single/double width and
+   half/single/double height). The normal size of the font was 8 pixels wide
+   and 16 pixels high. With the various scaling options, Degas could produce
+   fonts that were 8X8, 8X16, 8X32, 16X8, 16X16 and 16X32 pixels wide and
+   high.
+
+   The GEM GDOS font structure is substantially different from that used by
+   Degas. Instead of deriving all text sizes from one font file, GDOS must
+   have a font file for each size desired. In order to get all six Degas
+   font sizes, it is necessary to build six font files for GDOS. But a
+   problem arises here: two of these font files have a height of 8 pixels
+   (also known as "points"), two have heights of 16 pixels and two have
+   heights of 32 pixels. GDOS gets confused because, when it's told to
+   select a character height of 8 pixels, 16 pixels or 32 pixels, it won't
+   know which one to use!
+
+   This is where the concept of a font "family" comes into play. Each font
+   family is made up of several different font files, each one of which has
+   a different height. The characters in each font file that makes up a
+   family look alike, but are simply different sizes.
+
+   In addition, each font family must contain a unique identification
+   number, ranging from 1 to 32767, so that GDOS knows which font files are
+   a part of which family. The font families are also assigned a name up to
+   32 characters long so that you can choose the font from the Degas Elite
+   font menu.
+
+   The converter.
+
+   The FONTCONV program is designed to take a single Degas-format font file
+   and create up to six GEM-format font files for use with Degas Elite or
+   other programs that use GDOS. Each font is turned into two font families,
+   one of which is 8 pixels wide, the other of which is 16 pixels wide. The
+   8-pixel family is termed single-width, and the 16-pixel wide family is
+   double-width. These font families MUST contain a unique font identifier
+   number, otherwise GDOS becomes confused.
+
+   When run, a file selector dialog appears. Select a Degas-format font file
+   that you want to convert. After the font file is read into memory,
+   another dialog lets you select the sizes you want to use, and assign
+   names and font IDs to the fonts you create. The program creates default
+   values initially, but you can modify them as desired.
+
+   The font NAME is a 32-character string which appears in the Degas Elite
+   font selection dialog. Be sure the names assigned to the single-width
+   font and the double-width font are different, so you know which you are
+   selecting. The "EXTENDED" suffix is recommended for the double-width
+   font.
+
+   The face ID number is a number that you enter to differentiate the font
+   from all others (simply move the cursor to the id field). This number
+   MUST BE UNIQUE to this font! We recommend that you keep a small notebook
+   to hold the font numbers you have used and the fonts to which they have
+   been assigned. The importance of unique font identifier numbers cannot be
+   stressed too much, because if you try to use two font families with the
+   same identifier number, one of the fonts won't be available or become
+   intermixed with the other. If you aren't sure of which ID number to use,
+   enter a large value (up to 32767) to avoid accidental duplication. DON'T
+   use ID values below 50, because some existing GEM fonts may use those
+   numbers.
+
+   Both the single- and double-width fonts allow you to select the various
+   heights that will be used in creating the GEMfont files. Click on the
+   HALF, SINGLE and DOUBLE buttons to select or deselect that height.
+   Turning all the buttons off for a font width prevents that font family
+   from being created. If the original Degas font file had the half-height
+   option disabled, you will not be able to create a half-height version of
+   the font.
+
+   After setting the two font family settings to the appropriate values, you
+   can set the four-character filename prefix for the GEM fonts. The program
+   automatically sets this, but you can change it as needed. For a font
+   called COMPUTER, the prefix is set to COMP and the files that are written
+   are:
+
+   Filename           Size
+   ------------       ------
+   COMPHS08.FNT       8X8
+   COMPSS16.FNT       8X16
+   COMPDS32.FNT       8X32
+   COMPHD08.FNT       16X8
+   COMPSD16.FNT       16X16
+   COMPDD32.FNT       16X32
+
+   The first three font files are the single-width family, the last three
+   are the double-width family.
+
+   Using the fonts.
+
+   After you have converted the Degas fonts into the appropriate GEM font
+   files, you simply add the font files to your startup disk and place the
+   names of the fonts you want to use in the ASSIGN.SYS file.
+
+   CAUTION: Loading fonts requires a substantial amount of memory. If you
+   are using Degas Elite in a 512K system and try to load a large number of
+   fonts, you may run out of memory when the program tries to load the
+   fonts. If this happens, none of the file selector dialogs appear when you
+   try to load pictures, because of lack of memory. Exit the program and
+   remove some of the font filenames from the ASSIGN.SYS file before
+   retrying. Desk accessories can also cause this problem. Use only the desk
+   accessories and fonts you need.
+
+   Page 69: Appendix D: Showing Your Pictures
+
+   SHOWPIC2.PRG is an automatic picture display program which continually
+   cycles through all available Degas Elite pictures on a disk. It will
+   display both compressed and non-compressed pictures and blocks. On a
+   color monitor both medium and low resolution pictures can be displayed
+   without having to change resolutions. You cannot display color pictures
+   on a monochrome monitor and vice-versa. However, you can load these
+   pictures into Degas Elite and save them using your preferred resolution
+   and then display them with SHOWPIC2.
+
+   The initial screen lets you specify whether or not to display pictures,
+   blocks or filenames. Click in the appropriate box to select. Pressing
+   Help at any time allows you to re-select your options.
+
+   The second screen lets you specify the active drive. All pictures on a
+   disk, either in the root directory or in a folder will be displayed.
+   SHOWPIC2 only finds pictures and blocks one folder deep; if they are in a
+   folder which itself is in a folder, it can't find them.
+
+   Undo quits the program, space bar pauses and Help lets you change all the
+   options. Refer to the manual for more information on the display time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
