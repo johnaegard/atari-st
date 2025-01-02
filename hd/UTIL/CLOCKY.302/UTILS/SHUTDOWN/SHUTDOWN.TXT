@@ -1,0 +1,16 @@
+Hi,
+
+SHUTDOWN.C (and SHUTDOWN.PRG) was written for MiNT+N.AES users. N.AES comes
+with N.Closure, fine program for graceful shutdown of system. MiNTOS (KGMD)
+does fsck (checking disk filesystem) on every startup unless file
+/etc/fastboot is found. This file should be created when system goes down.
+Since N.Closure doesn't create this file, I write the SHUTDOWN program for
+this. It just creates the file and launches N.Closure (defined in SDMASTER
+env. variable in default N.AES setup).
+
+The beauty of Clocky and JCLKTool is that the usual hotkey combination
+Alt-Control-Q is intercepted by Clocky and JCLKTool starts SHUTDOWN.PRG.
+This in turn starts N.Closure, so for user *nothing changes*, just the next
+boot is much faster (because fsck is skipped).
+
+Petr

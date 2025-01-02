@@ -1,0 +1,165 @@
+DTCOOKIE Version 1.2 - Date/Time-Cookies setzen
+===============================================
+
+Sinn und Zweck von DTCOOKIE
+---------------------------
+Das Programm DTCOOKIE.PRG dient lediglich dazu, die Cookies
+"DATE", "TIME", "_IDT" und "_AKP" auf sinnvolle Werte zu setzen.
+Falls einer dieser Cookies bereits gesetzt ist, wird er von
+DTCOOKIE nicht verÑndert. Sinnvollerweise startet man DTCOOKIE.PRG
+aus dem AUTO-Ordner, vor den Programmen, die diese Cookies
+auswerten.
+
+Die Cookies "_AKP" und "_IDT"
+-----------------------------
+Dies sind mehr oder weniger offizielle Cookies von Atari. Sie
+enthalten Informationen Åber nationale Besonderheiten, die von
+Anwenderprogrammen und vom Desktop berÅcksichtigt werden sollten.
+Die Cookies werden unter anderem vom MultiTOS-Desktop ausgewertet,
+allerdings von Ñlteren TOS-Versionen nicht gesetzt. Falls Multi-
+TOS unter einer Ñlteren TOS-Version gestartet wird, sollte man
+diese Cookies z.B. mit DTCOOKIE selber setzen. Die Werte fÅr die
+Cookies entnimmt DTCOOKIE, wenn mîglich, dem nichtflÅchtigen
+Speicher (NVM), und sonst der LÑnderkennung im System-Header.
+
+Der "_AKP"-Cookie im Detail:
+----------------------------
+Bit 0..7:   LÑndercode fÅr Tastaturlayout
+Bit 8..15:  LÑndercode fÅr Landessprache
+Bit 16..31: reserviert
+
+Der "_IDT"-Cookie im Detail:
+----------------------------
+Bit 0..7:   Trennzeichen fÅr Datumsangaben
+            (Null steht als Default fÅr '/').
+Bit 8..11:  Datumsformat,
+            (0: MM-TT-JJ, 1: TT-MM-JJ,
+             2: JJ-MM-TT, 3: JJ-TT-MM.)
+Bit 12..15: Zeitformat
+            (0: am/pm, 1: 24 Stunden)
+Bit 16..31: reserviert
+
+Die Cookies "DATE" und "TIME"
+-----------------------------
+Dies sind infoffizielle Cookies, welche das Abfragen von Datum
+und Uhrzeit aus dem Interrupt erleichtern sollen:
+
+Der "DATE"-Cookie enthÑlt einen Zeiger auf eine word-groûe
+Variable mit dem aktuellen Datum im Tgetdate()-Format.
+Der "TIME"-Cookie enthÑlt einen Zeiger auf eine word-groûe
+Variable mit der aktuellen Uhrzeit im Tgettime()-Format.
+
+DTCOOKIE besetzt die Cookies mit Zeigern auf die GEMDOS-internen
+Variablen fÅr Datum und Uhrzeit. Es ermittelt die Adressen dieser
+Variablen Åber die GEMDOS-Funktion Sconfig() (die bisher nur von
+"KAOS" und "MagiX" angeboten wird) und wenn dies nicht mîglich
+ist, durch Tracing von Tgetdate()/Tgettime()-Aufrufen. Diese
+Methode ist zwar nicht ganz "sauber", funktioniert aber unter
+allen TOS-Versionen und auch mit MiNT (MiNT hat Åbrigens seine
+eigenen internen Variablen. Wird DTCOOKIE vor MiNT gestartet,
+zeigen die Cookies auf die GEMDOS-internen Variablen, wird
+DTCOOKIE nach MiNT gestartet, zeigen sie auf die MiNT-internen
+Variablen).
+
+Tips zur Abfrage von Datum und Uhrzeit aus dem Interrupt
+--------------------------------------------------------
+Die aktuelle Uhrzeit und das aktuelle Datum sollten eigentlich
+grundsÑtzlich mit den GEMDOS-Funktionen Tgetdate() und Tgettime()
+ermittelt werden. Diese Routinen benutzen zur Bestimmung der Zeit
+die Systemtimer-Routine etv_timer(), die Zeit wird dabei beim
+Start von GEMDOS und bei jeder Beendigung eines GEMDOS-Prozesses
+mit Hilfe der Hardware-Uhr aktualisiert, was einen Kompromiû aus
+Geschwindigkeit und Genauigkeit darstellt. Das Problem stellt sich
+dann, wenn die Zeit von einem residenten Programm im Interrupt
+benîtigt wird (etwa von einer Bildschirmuhr oder einem Programm,
+das im Hintergrund zeitabhÑngig Meûwerte aufzeichnet oder irgend-
+welche Prozesse oder GerÑte steuert). Weil das Standard-GEMDOS
+nicht re-entrant ist, dÅrfen Tgetdate() und Tgettime() hier nicht
+aufgerufen werden. Unter MiNT ist zwar das GEMDOS re-entrant, darf
+aber trotzdem nicht aus einem Interrupt aufgerufen werden. Man
+kînnte statt der GEMDOS-Funktionen Tgetdate() und Tgettime() zwar
+die XBIOS-Funktion Gettime() aufrufen, aber auch dies ist nicht zu
+empfehlen, denn Gettime() liest die Hardware-Uhr, was eventuell
+einige Zeit in Anspruch nehmen kînnte. Auûerdem ist auch das XBIOS
+nur bedingt re-entrant (der Rekursionsstapel ist zu klein und der
+Dispatcher sperrt wÑhrend des Rettens der Register nicht die
+Interrupts) und darf unter MiNT ebenfalls nicht im Interrupt
+aufgerufen werden.
+
+Im Multitasking-Zeitalter sollte man sich zunÑchst einmal Åberlegen,
+ob ein solches residentes Programm (TSR) nicht besser durch eine ganz
+"normale" im Hintergrund laufende Applikation ersetzt werden kann.
+Man kann dann vîllig problemlos Tgettime() und Tgetdate() aufrufen.
+
+Ist wirklich ein TSR erforderlich, wird vorgeschlagen, daû es das
+aktuelle Datum und die Uhrzeit wie folgt ermittelt:
+
+1. Es testet, ob der Cookie "MagX" gesetzt ist. In diesem Fall ist
+"MagiX" installiert, und es kann Tgettime() und Tgetdate() auch im
+Interrupt aufrufen. Die Routinen sind unter MagiX ausreichend
+schnell und re-entrant.
+
+2. Es testet, ob die Cookies "DATE" und "TIME" gesetzt sind. In
+diesem Fall kann es Datum und Uhrzeit Åber die Variablen
+bestimmen, deren Zeiger in den Cookies stehen (Zugriff auf die
+Variablen nur im Supervisor-Modus und nur lesend).
+
+3. Ansonsten bleiben dem TSR im wesentlichen die folgenden zwei
+Mîglichkeiten: Erstens, zu versuchen, die Adressen der GEMDOS-
+Variablen fÅr Datum und Uhrzeit selbst zu ermitteln, und dann
+diese Variablen zu benutzen (eine "unsaubere" Methode!) oder
+zweitens, bei der Initialisierung des Programms mit Tgetdate() und
+Tgettime() Datum und Uhrzeit zu bestimmen sowie die Systemvariable
+_hz_200 ($4ba) auszulesen und im Interrupt dann Datum und Uhrzeit
+aus der énderung von _hz_200 zu bestimmen. Wenn es Blockierungen
+oder Ungenauigkeiten von _hz_200 Rechnung tragen will, sollte es
+sich noch in den GEMDOS-Trap hÑngen und dort die Uhrzeit gelegent-
+lich korrigieren (z.B. bei jedem Pexec()- oder Pterm()- oder
+Pterm0()-Aufruf mit einem zusÑtzlichen Tgettime()-Aufruf).
+
+Wie gesagt, ist die Methode, mit der DTCOOKIES die GEMDOS-internen
+Variablen findet und die Benutzung dieser Variablen durch andere
+Programme (auûer unter KAOS und MagiX) nicht "offiziell erlaubt"
+und daher als "unsauber" zu bezeichnen, obwohl sie in allen
+bekannten FÑllen funktioniert und elegant, schnell und einfach
+ist. Da in Deutschland "Sauberkeit" groûgeschrieben wird, seien
+hier noch zwei Mîglichkeiten genannt, wie man die Cookies auch
+"sauber" setzen kînnte. Allerdings sind diese Lîsungen weder
+elegant, noch schnell, noch einfach. Welche Lîsung man bevorzugt,
+hÑngt wohl hauptsÑchlich davon ab, ob man mehr pragmatisch oder
+mehr dogmatisch denkt.
+
+1. Ein residentes Programm legt zwei Variablen fÅr Datum und
+Uhrzeit an, lÑût die Cookies "DATE" und "TIME" darauf zeigen,
+klinkt sich in etv_timer() oder irgendeinen anderen Timer ein,
+initialisiert die Variablen mit Tgetdate()/Tgettime() und
+aktualisiert sie dann im Timer-Interrupt, Ñhnlich, wie es das
+GEMDOS in etv_timer() mit seinen Variablen auch macht.
+
+2. Das TSR, das die Cookies benutzen mîchte, legt die Cookies
+"DATE" und "TIME" an und lÑût sie auf zwei Variablen im TSR
+zeigen (falls die Cookies bereits existieren, hat ein anderes
+TSR dies bereits getan, in diesem Fall benutzt es einfach die
+Zeiger in den Cookies). Das TSR initialisiert die Variablen
+danach mit den GEMDOS-Funktionen Tgetdate() und Tgettime().
+Ein zusÑtzliches Accessory-Programm aktualisiert die Variablen
+dann regelmÑûig (etwa einmal pro Sekunde) in einer evnt_timer()-
+Schleife mit Tgetdate() und Tgettime().
+
+Schlieûlich besteht theoretisch noch die Mîglichkeit, daû die
+Variablen unter GEMDOS oder MiNT einmal offiziell zugÑnglich
+gemacht werden, aber diese Lîsung wÑre ja viel zu einfach.
+
+Wahrscheinlich wird sich das ganze Problem in Zukunft aber auch
+von selbst lîsen - entweder weil Atari schnellere Rechner mit
+Multitasking-Betriebssystem ausliefert oder weil Atari pleite
+geht. Beides wÅrde die Notwendigkeit von TSR-Programmen auf dem
+Atari erheblich vermindern.
+
+Zum Schluû
+----------
+DTCOOKIE ist ein Freeware-Programm von Christoph Zwerschke. Die
+Benutzung geschieht auf eigene Gefahr. Alle Aussagen in obigem
+Text ohne Gewehr und Pistole.
+
+                                         Heidelberg, den 26.1.1994

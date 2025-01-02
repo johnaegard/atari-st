@@ -1,0 +1,63 @@
+# @(#)jclktool.set, Hot Keys Add On settings for jclktool.acc
+#
+# location: $HOME/jclktool.set
+#           ./jclktool.set
+#
+# format of entry: key-code flags application
+#
+# key code - char in hexadecimal form (prefix 0x)
+#            0x01 Escape
+#            0x02 1
+#            etc.
+# !!!!!!!! use keycode.tos for determining the key-code !!!!!!!!!!
+#
+# flags: 0  application does not support VA_START
+#        1  application supports VA_START
+#        3  application supports and requires VA_START
+#
+# application: use full path
+#              the one which is considered already be running
+#                (accessories, desktop etc.) can be defined
+#                by its name only
+#
+# currently max. 128 entries can be used
+
+0x01 3 taskbar				# [Alternate][Control][Escape]
+0x10 0 c:\n_aes\apps\shutdown.prg	# [Alternate][Control][Q]
+0x20 1 thing				# [Alternate][Control][D]
+0x1f 1 st-guide				# [Alternate][Control][S]
+0x12 1 c:\bin\tools\edit\everest.prg	# [Alternate][Control][E]
+0x26 0 c:\point\led.prg			# [Alternate][Control][L]
+0x1e 1 e:\usr\aMAIL\amail.prg		# [Alternate][Control][A]
+
+# launching of application:
+#
+# if application is already running
+#   if application requires VA_START (Start Me Up)
+#     if AVSERVER detected
+#       send VA_START to application
+#   else
+#     if N.AES detected
+#       appl_control(APC_TOP)
+#     else
+#       if AVSERVER detected
+#         send VA_START to application
+#       else
+#         send (at least) AC_OPEN to application   (=> only accessories
+#         can be TOPped under SingleAES || MultiAES || Geneva || MagiC
+#         without AVSERVER !!!)
+#
+# else
+#   if AVSERVER detected
+#     send AV_STARTPROG to AVSERVER
+#   else
+#     shel_write()  (but it runs nothing - it seems shel_write() from within
+#     an accessory cannot be used)
+#
+#
+# We can derive the best environment for using Hot Keys Add On from above
+# scheme:
+#
+# 1. N.AES
+# 2. AVSERVER
+# 3. Use VA_START supporting applications

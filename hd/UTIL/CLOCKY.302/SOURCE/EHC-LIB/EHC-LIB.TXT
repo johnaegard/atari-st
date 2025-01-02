@@ -1,0 +1,78 @@
+[E]xternal [H]otkeys [C]lient library
+-------------------------------------
+
+This small library provides a simple interface to Clocky's external
+hotkeys (see the Clocky docs for more information). Feel free to
+use/spread/modify/whatever this library.
+
+Note: This library needs Clocky v.2.20 or newer. It will not compile
+with earlier versions of jclktool.h.
+
+
+Example code
+------------
+
+First you must initialise the library:
+
+	int hotkeysActive;
+
+	hotkeysActive = initHotkeys();
+
+initHotkeys() returns either a negative number (initialisation failed)
+or a positive number (initialisation OK).
+
+Then register the hotkeys you want to use. Note: The hotkey-functions
+always work with *scancodes*, but there are two functions in the
+library to convert between ascii and scancode, scan2ascii() and
+ascii2scan(). See ech-lib.h for details.
+
+	registerHotkey(0x0f);            /* TAB */
+	registerHotkey(ascii2scan('p')); /* p */
+
+If the hotkey is already registered by another application, this
+function will return 0, otherwise a positive number.
+
+Use the function checkHotkeys() to check for pressed hotkeys. The following
+piece of code is usually triggered by a timer-event.
+
+	char hotKey;
+
+	if (hotkeysActive)
+		if ((hotKey = checkHotkeys()) != 0)
+		{
+			/* First we checked for keys with no ASCII-value */
+			hotKey &= 0xff;		/* filter out shift keys */
+			switch (hotKey)
+			{
+				case 0x0f:	/* TAB */
+					do_something();
+					break;
+			}
+
+			/* Then we check for characters */
+			hotKey = scan2ascii(hotKey);
+			switch (hotKey)
+			{
+				case 'p':	/* p */
+					do_something_else();
+					break;
+			}
+		}
+
+When your application exits, you should free your registered hotkeys
+with the following call:
+
+	removeHotkeys(-1);
+
+If you pass -1 as parameter, all you registered hotkeys will be
+removed. If you for some reason want to remove one specific hotkey,
+kall removeHotkeys() with the scancode of this key as parameter.
+
+That's it...
+
+
+Jo Even Skarstein
+<joska@nuts.edu>
+19/03/98
+
+Additions and corrections by Petr Stehlik, 15/06/2000
