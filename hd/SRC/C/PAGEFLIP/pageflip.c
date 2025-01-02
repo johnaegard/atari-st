@@ -1,3 +1,5 @@
+// TODO load PI1s, including pallette, into the two pages
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <osbind.h>
@@ -12,15 +14,13 @@ typedef struct
 
 AlignedBuffer align_buffer(size_t size)
 {
-  char *original_ptr = malloc(size + 255);
+  void *original_ptr = malloc(size + 255);
   if (!original_ptr)
   {
     return (AlignedBuffer){NULL, NULL}; // Return NULL if malloc fails
   }
   memset(original_ptr,0,size+255);
-  // for (int i = 0; i < 32255; i++) {
-  //     printf("%d", original_ptr[i]);
-  // }
+
   unsigned long addr = (unsigned long)original_ptr;
   unsigned long aligned_addr = (addr + 255) & ~255;
 

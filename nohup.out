@@ -1,0 +1,222 @@
+INFO : Hatari v2.3.1, compiled on:  Jan 24 2021, 22:15:57
+INFO : Inserted disk '/home/johnzo/emu/atari-st/floppies/Degas Elite v1.1 (1986)(Batteries Included)[!].stx' to drive A:.
+INFO : GEMDOS HDD emulation, C: <-> /home/johnzo/emu/atari-st/hd.
+WARN : Bus Error reading at address $ffff860f, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6c4710, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $5d1234, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6d3148, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $d003c3, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+WARN : Bus Error reading at address $ffff860f, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6c4710, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $5d1234, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6d3148, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $d003c3, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+INFO : Floppy A: has been removed from drive.
+INFO : Hatari v2.3.1, compiled on:  Jan 24 2021, 22:15:57
+INFO : Inserted disk '/home/johnzo/emu/atari-st/floppies/Degas Elite v1.1 (1986)(Batteries Included)[!].stx' to drive A:.
+INFO : GEMDOS HDD emulation, C: <-> /home/johnzo/emu/atari-st/hd.
+WARN : Bus Error reading at address $ffff860f, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6c4710, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $5d1234, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6d3148, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $d003c3, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> X11 KeyCode 151 (143), X11 KeySym 0x1008FF2B (XF86WakeUp).
+INFO : Floppy A: has been removed from drive.
+INFO : Hatari v2.3.1, compiled on:  Jan 24 2021, 22:15:57
+INFO : Inserted disk '/home/johnzo/emu/atari-st/floppies/Degas Elite v1.1 (1986)(Batteries Included)[!].stx' to drive A:.
+INFO : GEMDOS HDD emulation, C: <-> /home/johnzo/emu/atari-st/hd.
+WARN : Bus Error reading at address $ffff860f, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6c4710, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $5d1234, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6d3148, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $d003c3, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $ffff860f, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6c4710, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $5d1234, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6d3148, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $d003c3, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
