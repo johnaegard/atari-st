@@ -72,13 +72,10 @@ Setcolor(15,0xddd);
     return 1;
   }
 
-
   void *physbase = Physbase();
   void *logbase = screen_ram.aligned_ptr;
 
-  // memset(logbase,255,80);
-
-  unsigned char fill_sequence[8] = {64,255,0,0,0,0,64,127};
+  unsigned char fill_sequence[8] = {255,255,0,0,0,0,255,255};
   fill(logbase, screen_size_bytes, fill_sequence);
   
   printf("logbase: %p\n", logbase);
