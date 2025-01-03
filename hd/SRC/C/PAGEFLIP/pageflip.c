@@ -50,12 +50,23 @@ void fill(void *buffer, size_t buffer_size, const unsigned char sequence[8])
 void get_current_palette(unsigned short* palette){
   for(char i=0;i<16;i++) {
     palette[i] = Setcolor(i,-1);
-    printf("color %d = %04X\n",i,palette[i]);
+    // printf("color %d = %04X\n",i,palette[i]);
     Setcolor(i,palette[i]);
   }
 }
 
-void readDegasScreen(const char *filename, unsigned short palette[16], unsigned short bitmap[16000]) {
+typedef struct {
+    unsigned short *palette;
+    unsigned short *bitmap;
+  } Image;
+
+// Function to read the file and populate the struct
+Image read_degas_screen(const char *filename) {
+    Image screen;  // Struct to hold the arrays
+
+    screen.palette = (unsigned short *) malloc(16 * sizeof(unsigned short));
+    screen.bitmap = (unsigned short *) malloc(16000 * sizeof(unsigned short));
+
     // Open the file in binary mode
     FILE *file = fopen(filename, "rb");
     if (!file) {
@@ -71,14 +82,14 @@ void readDegasScreen(const char *filename, unsigned short palette[16], unsigned 
     }
 
     // Read the next 16 words into the palette array
-    if (fread(palette, sizeof(unsigned short), 16, file) != 16) {
+    if (fread(screen.palette, sizeof(unsigned short), 16, file) != 16) {
         perror("Error reading palette data");
         fclose(file);
         exit(EXIT_FAILURE);
     }
 
     // Read the next 16000 words into the bitmap array
-    if (fread(bitmap, sizeof(unsigned short), 16000, file) != 16000) {
+    if (fread(screen.bitmap, sizeof(unsigned short), 16000, file) != 16000) {
         perror("Error reading bitmap data");
         fclose(file);
         exit(EXIT_FAILURE);
@@ -86,46 +97,42 @@ void readDegasScreen(const char *filename, unsigned short palette[16], unsigned 
 
     // Close the file
     fclose(file);
+
+    // Return the struct containing the arrays
+    return screen;
 }
 
-int main()
-{
+int main() {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
 
-  printf("size of u short=%d\n",sizeof(unsigned short));
+  if (screen_ram.aligned_ptr){
+    printf("Original pointer: %p\n", screen_ram.original_ptr);
+    printf("Aligned pointer: %p\n", screen_ram.aligned_ptr);
+  }
+  else {
+    printf("Memory allocation failed.\n");
+    return 1;
+  }
+  void *physbase = Physbase();
+  void *logbase = screen_ram.aligned_ptr;
+
+//  unsigned char fill_sequence[8] = {255,255,0,0,0,0,255,255};
+//  fill(logbase, screen_size_bytes, fill_sequence);
+  
+  printf("logbase: %p\n", logbase);
+  printf("physbase: %p\n", physbase);
 
   unsigned short old_palette[16];
   get_current_palette(old_palette); 
 
-  Setcolor(0,0);
-  Setcolor(1,0x777);
-  Setcolor(2,0x666);
-  Setcolor(3,0x555);
-  Setcolor(9,0x700);
-  Setcolor(15,0xddd);
+  Image screen1 = read_degas_screen(".\\RES\\PAGE1.PI1");
+  Image screen2 = read_degas_screen(".\\RES\\PAGE2.PI1");
 
-  if (screen_ram.aligned_ptr)
-  {
-    printf("Original pointer: %p\n", screen_ram.original_ptr);
-    printf("Aligned pointer: %p\n", screen_ram.aligned_ptr);
-  }
-  else
-  {
-    //        printf("Memory allocation failed.\n");
-    return 1;
-  }
+  memcpy(physbase, screen1.bitmap, 16000 * sizeof(unsigned short));
+  memcpy(logbase, screen2.bitmap, 16000 * sizeof(unsigned short));
 
-  void *physbase = Physbase();
-  void *logbase = screen_ram.aligned_ptr;
-
-  unsigned char fill_sequence[8] = {255,255,0,0,0,0,255,255};
-  fill(logbase, screen_size_bytes, fill_sequence);
-  
-  printf("logbase: %p\n", logbase);
-  printf("physbase: %p\n", physbase);
   Setscreen(logbase, physbase, -1);
-  printf("other page!\n");
   Setscreen(physbase, logbase, -1);
   for (char i = 0; i < 3; i++)
   {
@@ -137,6 +144,10 @@ int main()
   Setpalette(old_palette);
   Setscreen(physbase, physbase, -1);
   getchar();
+  free(screen1.bitmap);
+  free(screen1.palette);
+  free(screen2.bitmap);
+  free(screen2.palette);
   free(screen_ram.original_ptr);
   return 0;
 }
