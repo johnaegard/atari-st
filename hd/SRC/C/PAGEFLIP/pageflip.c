@@ -108,7 +108,6 @@ Image read_degas_screen(const char *filename) {
 int main() {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
-
   void *physbase = Physbase();
   void *logbase = screen_ram.aligned_ptr;
   
@@ -120,26 +119,31 @@ int main() {
 
   Image screen1 = read_degas_screen(".\\RES\\PAGE1.PI1");
   Image screen2 = read_degas_screen(".\\RES\\PAGE2.PI1");
-
   memcpy(physbase, screen1.bitmap, 16000 * sizeof(unsigned short));
   memcpy(logbase, screen2.bitmap, 16000 * sizeof(unsigned short));
 
   Setpalette(screen1.palette);
   Setscreen(logbase, physbase, -1);
+
   Setpalette(screen2.palette);
   Setscreen(physbase, logbase, -1);
+
   for (char i = 0; i < 2; i++) {
     Setpalette(screen1.palette);
     Setscreen(logbase, physbase, -1);
     sleep(1);
+
     Setpalette(screen2.palette);
     Setscreen(physbase, logbase, -1);
     sleep(1);
   }
+
   Setpalette(screen1.palette);
   Setscreen(physbase, physbase, -1);
+
   Setpalette(old_palette);
   getchar();
+
   free(screen1.bitmap);
   free(screen1.palette);
   free(screen2.bitmap);
