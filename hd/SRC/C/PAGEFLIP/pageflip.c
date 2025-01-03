@@ -5,13 +5,16 @@
 #include <unistd.h>
 #include <stddef.h>
 
-// flips successfully.
-
 typedef struct
 {
   void *aligned_ptr;
   void *original_ptr;
 } AlignedBuffer;
+
+typedef struct {
+    unsigned short *palette;
+    unsigned short *bitmap;
+  } Image;
 
 AlignedBuffer align_buffer(size_t size)
 {
@@ -30,7 +33,6 @@ AlignedBuffer align_buffer(size_t size)
 
   return buffer;
 }
-
 void fill(void *buffer, size_t buffer_size, const unsigned char sequence[8])
 {
   if (buffer == NULL || sequence == NULL || buffer_size == 0)
@@ -49,7 +51,6 @@ void fill(void *buffer, size_t buffer_size, const unsigned char sequence[8])
     }
   }
 }
-
 void get_current_palette(unsigned short* palette){
   for(char i=0;i<16;i++) {
     palette[i] = Setcolor(i,-1);
@@ -57,13 +58,6 @@ void get_current_palette(unsigned short* palette){
     Setcolor(i,palette[i]);
   }
 }
-
-typedef struct {
-    unsigned short *palette;
-    unsigned short *bitmap;
-  } Image;
-
-// Function to read the file and populate the struct
 Image read_degas_screen(const char *filename) {
     Image screen;  // Struct to hold the arrays
 
@@ -115,10 +109,13 @@ int main() {
   printf("physbase: %p\n", physbase);
 
   unsigned short old_palette[16];
-  get_current_palette(old_palette); 
+  get_current_palette(old_palette);
+  void *old_bitmap = malloc(32000); 
 
   Image screen1 = read_degas_screen(".\\RES\\PAGE1.PI1");
   Image screen2 = read_degas_screen(".\\RES\\PAGE2.PI1");
+
+  memcpy(old_bitmap, physbase, 16000 * sizeof(unsigned short));
   memcpy(physbase, screen1.bitmap, 16000 * sizeof(unsigned short));
   memcpy(logbase, screen2.bitmap, 16000 * sizeof(unsigned short));
 
@@ -138,10 +135,10 @@ int main() {
     sleep(1);
   }
 
-  Setpalette(screen1.palette);
+  Setpalette(old_palette);
+  memcpy(physbase, old_bitmap, 32000);
   Setscreen(physbase, physbase, -1);
 
-  Setpalette(old_palette);
   getchar();
 
   free(screen1.bitmap);
