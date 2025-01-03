@@ -3,6 +3,7 @@
 #include <osbind.h>
 #include <string.h>
 #include <unistd.h>
+#include <stddef.h>
 
 // flips successfully.
 
@@ -23,10 +24,12 @@ AlignedBuffer align_buffer(size_t size)
   unsigned long addr = (unsigned long)original_ptr;
   unsigned long aligned_addr = (addr + 255) & ~255;
 
-  AlignedBuffer result = {(void *)aligned_addr, original_ptr};
-  return result;
+  AlignedBuffer buffer = {(void *)aligned_addr, original_ptr};
+  printf("Original pointer: %p\n", buffer.original_ptr);
+  printf("Aligned pointer:  %p\n", buffer.aligned_ptr);
+
+  return buffer;
 }
-#include <stddef.h> // For size_t
 
 void fill(void *buffer, size_t buffer_size, const unsigned char sequence[8])
 {
@@ -106,19 +109,8 @@ int main() {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
 
-  if (screen_ram.aligned_ptr){
-    printf("Original pointer: %p\n", screen_ram.original_ptr);
-    printf("Aligned pointer: %p\n", screen_ram.aligned_ptr);
-  }
-  else {
-    printf("Memory allocation failed.\n");
-    return 1;
-  }
   void *physbase = Physbase();
   void *logbase = screen_ram.aligned_ptr;
-
-//  unsigned char fill_sequence[8] = {255,255,0,0,0,0,255,255};
-//  fill(logbase, screen_size_bytes, fill_sequence);
   
   printf("logbase: %p\n", logbase);
   printf("physbase: %p\n", physbase);
@@ -132,17 +124,21 @@ int main() {
   memcpy(physbase, screen1.bitmap, 16000 * sizeof(unsigned short));
   memcpy(logbase, screen2.bitmap, 16000 * sizeof(unsigned short));
 
+  Setpalette(screen1.palette);
   Setscreen(logbase, physbase, -1);
+  Setpalette(screen2.palette);
   Setscreen(physbase, logbase, -1);
-  for (char i = 0; i < 3; i++)
-  {
+  for (char i = 0; i < 2; i++) {
+    Setpalette(screen1.palette);
     Setscreen(logbase, physbase, -1);
     sleep(1);
+    Setpalette(screen2.palette);
     Setscreen(physbase, logbase, -1);
     sleep(1);
   }
-  Setpalette(old_palette);
+  Setpalette(screen1.palette);
   Setscreen(physbase, physbase, -1);
+  Setpalette(old_palette);
   getchar();
   free(screen1.bitmap);
   free(screen1.palette);
