@@ -55,6 +55,39 @@ void get_current_palette(unsigned short* palette){
   }
 }
 
+void readDegasScreen(const char *filename, unsigned short palette[16], unsigned short bitmap[16000]) {
+    // Open the file in binary mode
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Skip the first 16-bit word
+    if (fseek(file, sizeof(unsigned short), SEEK_SET) != 0) {
+        perror("Error seeking in file");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    // Read the next 16 words into the palette array
+    if (fread(palette, sizeof(unsigned short), 16, file) != 16) {
+        perror("Error reading palette data");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    // Read the next 16000 words into the bitmap array
+    if (fread(bitmap, sizeof(unsigned short), 16000, file) != 16000) {
+        perror("Error reading bitmap data");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    // Close the file
+    fclose(file);
+}
+
 int main()
 {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
@@ -69,7 +102,7 @@ int main()
   Setcolor(1,0x777);
   Setcolor(2,0x666);
   Setcolor(3,0x555);
-  Setcolor(9, 0x700);
+  Setcolor(9,0x700);
   Setcolor(15,0xddd);
 
   if (screen_ram.aligned_ptr)
