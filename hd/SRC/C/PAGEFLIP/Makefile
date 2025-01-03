@@ -1,2 +1,2 @@
 tos:
-	m68k-atari-mint-gcc ./pageflip.c -o pageflip.tos  -std=c99
+	m68k-atari-mint-gcc ./pageflip.c -o PAGEFLIP.TOS -std=c99

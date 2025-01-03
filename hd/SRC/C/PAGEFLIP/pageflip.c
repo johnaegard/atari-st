@@ -1,10 +1,10 @@
-// TODO load PI1s, including pallette, into the two pages
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <osbind.h>
 #include <string.h>
 #include <unistd.h>
+
+// flips successfully.
 
 typedef struct
 {
@@ -20,7 +20,6 @@ AlignedBuffer align_buffer(size_t size)
     return (AlignedBuffer){NULL, NULL}; // Return NULL if malloc fails
   }
   memset(original_ptr,0,size+255);
-
   unsigned long addr = (unsigned long)original_ptr;
   unsigned long aligned_addr = (addr + 255) & ~255;
 
@@ -48,20 +47,30 @@ void fill(void *buffer, size_t buffer_size, const unsigned char sequence[8])
   }
 }
 
+void get_current_palette(unsigned short* palette){
+  for(char i=0;i<16;i++) {
+    palette[i] = Setcolor(i,-1);
+    printf("color %d = %04X\n",i,palette[i]);
+    Setcolor(i,palette[i]);
+  }
+}
+
 int main()
 {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
 
-Setcolor(0,0);
-Setcolor(1,0x777);
-Setcolor(2,0x666);
-Setcolor(3,0x555);
-//Setcolor(8,0xf00);
-Setcolor(9, 0xf00);
-//Setcolor(5, 0xf00);
+  printf("size of u short=%d\n",sizeof(unsigned short));
 
-Setcolor(15,0xddd);
+  unsigned short old_palette[16];
+  get_current_palette(old_palette); 
+
+  Setcolor(0,0);
+  Setcolor(1,0x777);
+  Setcolor(2,0x666);
+  Setcolor(3,0x555);
+  Setcolor(9, 0x700);
+  Setcolor(15,0xddd);
 
   if (screen_ram.aligned_ptr)
   {
@@ -92,6 +101,7 @@ Setcolor(15,0xddd);
     Setscreen(physbase, logbase, -1);
     sleep(1);
   }
+  Setpalette(old_palette);
   Setscreen(physbase, physbase, -1);
   getchar();
   free(screen_ram.original_ptr);
