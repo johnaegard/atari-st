@@ -4,6 +4,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <stddef.h>
+#include <mint/linea.h>
+
+// next: scroll some shit.
+
 
 typedef struct
 {
@@ -11,7 +15,7 @@ typedef struct
   void *original_ptr;
 } AlignedBuffer;
 
-typedef struct {
+typedef struct{
     unsigned short *palette;
     unsigned short *bitmap;
   } Image;
@@ -100,6 +104,7 @@ Image read_degas_screen(const char *filename) {
 }
 
 int main() {
+
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
   void *physbase = Physbase();
@@ -115,9 +120,9 @@ int main() {
   Image screen1 = read_degas_screen(".\\RES\\PAGE1.PI1");
   Image screen2 = read_degas_screen(".\\RES\\PAGE2.PI1");
 
-  memcpy(old_bitmap, physbase, 16000 * sizeof(unsigned short));
-  memcpy(physbase, screen1.bitmap, 16000 * sizeof(unsigned short));
-  memcpy(logbase, screen2.bitmap, 16000 * sizeof(unsigned short));
+  memcpy(old_bitmap, physbase, 32000);
+  memcpy(physbase, screen1.bitmap, 32000);
+  memcpy(logbase, screen2.bitmap, 32000);
 
   Setpalette(screen1.palette);
   Setscreen(logbase, physbase, -1);
@@ -138,7 +143,6 @@ int main() {
   Setpalette(old_palette);
   memcpy(physbase, old_bitmap, 32000);
   Setscreen(physbase, physbase, -1);
-
   getchar();
 
   free(screen1.bitmap);
@@ -146,5 +150,6 @@ int main() {
   free(screen2.bitmap);
   free(screen2.palette);
   free(screen_ram.original_ptr);
+
   return 0;
 }

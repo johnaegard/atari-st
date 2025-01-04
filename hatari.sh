@@ -1,1 +1,1 @@
-nohup hatari --configfile ~/emu/atari-st/hatari.cfg & disown
+hatari --configfile ~/emu/atari-st/hatari.cfg --trace keymap
