@@ -1,1 +1,4 @@
-hatari --configfile ~/emu/atari-st/hatari.cfg --trace keymap
+#!/bin/bash
+
+additional_args="$@"
+hatari --configfile ./hatari/hatari.cfg $additional_args
