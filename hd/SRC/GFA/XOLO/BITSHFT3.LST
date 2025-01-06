@@ -1,0 +1,240 @@
+DEFINT "A-Z"
+SETCOLOR 0,0
+@setup_video_ram
+@setup_sprite_store
+@setup_backing_store
+@setup_screens
+'
+' animate
+'
+temp_old_x=0
+old_x=0
+y=10
+frames=0
+start=TIMER
+FOR x=0 TO 100
+  '
+  ' tidy vert sprites
+  '
+  old_shift_x=(old_x DIV 16)*16
+  VSYNC
+  ' BMOVE backing_store+(80*10),logical_screen+(80*10),50
+  ' BMOVE backing_store+(80*11),logical_screen+(80*11),50
+  ' BMOVE backing_store+(80*12),logical_screen+(80*12),50
+  ' BMOVE backing_store+(80*13),logical_screen+(80*13),50
+  ' BMOVE backing_store+(80*14),logical_screen+(80*14),50
+  ' BMOVE backing_store+(80*15),logical_screen+(80*15),50
+  ' BMOVE backing_store+(80*16),logical_screen+(80*16),50
+  ' BMOVE backing_store+(80*17),logical_screen+(80*17),50
+  ' BMOVE backing_store+(80*18),logical_screen+(80*18),50
+  ' BMOVE backing_store+(80*19),logical_screen+(80*19),50
+  ' BMOVE backing_store+(80*20),logical_screen+(80*20),50
+  ' BMOVE backing_store+(80*21),logical_screen+(80*21),50
+  ' BMOVE backing_store+(80*22),logical_screen+(80*22),50
+  ' BMOVE backing_store+(80*23),logical_screen+(80*23),50
+  ' BMOVE backing_store+(80*24),logical_screen+(80*24),50
+  ' BMOVE backing_store+(80*25),logical_screen+(80*25),50
+  ' BMOVE backing_store+(80*26),logical_screen+(80*26),50
+  ' BMOVE backing_store+(80*27),logical_screen+(80*27),50
+  ' BMOVE backing_store+(80*28),logical_screen+(80*28),50
+  ' BMOVE backing_store+(80*29),logical_screen+(80*29),50
+  ' BMOVE backing_store+(80*30),logical_screen+(80*30),50
+  ' BMOVE backing_store+(80*31),logical_screen+(80*31),50
+  ' BMOVE backing_store+(80*32),logical_screen+(80*32),50
+  ' BMOVE backing_store+(80*33),logical_screen+(80*33),50
+  ' BMOVE backing_store+(80*34),logical_screen+(80*34),50
+  ' BMOVE backing_store+(80*35),logical_screen+(80*35),50
+  ' BMOVE backing_store+(80*36),logical_screen+(80*36),50
+  ' BMOVE backing_store+(80*37),logical_screen+(80*37),50
+  ' BMOVE backing_store+(80*38),logical_screen+(80*38),50
+  ' BMOVE backing_store+(80*39),logical_screen+(80*39),50
+  ' BMOVE backing_store+(80*40),logical_screen+(80*40),50
+  ' BMOVE backing_store+(80*41),logical_screen+(80*41),50
+  ' BMOVE backing_store+(80*42),logical_screen+(80*42),50
+  ' BMOVE backing_store+(80*43),logical_screen+(80*43),50
+  ' BMOVE backing_store+(80*44),logical_screen+(80*44),50
+  ' BMOVE backing_store+(80*45),logical_screen+(80*45),50
+  ' BMOVE backing_store+(80*46),logical_screen+(80*46),50
+  ' BMOVE backing_store+(80*47),logical_screen+(80*47),50
+  ' BMOVE backing_store+(80*48),logical_screen+(80*48),50
+  ' BMOVE backing_store+(80*49),logical_screen+(80*49),50
+  ' BMOVE backing_store+(80*50),logical_screen+(80*50),50
+  ' BMOVE backing_store+(80*51),logical_screen+(80*51),50
+  ' BMOVE backing_store+(80*52),logical_screen+(80*52),50
+  ' BMOVE backing_store+(80*53),logical_screen+(80*53),50
+  ' BMOVE backing_store+(80*54),logical_screen+(80*54),50
+  ' BMOVE backing_store+(80*55),logical_screen+(80*55),50
+  ' BMOVE backing_store+(80*56),logical_screen+(80*56),50
+  ' BMOVE backing_store+(80*57),logical_screen+(80*57),50
+  ' BMOVE backing_store+(80*58),logical_screen+(80*58),50
+  ' BMOVE backing_store+(80*59),logical_screen+(80*59),50
+  ' BMOVE backing_store+(80*60),logical_screen+(80*60),50
+  ' BMOVE backing_store+(80*61),logical_screen+(80*61),50
+  ' BMOVE backing_store+(80*62),logical_screen+(80*62),50
+  ' BMOVE backing_store+(80*63),logical_screen+(80*63),50
+  ' BMOVE backing_store+(80*64),logical_screen+(80*64),50
+  ' BMOVE backing_store+(80*65),logical_screen+(80*65),50
+  ' BMOVE backing_store+(80*66),logical_screen+(80*66),50
+  ' BMOVE backing_store+(80*67),logical_screen+(80*67),50
+  ' BMOVE backing_store+(80*68),logical_screen+(80*68),50
+  ' BMOVE backing_store+(80*69),logical_screen+(80*69),50
+  ' BMOVE backing_store+(80*70),logical_screen+(80*70),50
+  ' BMOVE backing_store+(80*71),logical_screen+(80*71),50
+  ' BMOVE backing_store+(80*72),logical_screen+(80*72),50
+  ' BMOVE backing_store+(80*73),logical_screen+(80*73),50
+  ' BMOVE backing_store+(80*74),logical_screen+(80*74),50
+  '
+  ' stamp vert sprites
+  '
+  src_x=(x MOD 16)*16
+  dest_x=(x DIV 16)*16
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*10)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*11)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*12)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*13)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*14)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*15)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*16)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*17)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*18)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*19)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*20)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*21)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*22)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*23)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*24)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*25)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*26)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*27)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*28)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*29)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*30)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*31)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*32)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*33)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*34)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*35)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*36)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*37)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*38)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*39)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*40)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*41)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*42)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*43)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*44)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*45)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*46)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*47)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*48)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*49)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*50)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*51)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*52)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*53)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*54)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*55)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*56)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*57)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*58)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*59)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*60)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*61)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*62)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*63)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*64)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*65)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*66)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*67)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*68)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*69)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*70)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*71)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*72)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*73)+(dest_x DIV 8),2
+  BMOVE sprite_store+(src_x DIV 8),logical_screen+(80*74)+(dest_x DIV 8),2
+  '
+  '  RC_COPY sprite_store,src_x,0,16,64 TO logical_screen,dest_x+xoff,y+yoff
+  '
+  ' VOID INP(2)
+  '
+  ' flip
+  '
+  ' PRINT x,src_x
+  ~XBIOS(5,L:physical_screen,L:logical_screen,-1)
+  SWAP logical_screen,physical_screen
+  old_x=temp_old_x
+  temp_old_x=x
+  INC frames
+  ' ~INP(2)
+NEXT x
+'
+duration_s#=(TIMER-start)/200
+fps#=INT(frames/duration_s#)
+'
+@cleanup
+PRINT
+PRINT
+PRINT (fps#)
+~INP(2)
+EDIT
+'
+PROCEDURE setup_screens
+  '
+  ' initial set up of screens
+  '
+  BMOVE backing_store,physical_screen,32000
+  BMOVE backing_store,logical_screen,32000
+  '
+  ' logical,physical is the order.
+  '
+  ~XBIOS(5,L:physical_screen,L:physical_screen,-1)
+  CLS
+  ~XBIOS(5,L:logical_screen,L:physical_screen,-1)
+  CLS
+RETURN
+PROCEDURE setup_sprite_store
+  '
+  ' sprite store
+  '
+  CLS
+  DEFFILL 1,1,1
+  FOR col=0 TO 15
+    x=(col*16)+col
+    PBOX x,0,x,63
+    '  LINE col*16,0,col*16,300
+  NEXT col
+  BMOVE physical_screen,sprite_store,32000
+  ~INP(2)
+RETURN
+PROCEDURE setup_backing_store
+  '
+  ' backing store
+  '
+  CLS
+  ' BOX 0,0,399,399
+  BMOVE physical_screen,backing_store,32000
+RETURN
+PROCEDURE setup_video_ram
+  orig_phys_screen=XBIOS(2)
+  '
+  DIM screen1_ram_ary|(32255)
+  screen1_ram_addr=V:screen1_ram_ary|(0)
+  '
+  logical_screen=(screen1_ram_addr+255) AND &HFFFFFF00  ! Buffer screen address
+  physical_screen=orig_phys_screen
+  '
+  DIM graphbuffer_ram_ary|(65000)
+  graphbuffer=V:graphbuffer_ram_ary|(0) ! Create memory buffer
+  backing_store=graphbuffer
+  sprite_store=graphbuffer+32000
+  PRINT "physical screen"+STR$(physical_screen)
+  PRINT "logical screen"+STR$(logical_screen)
+  VOID INP(2)
+  '
+  ON ERROR GOSUB cleanup ! On error cleanup and quit
+  ON BREAK GOSUB cleanup ! On break cleanup and quit
+RETURN
+PROCEDURE cleanup
+  ~XBIOS(5,L:orig_phys_screen,L:orig_phys_screen,-1)
+RETURN

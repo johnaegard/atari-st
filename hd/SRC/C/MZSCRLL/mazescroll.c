@@ -14,9 +14,9 @@ typedef struct
 typedef struct{
     unsigned short *palette;
     unsigned short *bitmap;
-  } Image;
+  } Screen;
 
-AlignedBuffer align_buffer(size_t size) {
+AlignedBuffer new_aligned_buffer(size_t size) {
   void *original_ptr = malloc(size + 255);
   if (!original_ptr)
   {
@@ -32,6 +32,9 @@ AlignedBuffer align_buffer(size_t size) {
 
   return buffer;
 }
+void free_aligned_buffer(AlignedBuffer buffer){
+  free(buffer.original_ptr);
+}
 void get_current_palette(unsigned short* palette){
   for(char i=0;i<16;i++) {
     palette[i] = Setcolor(i,-1);
@@ -39,8 +42,8 @@ void get_current_palette(unsigned short* palette){
     Setcolor(i,palette[i]);
   }
 }
-Image read_degas_screen(const char *filename) {
-    Image screen;  // Struct to hold the arrays
+Screen read_degas_file(const char *filename) {
+    Screen screen;  // Struct to hold the arrays
 
     screen.palette = (unsigned short *) malloc(16 * sizeof(unsigned short));
     screen.bitmap = (unsigned short *) malloc(16000 * sizeof(unsigned short));
@@ -79,52 +82,78 @@ Image read_degas_screen(const char *filename) {
     // Return the struct containing the arrays
     return screen;
 }
+Screen copy_screen(void *addr) {
+  Screen screen; 
+  screen.palette = (unsigned short *) malloc(16 * sizeof(unsigned short));    
+  screen.bitmap = (unsigned short *) malloc(16000 * sizeof(unsigned short));
+  get_current_palette(screen.palette);
+  memcpy(screen.bitmap, addr, 32000);
+  return screen;
+}
+void put_screen(Screen screen, void *buffer) {
+  Setpalette(screen.palette);
+  memcpy(buffer, screen.bitmap, 32000);
+}  
+void free_screen(Screen screen){
+  free(screen.bitmap);
+  free(screen.palette);
+}
+void clear_screen(Screen screen) {
+    memset(screen.bitmap,0,32000);
+}
 
 int main() {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
-  AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
+  AlignedBuffer altpage_ram = new_aligned_buffer(screen_size_bytes);
   void *physbase = Physbase();
-  void *logbase = screen_ram.aligned_ptr;
+  void *logbase = altpage_ram.aligned_ptr;
+  void *tmpbase;
   
   printf("logbase: %p\n", logbase);
   printf("physbase: %p\n", physbase);
 
-  unsigned short old_palette[16];
-  get_current_palette(old_palette);
-  void *old_bitmap = malloc(32000); 
+  Screen original_screen = copy_screen(physbase);
+  memset(physbase,0,32000);
 
-  Image screen1 = read_degas_screen(".\\RES\\PAGE1.PI1");
-  Image screen2 = read_degas_screen(".\\RES\\PAGE2.PI1");
+  Screen sprite_screen = read_degas_file(".\\RES\\WALLS.PI1");
+  // the sprite screen supplies the palette
+  Setpalette(sprite_screen.palette);
 
-  memcpy(old_bitmap, physbase, 32000);
-  memcpy(physbase, screen1.bitmap, 32000);
-  memcpy(logbase, screen2.bitmap, 32000);
+  char old_x=0;
+  char temp_old_x=0;
+  char src_line = 0;
 
-  Setpalette(screen1.palette);
-  Setscreen(logbase, physbase, -1);
+  unsigned long sprite_screen_addr = (unsigned long) sprite_screen.bitmap;
+  unsigned long logbase_addr;
+  unsigned long src_addr;
+  unsigned long dest_addr;
 
-  Setpalette(screen2.palette);
-  Setscreen(physbase, logbase, -1);
+  for(char x=0; x < 127; x++){
+    Vsync();
+    memset(logbase,0,32000);
+    logbase_addr = (unsigned long) logbase;
+    src_line = x % 16;
+    src_addr = sprite_screen_addr + (src_line *160);
 
-  for (char i = 0; i < 2; i++) {
-    Setpalette(screen1.palette);
-    Setscreen(logbase, physbase, -1);
-    sleep(1);
+    for(char line=0; line<32;line++){
+      dest_addr = logbase_addr + (line * 160) + ((x / 16) * 8);
+      memcpy( (void *) dest_addr, (void *) src_addr, 4); 
+      // printf("x:%d line:%d destaddr:%X\n",x,line,dest_addr);
+    };
 
-    Setpalette(screen2.palette);
-    Setscreen(physbase, logbase, -1);
-    sleep(1);
+    tmpbase = physbase;
+    physbase = logbase;
+    logbase = tmpbase;
+    Setscreen(logbase,physbase,-1);
+
+//    getchar();
   }
 
-  Setpalette(old_palette);
-  memcpy(physbase, old_bitmap, 32000);
-  Setscreen(physbase, physbase, -1);
+  put_screen(original_screen, physbase);
+  Setscreen(physbase, physbase,-1);
   getchar();
 
-  free(screen1.bitmap);
-  free(screen1.palette);
-  free(screen2.bitmap);
-  free(screen2.palette);
-  free(screen_ram.original_ptr);
+  free_screen(sprite_screen);
+  free_aligned_buffer(altpage_ram);
   return 0;
 }

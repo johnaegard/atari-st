@@ -1,0 +1,118 @@
+DEFINT "A-Z"
+SETCOLOR 0,0
+@setup_video_ram
+@setup_sprite_store
+@setup_backing_store
+@setup_screens
+'
+' animate
+'
+temp_old_x=0
+old_x=0
+y=10
+frames=0
+start=TIMER
+FOR x=0 TO 100
+  VSYNC
+  '
+  ' tidy vert sprites
+  '
+  old_shift_x=(old_x DIV 16)*16
+  RC_COPY backing_store,old_shift_x,y,16,64 TO logical_screen,old_shift_x,y,0
+  ' RC_COPY backing_store,old_shift_x,y,16,64 TO logical_screen,old_shift_x+64,y,0
+  ' RC_COPY backing_store,old_shift_x,y,16,64 TO logical_screen,old_shift_x+128,y,0
+  ' RC_COPY backing_store,old_shift_x,y,16,64 TO logical_screen,old_shift_x+192,y
+  ' RC_COPY backing_store,old_shift_x,y,16,64 TO logical_screen,old_shift_x+256,y,0
+  ' CLS
+  '
+  ' stamp vert sprites
+  '
+  src_x=(x MOD 16)*16
+  dest_x=(x DIV 16)*16
+  RC_COPY sprite_store,src_x,0,16,64 TO logical_screen,dest_x,y
+  ' RC_COPY sprite_store,src_x,0,16,64 TO logical_screen,dest_x+64,y
+  ' RC_COPY sprite_store,src_x,0,16,64 TO logical_screen,dest_x+128,y
+  ' RC_COPY sprite_store,src_x,0,16,64 TO logical_screen,dest_x+192,y
+  ' RC_COPY sprite_store,src_x,0,16,64 TO logical_screen,dest_x+256,y
+  ' VOID INP(2)
+  '
+  ' flip
+  '
+  ' PRINT x,src_x
+  ~XBIOS(5,L:physical_screen,L:logical_screen,-1)
+  SWAP logical_screen,physical_screen
+  old_x=temp_old_x
+  temp_old_x=x
+  INC frames
+  ' ~INP(2)
+NEXT x
+'
+duration_s#=(TIMER-start)/200
+fps#=INT(frames/duration_s#)
+'
+@cleanup
+PRINT
+PRINT
+PRINT (fps#)
+~INP(2)
+EDIT
+'
+PROCEDURE setup_screens
+  '
+  ' initial set up of screens
+  '
+  BMOVE backing_store,physical_screen,32000
+  BMOVE backing_store,logical_screen,32000
+  '
+  ' logical,physical is the order.
+  '
+  ~XBIOS(5,L:physical_screen,L:physical_screen,-1)
+  CLS
+  ~XBIOS(5,L:logical_screen,L:physical_screen,-1)
+  CLS
+RETURN
+PROCEDURE setup_sprite_store
+  '
+  ' sprite store
+  '
+  CLS
+  DEFFILL 1,1,1
+  FOR col=0 TO 15
+    x=(col*16)+col
+    PBOX x,0,x,63
+    '  LINE col*16,0,col*16,300
+  NEXT col
+  BMOVE physical_screen,sprite_store,32000
+  ~INP(2)
+RETURN
+PROCEDURE setup_backing_store
+  '
+  ' backing store
+  '
+  CLS
+  ' BOX 0,0,399,399
+  BMOVE physical_screen,backing_store,32000
+RETURN
+PROCEDURE setup_video_ram
+  orig_phys_screen=XBIOS(2)
+  '
+  DIM screen1_ram_ary|(32255)
+  screen1_ram_addr=V:screen1_ram_ary|(0)
+  '
+  logical_screen=(screen1_ram_addr+255) AND &HFFFFFF00  ! Buffer screen address
+  physical_screen=orig_phys_screen
+  '
+  DIM graphbuffer_ram_ary|(65000)
+  graphbuffer=V:graphbuffer_ram_ary|(0) ! Create memory buffer
+  backing_store=graphbuffer
+  sprite_store=graphbuffer+32000
+  PRINT "physical screen"+STR$(physical_screen)
+  PRINT "logical screen"+STR$(logical_screen)
+  VOID INP(2)
+  '
+  ON ERROR GOSUB cleanup ! On error cleanup and quit
+  ON BREAK GOSUB cleanup ! On break cleanup and quit
+RETURN
+PROCEDURE cleanup
+  ~XBIOS(5,L:orig_phys_screen,L:orig_phys_screen,-1)
+RETURN

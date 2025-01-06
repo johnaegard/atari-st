@@ -20,7 +20,7 @@ typedef struct{
     unsigned short *bitmap;
   } Image;
 
-AlignedBuffer align_buffer(size_t size)
+AlignedBuffer new_aligned_buffer(size_t size)
 {
   void *original_ptr = malloc(size + 255);
   if (!original_ptr)
@@ -62,7 +62,7 @@ void get_current_palette(unsigned short* palette){
     Setcolor(i,palette[i]);
   }
 }
-Image read_degas_screen(const char *filename) {
+Image read_degas_file(const char *filename) {
     Image screen;  // Struct to hold the arrays
 
     screen.palette = (unsigned short *) malloc(16 * sizeof(unsigned short));
@@ -106,7 +106,7 @@ Image read_degas_screen(const char *filename) {
 int main() {
 
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
-  AlignedBuffer screen_ram = align_buffer(screen_size_bytes);
+  AlignedBuffer screen_ram = new_aligned_buffer(screen_size_bytes);
   void *physbase = Physbase();
   void *logbase = screen_ram.aligned_ptr;
   
@@ -117,8 +117,8 @@ int main() {
   get_current_palette(old_palette);
   void *old_bitmap = malloc(32000); 
 
-  Image screen1 = read_degas_screen(".\\RES\\PAGE1.PI1");
-  Image screen2 = read_degas_screen(".\\RES\\PAGE2.PI1");
+  Image screen1 = read_degas_file(".\\RES\\PAGE1.PI1");
+  Image screen2 = read_degas_file(".\\RES\\PAGE2.PI1");
 
   memcpy(old_bitmap, physbase, 32000);
   memcpy(physbase, screen1.bitmap, 32000);
