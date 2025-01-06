@@ -104,8 +104,6 @@ void clear_screen(Screen screen) {
     memset(screen.bitmap,0,32000);
 }
 
-
-
 int main() {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer altpage_ram = new_aligned_buffer(screen_size_bytes);
@@ -126,15 +124,23 @@ int main() {
   unsigned long logbase_addr;
   unsigned long src_addr;
   unsigned long dest_addr;
+  unsigned long cleanup_addr;
+
+  byte oldx = 0;
+  byte tmp_oldx= 0;
+
+  byte zeros[8] = {0,0};
+  logbase_addr = (unsigned long) logbase;
 
   for(byte x=0; x < 250; x++){
-    logbase_addr = (unsigned long) logbase;
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line *160);
 
-    for(byte line=0; line<200;line++){
+    for(byte line=0; line<199;line++){
+      cleanup_addr = logbase_addr + (line * 160) + ((oldx / 16) * 8);
+      memcpy( (void *) cleanup_addr, zeros, 2); 
       dest_addr = logbase_addr + (line * 160) + ((x / 16) * 8);
-      memcpy( (void *) dest_addr, (void *) src_addr, 4); 
+      memcpy( (void *) dest_addr, (void *) src_addr, 2); 
     };
 
     tmpbase = physbase;
@@ -142,7 +148,9 @@ int main() {
     logbase = tmpbase;
     Vsync();
     Setscreen(logbase,physbase,-1);
-
+    
+    tmp_oldx = x;
+    oldx = tmp_oldx;
 //    getchar();
   }
 
