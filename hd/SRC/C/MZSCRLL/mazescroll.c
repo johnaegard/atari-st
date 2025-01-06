@@ -4,8 +4,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <stddef.h>
+#include <time.h>
 
 typedef unsigned char byte;
+typedef unsigned short word;
 
 typedef struct
 {
@@ -126,13 +128,16 @@ int main() {
   unsigned long dest_addr;
   unsigned long cleanup_addr;
 
-  byte oldx = 0;
-  byte tmp_oldx= 0;
+  word oldx = 0;
+  word tmp_oldx= 0;
+  word frames=0;
 
-  byte zeros[8] = {0,0};
+  byte zeros[2] = {0,0};
   logbase_addr = (unsigned long) logbase;
 
-  for(byte x=0; x < 250; x++){
+  clock_t start = clock();
+
+  for(word x=0; x < 319; x++){
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line *160);
 
@@ -151,12 +156,18 @@ int main() {
     
     tmp_oldx = x;
     oldx = tmp_oldx;
-//    getchar();
+    frames++;
   }
+  clock_t end = clock();
+  double total_time = (double)(end - start) / CLOCKS_PER_SEC;
+  double fps = frames / total_time;
+
+  Setscreen(physbase, physbase,-1);
+  printf("%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
+
+  getchar();
 
   put_screen(original_screen, physbase);
-  Setscreen(physbase, physbase,-1);
- // getchar();
 
   free_screen(sprite_screen);
   free_aligned_buffer(altpage_ram);
