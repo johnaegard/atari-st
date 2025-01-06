@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stddef.h>
 
+typedef unsigned char byte;
+
 typedef struct
 {
   void *aligned_ptr;
@@ -27,8 +29,8 @@ AlignedBuffer new_aligned_buffer(size_t size) {
   unsigned long aligned_addr = (addr + 255) & ~255;
 
   AlignedBuffer buffer = {(void *)aligned_addr, original_ptr};
-  printf("Original pointer: %p\n", buffer.original_ptr);
-  printf("Aligned pointer:  %p\n", buffer.aligned_ptr);
+  //printf("Original pointer: %p\n", buffer.original_ptr);
+  //printf("Aligned pointer:  %p\n", buffer.aligned_ptr);
 
   return buffer;
 }
@@ -36,7 +38,7 @@ void free_aligned_buffer(AlignedBuffer buffer){
   free(buffer.original_ptr);
 }
 void get_current_palette(unsigned short* palette){
-  for(char i=0;i<16;i++) {
+  for(byte i=0;i<16;i++) {
     palette[i] = Setcolor(i,-1);
     // printf("color %d = %04X\n",i,palette[i]);
     Setcolor(i,palette[i]);
@@ -102,16 +104,16 @@ void clear_screen(Screen screen) {
     memset(screen.bitmap,0,32000);
 }
 
+
+
 int main() {
   const size_t screen_size_bytes = 32000; // Set the size of the buffer
   AlignedBuffer altpage_ram = new_aligned_buffer(screen_size_bytes);
   void *physbase = Physbase();
   void *logbase = altpage_ram.aligned_ptr;
   void *tmpbase;
+  Cursconf(0,1);
   
-  printf("logbase: %p\n", logbase);
-  printf("physbase: %p\n", physbase);
-
   Screen original_screen = copy_screen(physbase);
   memset(physbase,0,32000);
 
@@ -119,31 +121,26 @@ int main() {
   // the sprite screen supplies the palette
   Setpalette(sprite_screen.palette);
 
-  char old_x=0;
-  char temp_old_x=0;
-  char src_line = 0;
-
+  byte src_line;
   unsigned long sprite_screen_addr = (unsigned long) sprite_screen.bitmap;
   unsigned long logbase_addr;
   unsigned long src_addr;
   unsigned long dest_addr;
 
-  for(char x=0; x < 127; x++){
-    Vsync();
-    memset(logbase,0,32000);
+  for(byte x=0; x < 250; x++){
     logbase_addr = (unsigned long) logbase;
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line *160);
 
-    for(char line=0; line<32;line++){
+    for(byte line=0; line<200;line++){
       dest_addr = logbase_addr + (line * 160) + ((x / 16) * 8);
       memcpy( (void *) dest_addr, (void *) src_addr, 4); 
-      // printf("x:%d line:%d destaddr:%X\n",x,line,dest_addr);
     };
 
     tmpbase = physbase;
     physbase = logbase;
     logbase = tmpbase;
+    Vsync();
     Setscreen(logbase,physbase,-1);
 
 //    getchar();
@@ -151,7 +148,7 @@ int main() {
 
   put_screen(original_screen, physbase);
   Setscreen(physbase, physbase,-1);
-  getchar();
+ // getchar();
 
   free_screen(sprite_screen);
   free_aligned_buffer(altpage_ram);

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "PAGEFLIP.C": "cpp"
+        "PAGEFLIP.C": "cpp",
+        "string.h": "c"
     }
 }
