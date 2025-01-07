@@ -137,14 +137,30 @@ int main() {
 
   clock_t start = clock();
 
+  unsigned long oldxoffset;
+  unsigned long xoffset;
+
   for(word x=0; x < 319; x++){
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line *160);
 
+    oldxoffset = logbase_addr +((oldx / 16) * 8);
+    xoffset = logbase_addr + ((x / 16) * 8);
+
     for(byte line=0; line<199;line++){
-      cleanup_addr = logbase_addr + (line * 160) + ((oldx / 16) * 8);
+      cleanup_addr = (line * 160) + oldxoffset;
       memcpy( (void *) cleanup_addr, zeros, 2); 
-      dest_addr = logbase_addr + (line * 160) + ((x / 16) * 8);
+      dest_addr = (line * 160) + xoffset;
+      memcpy( (void *) dest_addr, (void *) src_addr, 2); 
+    };
+
+    oldxoffset = logbase_addr +(((oldx+32) / 16) * 8);
+    xoffset = logbase_addr + (((x+32 )/ 16) * 8);
+
+    for(byte line=0; line<199;line++){
+      cleanup_addr = (line * 160) + oldxoffset;
+      memcpy( (void *) cleanup_addr, zeros, 2); 
+      dest_addr = (line * 160) + xoffset;
       memcpy( (void *) dest_addr, (void *) src_addr, 2); 
     };
 
