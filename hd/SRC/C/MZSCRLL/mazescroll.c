@@ -156,16 +156,16 @@ int main()
   unsigned long xoffset;
   byte col;
 
-  for (word x = 0; x < 250; x++)
+  for (word x = 0; x < 180; x++)
   {
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line * 160);
 
-    for (col = 0; col < 3; col++) {
+    for (col = 0; col < 4; col++) {
       oldxoffset = logbase_addr + (((oldx + col *32) / 16) * 8);
       xoffset = logbase_addr + (((x + col*32) / 16) * 8);
 
-      for (byte line = 0; line < 199; line++){
+      for (byte line = 0; line < 150; line++){
         cleanup_addr = (line * 160) + oldxoffset;
         memcpy((void *)cleanup_addr, zeros, 2);
         dest_addr = (line * 160) + xoffset;
