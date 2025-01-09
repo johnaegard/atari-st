@@ -1,7 +1,6 @@
-
 	SECTION TEXT		;CODE Section
 	
-	lea Message,a3
+	lea Message,A3
 	jsr PrintString		;Show String Message
     
 	jsr NewLine			;Move down a line
@@ -44,4 +43,3 @@ PrintString:
 		bra PrintString
 PrintString_Done:		
 	rts
-	

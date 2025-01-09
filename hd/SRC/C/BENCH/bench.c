@@ -9,11 +9,11 @@ int main() {
 
     // Get the starting time
     clock_t start = clock();
-    int iters=2500;
+    int iters=2400;
+    size_t bytes_per_copy=2;
 
-    // Perform the copy operation 10,000 times
     for (int i = 0; i < iters; i++) {
-        memcpy(dest, src, 8);
+        memcpy(dest, src, bytes_per_copy);
     }
 
     // Get the ending time
@@ -23,7 +23,8 @@ int main() {
     double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
 
     // Display the result
-    printf("Time to copy 4 words %d times:\n%f seconds\n", iters, time_taken);
+    printf("Time to copy %d bytes %d times:\n%f seconds\n", bytes_per_copy, iters,time_taken);
+    printf("1 frame = %fs\n",1.0/60);
     
     getchar(); // Waits for a key press
 

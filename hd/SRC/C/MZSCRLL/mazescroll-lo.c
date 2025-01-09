@@ -131,7 +131,6 @@ int main()
 
   Screen original_screen = copy_screen(physbase);
   memset(physbase, 0, 32000);
-
   Screen sprite_screen = read_degas_file(".\\RES\\WALLS.PI1");
   // the sprite screen supplies the palette
   Setpalette(sprite_screen.palette);
@@ -143,12 +142,12 @@ int main()
   unsigned long dest_addr;
   unsigned long cleanup_addr;
 
+  word x =0;
   word oldx = 0;
   word tmp_oldx = 0;
   word frames = 0;
 
   byte zeros[2] = {0, 0};
-  logbase_addr = (unsigned long)logbase;
 
   clock_t start = clock();
 
@@ -156,31 +155,38 @@ int main()
   unsigned long xoffset;
   byte col;
 
-  for (word x = 0; x < 180; x++)
-  {
+#define HEIGHT 200
+#define COLS 2
+#define CYCLES 200
+#define COL_WIDTH 32
+
+  for (word x = 0; x < CYCLES; x++){
+//    x = lx;
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line * 160);
+    logbase_addr = (unsigned long)logbase;
 
-    for (col = 0; col < 4; col++) {
+    for (col = 0; col < COLS; col++) {
       oldxoffset = logbase_addr + (((oldx + col *32) / 16) * 8);
       xoffset = logbase_addr + (((x + col*32) / 16) * 8);
-
-      for (byte line = 0; line < 150; line++){
-        cleanup_addr = (line * 160) + oldxoffset;
-        memcpy((void *)cleanup_addr, zeros, 2);
-        dest_addr = (line * 160) + xoffset;
-        memcpy((void *)dest_addr, (void *)src_addr, 2);
+ 
+      for (word line = 0; line < (HEIGHT * 160); line = line + 160){
+        cleanup_addr = line + oldxoffset;
+        memcpy( (void *) cleanup_addr, zeros, 2);
+        dest_addr = line + xoffset;
+        memcpy( (void *) dest_addr, (void *)src_addr, 2);
       };
     }
 
     tmpbase = physbase;
     physbase = logbase;
     logbase = tmpbase;
-    Vsync();
+    // Vsync();
+    getchar();
     Setscreen(logbase, physbase, -1);
 
-    tmp_oldx = x;
     oldx = tmp_oldx;
+    tmp_oldx = x;
     frames++;
   }
   clock_t end = clock();
@@ -188,10 +194,11 @@ int main()
   double fps = frames / total_time;
 
   Setscreen(physbase, physbase, -1);
+
+  printf("%d cols\n%d height\n%d lines\n", COLS, HEIGHT, COLS*HEIGHT);
   printf("%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
 
   getchar();
-
   put_screen(original_screen, physbase);
 
   free_screen(sprite_screen);
