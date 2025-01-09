@@ -131,7 +131,6 @@ int main() {
   word frames = 0;
 
   byte zeros[2] = { 0, 0 };
-  logbase_addr = (unsigned long)logbase;
 
   clock_t start = clock();
 
@@ -142,14 +141,18 @@ int main() {
 #define CHUNK_WIDTH_PIXELS 16
 #define CHUNK_WIDTH_BYTES 2
 #define LINE_WIDTH_BYTES 80      
+#define COL_WIDTH 64
+#define HEIGHT 275
+#define COLS 6
 
-  for (word x = 0; x < 500; x++) {  
+  for (word x = 0; x < 250; x++) { 
+    logbase_addr = (unsigned long)logbase;
     src_line = x % 16;
-    src_addr = sprite_screen_addr + (src_line * 80);
-    for (col = 0; col < 1; col++) {
-      oldxoffset = logbase_addr + (((oldx + col * 64) / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
-      xoffset = logbase_addr + (((x + col * 64)  / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
-      for (word line = 0; line < 260; line++) {
+    src_addr = sprite_screen_addr + (src_line * LINE_WIDTH_BYTES);
+    for (col = 0; col < COLS; col++) {
+      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH) / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
+      xoffset = logbase_addr + (((x + col * COL_WIDTH)  / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
+      for (word line = 0; line < HEIGHT; line++) {
         cleanup_addr = line * LINE_WIDTH_BYTES + oldxoffset;
         memcpy((void*)cleanup_addr, zeros, CHUNK_WIDTH_BYTES);
         dest_addr = line * LINE_WIDTH_BYTES + xoffset;
@@ -162,8 +165,8 @@ int main() {
     Vsync();
     Setscreen(logbase, physbase, -1);
 
-    tmp_oldx = x;
     oldx = tmp_oldx;
+    tmp_oldx = x;
     frames++;
   }
   clock_t end = clock();
@@ -171,6 +174,7 @@ int main() {
   double fps = frames / total_time;
 
   Setscreen(physbase, physbase, -1);
+  printf("%d cols\n%d height\n%d lines\n", COLS, HEIGHT, COLS*HEIGHT);
   printf("%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
 
   getchar();
