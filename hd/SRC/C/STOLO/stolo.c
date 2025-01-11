@@ -168,8 +168,8 @@ int main() {
     logbase_addr = (unsigned long)logbase;
 
     for (col = 0; col < COLS; col++) {
-      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH) / 16) * 8);
-      xoffset = logbase_addr + (((x + col * COL_WIDTH) / 16) * 8);
+      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / 16) * 8);
+      xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / 16) * 8);
       for (word line = 0; line < (HEIGHT * 160); line = line + 160) {
         cleanup_addr = line + oldxoffset;
         memcpy((void*)cleanup_addr, zeros, 2);

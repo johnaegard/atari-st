@@ -8,9 +8,10 @@
 
 #define HEIGHT 200
 #define COLS 5
-#define CYCLES 200
-#define COL_WIDTH 32
+#define CYCLES 16
+#define COL_WIDTH_PX 32
 #define BYTES_PER_LINE 160
+#define HORIZ_WALL_BYTES 32
 
 typedef unsigned char byte;
 typedef unsigned short word;
@@ -55,8 +56,8 @@ void get_current_palette(unsigned short* palette) {
 Screen read_degas_file(const char* filename) {
   Screen screen; // Struct to hold the arrays
 
-  screen.palette = (unsigned short*)malloc(16 * sizeof(unsigned short));
-  screen.bitmap = (unsigned short*)malloc(16000 * sizeof(unsigned short));
+  screen.palette = (word*)malloc(16 * sizeof(word));
+  screen.bitmap = (word*)malloc(16000 * sizeof(word));
 
   // Open the file in binary mode
   FILE* file = fopen(filename, "rb");
@@ -65,31 +66,24 @@ Screen read_degas_file(const char* filename) {
     exit(EXIT_FAILURE);
   }
 
-  // Skip the first 16-bit word
-  if (fseek(file, sizeof(unsigned short), SEEK_SET) != 0) {
+  // Skip the first word
+  if (fseek(file, sizeof(word), SEEK_SET) != 0) {
     perror("Error seeking in file");
     fclose(file);
     exit(EXIT_FAILURE);
   }
-
-  // Read the next 16 words into the palette array
-  if (fread(screen.palette, sizeof(unsigned short), 16, file) != 16) {
+  if (fread(screen.palette, sizeof(word), 16, file) != 16) {
     perror("Error reading palette data");
     fclose(file);
     exit(EXIT_FAILURE);
   }
-
-  // Read the next 16000 words into the bitmap array
-  if (fread(screen.bitmap, sizeof(unsigned short), 16000, file) != 16000) {
+  if (fread(screen.bitmap, sizeof(word), 16000, file) != 16000) {
     perror("Error reading bitmap data");
     fclose(file);
     exit(EXIT_FAILURE);
   }
-
-  // Close the file
   fclose(file);
-
-  // Return the struct containing the arrays
+  Setpalette(screen.palette);
   return screen;
 }
 Screen copy_screen(void* addr) {
@@ -139,9 +133,10 @@ int main() {
   Cursconf(0, 1);
 
   Screen original_screen = copy_screen(physbase);
-  memset(physbase, 0, 32000);
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
-  Setpalette(sprite_screen.palette);
+  memcpy(physbase,sprite_screen.bitmap,32000);
+  getchar();
+  memset(physbase,0,32000);
 
   byte vertical_wall_src_y, horiz_wall_src_y;
   unsigned long vertical_wall_src_addr, horiz_wall_src_addr;
@@ -155,7 +150,7 @@ int main() {
   word oldx = 0;
   word tmp_oldx = 0;
   word frames = 0;
-  byte zeros[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  byte zeros[32] = {0};
   clock_t start = clock();
   byte col;
 
@@ -169,8 +164,8 @@ int main() {
     horiz_wall_src_addr = sprite_screen_addr + (horiz_wall_src_y * BYTES_PER_LINE);
 
     for (col = 0; col < COLS; col++) {
-      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH) / 16) * 8);
-      xoffset = logbase_addr + (((x + col * COL_WIDTH) / 16) * 8);
+      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / 16) * 8);
+      xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / 16) * 8);
       // vert lines
       for (word line = 0; line < (HEIGHT * BYTES_PER_LINE); line = line + BYTES_PER_LINE) {
         cleanup_addr = line + oldxoffset;
@@ -179,11 +174,11 @@ int main() {
         memcpy((void*)dest_addr, (void*)vertical_wall_src_addr, 2);
       };
       // horiz lines
-      word dest_y = (col % 2) * 32;
+      word dest_y = (1+col % 2) * COL_WIDTH_PX;
       cleanup_addr = (dest_y * BYTES_PER_LINE) + oldxoffset;
-      memcpy((void*)cleanup_addr, zeros, 16);
+      memcpy((void*)cleanup_addr, zeros, HORIZ_WALL_BYTES);
       dest_addr = (dest_y * BYTES_PER_LINE) + xoffset;
-      memcpy((void*)dest_addr, (void*)horiz_wall_src_addr, 16);
+      memcpy((void*)dest_addr, (void*)horiz_wall_src_addr, HORIZ_WALL_BYTES);
    }
 
     swap_pages(&logbase, &physbase);

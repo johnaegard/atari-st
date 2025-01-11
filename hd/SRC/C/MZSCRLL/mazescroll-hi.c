@@ -150,8 +150,8 @@ int main() {
     src_line = x % 16;
     src_addr = sprite_screen_addr + (src_line * LINE_WIDTH_BYTES);
     for (col = 0; col < COLS; col++) {
-      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH) / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
-      xoffset = logbase_addr + (((x + col * COL_WIDTH)  / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
+      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
+      xoffset = logbase_addr + (((x + col * COL_WIDTH_PX)  / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
       for (word line = 0; line < HEIGHT; line++) {
         cleanup_addr = line * LINE_WIDTH_BYTES + oldxoffset;
         memcpy((void*)cleanup_addr, zeros, CHUNK_WIDTH_BYTES);
