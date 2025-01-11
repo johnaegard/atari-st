@@ -6,6 +6,12 @@
 #include <stddef.h>
 #include <time.h>
 
+#define HEIGHT 200
+#define COLS 5
+#define CYCLES 200
+#define COL_WIDTH 32
+#define BYTES_PER_LINE 160
+
 typedef unsigned char byte;
 typedef unsigned short word;
 
@@ -18,6 +24,8 @@ typedef struct {
   unsigned short* palette;
   unsigned short* bitmap;
 } Screen;
+
+void *tmpbase;
 
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = malloc(size + 255);
@@ -103,74 +111,15 @@ void free_screen(Screen screen) {
 void clear_screen(Screen screen) {
   memset(screen.bitmap, 0, 32000);
 }
-
-int main() {
-  const size_t screen_size_bytes = 32000; // Set the size of the buffer
-  AlignedBuffer altpage_ram = new_aligned_buffer(screen_size_bytes);
-  void* physbase = Physbase();
-  void* logbase = altpage_ram.aligned_ptr;
-  void* tmpbase;
-  Cursconf(0, 1);
-
-  Screen original_screen = copy_screen(physbase);
-  memset(physbase, 0, 32000);
-  Screen sprite_screen = read_degas_file(".\\RES\\WALLS.PI1");
-  // the sprite screen supplies the palette
-  Setpalette(sprite_screen.palette);
-
-  byte src_line;
-  unsigned long sprite_screen_addr = (unsigned long)sprite_screen.bitmap;
-  unsigned long logbase_addr;
-  unsigned long src_addr;
-  unsigned long dest_addr;
-  unsigned long cleanup_addr;
-
-  word x = 0;
-  word oldx = 0;
-  word tmp_oldx = 0;
-  word frames = 0;
-
-  byte zeros[2] = { 0, 0 };
-
-  clock_t start = clock();
-
-  unsigned long oldxoffset;
-  unsigned long xoffset;
-  byte col;
-
-#define HEIGHT 200
-#define COLS 10
-#define CYCLES 60
-#define COL_WIDTH 32
-
-  for (word x = 0; x < CYCLES; x++) {
-    src_line = x % 16;
-    src_addr = sprite_screen_addr + (src_line * 160);
-    logbase_addr = (unsigned long)logbase;
-
-    for (col = 0; col < COLS; col++) {
-      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH) / 16) * 8);
-      xoffset = logbase_addr + (((x + col * COL_WIDTH) / 16) * 8);
-      for (word line = 0; line < (HEIGHT * 160); line = line + 160) {
-        cleanup_addr = line + oldxoffset;
-        memcpy((void*)cleanup_addr, zeros, 2);
-        dest_addr = line + xoffset;
-        memcpy((void*)dest_addr, (void*)src_addr, 2);
-      };
-    }
-
-    tmpbase = physbase;
-    physbase = logbase;
-    logbase = tmpbase;
+void swap_pages(void **a, void **b){
+    tmpbase = *b;
+    *b = *a;
+    *a = tmpbase;
     Vsync();
-    Setscreen(logbase, physbase, -1);
-
-    oldx = tmp_oldx;
-    tmp_oldx = x;
-    frames++;
-  }
-  clock_t end = clock();
-  double total_time = (double)(end - start) / CLOCKS_PER_SEC;
+    Setscreen(*a, *b, -1);
+}
+void the_end(clock_t start, clock_t end,void *physbase,Screen original_screen, word frames){
+ double total_time = (double)(end - start) / CLOCKS_PER_SEC;
   double fps = frames / total_time;
 
   Setscreen(physbase, physbase, -1);
@@ -180,7 +129,71 @@ int main() {
 
   getchar();
   put_screen(original_screen, physbase);
+}
 
+int main() {
+  const size_t screen_size_bytes = 32000; // Set the size of the buffer
+  AlignedBuffer altpage_ram = new_aligned_buffer(screen_size_bytes);
+  void* logbase = altpage_ram.aligned_ptr;
+  void* physbase = Physbase();
+  Cursconf(0, 1);
+
+  Screen original_screen = copy_screen(physbase);
+  memset(physbase, 0, 32000);
+  Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
+  Setpalette(sprite_screen.palette);
+
+  byte vertical_wall_src_y, horiz_wall_src_y;
+  unsigned long vertical_wall_src_addr, horiz_wall_src_addr;
+  unsigned long sprite_screen_addr = (unsigned long) sprite_screen.bitmap;
+  unsigned long logbase_addr;
+  unsigned long dest_addr;
+  unsigned long cleanup_addr;
+  unsigned long oldxoffset;
+  unsigned long xoffset;
+  word x = 0;
+  word oldx = 0;
+  word tmp_oldx = 0;
+  word frames = 0;
+  byte zeros[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  clock_t start = clock();
+  byte col;
+
+  for (word x = 0; x < CYCLES; x++) {
+
+    logbase_addr = (unsigned long)logbase;
+
+    vertical_wall_src_y = x % 16;
+    vertical_wall_src_addr = sprite_screen_addr + (vertical_wall_src_y * BYTES_PER_LINE);
+    horiz_wall_src_y = 30 + (x % 32);
+    horiz_wall_src_addr = sprite_screen_addr + (horiz_wall_src_y * BYTES_PER_LINE);
+
+    for (col = 0; col < COLS; col++) {
+      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH) / 16) * 8);
+      xoffset = logbase_addr + (((x + col * COL_WIDTH) / 16) * 8);
+      // vert lines
+      for (word line = 0; line < (HEIGHT * BYTES_PER_LINE); line = line + BYTES_PER_LINE) {
+        cleanup_addr = line + oldxoffset;
+        memcpy((void*)cleanup_addr, zeros, 2);
+        dest_addr = line + xoffset;
+        memcpy((void*)dest_addr, (void*)vertical_wall_src_addr, 2);
+      };
+      // horiz lines
+      word dest_y = (col % 2) * 32;
+      cleanup_addr = (dest_y * BYTES_PER_LINE) + oldxoffset;
+      memcpy((void*)cleanup_addr, zeros, 16);
+      dest_addr = (dest_y * BYTES_PER_LINE) + xoffset;
+      memcpy((void*)dest_addr, (void*)horiz_wall_src_addr, 16);
+   }
+
+    swap_pages(&logbase, &physbase);
+    oldx = tmp_oldx;
+    tmp_oldx = x;
+    frames++;
+    getchar();
+  }
+  clock_t end = clock();
+  the_end(start,end,physbase,original_screen,frames);
   free_screen(sprite_screen);
   free_aligned_buffer(altpage_ram);
   return 0;
