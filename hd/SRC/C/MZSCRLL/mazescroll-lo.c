@@ -178,20 +178,19 @@ int main() {
       };
       word dest_y = (1+col % 2) * COL_WIDTH_PX;
       cleanup_addr = (dest_y * LINE_SIZE_BYTES) + old_horiz_xoffset;
-      memcpy((void*)cleanup_addr, zeros, CHUNK_SIZE_BYTES*2);
+      memcpy((void*)cleanup_addr, zeros, 32);
     }
 
     for (col = 0; col < COLS; col++) {
       vert_xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / CHUNK_SIZE_BYTES) * 8);
       // vert lines
       for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
-        if (!(line ==32 || line==64)) {
+        //if (!(line ==32 || line==64)) {
           dest_addr = line + vert_xoffset;
           memcpy((void*)dest_addr, (void*)vertical_wall_src_addr, 2);
-        }
+        //}
       };
    }
-
     for (col = 0; col < COLS; col++) {
       // horiz lines
       horiz_xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / 32) * 16);
@@ -199,7 +198,6 @@ int main() {
       dest_addr = (dest_y * LINE_SIZE_BYTES) + horiz_xoffset;
       memcpy((void*)dest_addr,(void*)horiz_wall_chunk1_src_addr,32);
     }
-
     swap_pages(&logbase, &physbase);
     oldx = tmp_oldx;
     tmp_oldx = x;
