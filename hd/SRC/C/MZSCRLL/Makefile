@@ -1,3 +1,4 @@
 tos:
 	m68k-atari-mint-gcc ./mazescroll-lo.c -o MZSCRLLO.TOS -std=c99 -O3
+#	m68k-atari-mint-gcc ./horiz-lo.c -o HRZLO.TOS -std=c99 -O3
 #	m68k-atari-mint-gcc ./mazescroll-hi.c -o MZSCRLHI.TOS -std=c99 -O3

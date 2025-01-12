@@ -6,12 +6,12 @@
 #include <stddef.h>
 #include <time.h>
 
-#define HEIGHT 200
+#define COL_HEIGHT_PX 200
 #define COLS 5
-#define CYCLES 16
 #define COL_WIDTH_PX 32
-#define BYTES_PER_LINE 160
+#define LINE_SIZE_BYTES 160
 #define HORIZ_WALL_BYTES 32
+#define CHUNK_SIZE_BYTES 16
 
 typedef unsigned char byte;
 typedef unsigned short word;
@@ -118,7 +118,7 @@ void the_end(clock_t start, clock_t end,void *physbase,Screen original_screen, w
 
   Setscreen(physbase, physbase, -1);
 
-  printf("%d cols\n%d height\n%d lines\n", COLS, HEIGHT, COLS * HEIGHT);
+  printf("%d cols\n%d height\n%d lines\n", COLS, COL_HEIGHT_PX, COLS * COL_HEIGHT_PX);
   printf("%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
 
   getchar();
@@ -138,14 +138,16 @@ int main() {
   getchar();
   memset(physbase,0,32000);
 
-  byte vertical_wall_src_y, horiz_wall_src_y;
-  unsigned long vertical_wall_src_addr, horiz_wall_src_addr;
+  byte vertical_wall_src_y, horiz_wall_chunk1_src_y, horiz_wall_chunk2_src_y;
+  unsigned long vertical_wall_src_addr, horiz_wall_chunk1_src_addr, horiz_wall_chunk2_src_addr;
   unsigned long sprite_screen_addr = (unsigned long) sprite_screen.bitmap;
   unsigned long logbase_addr;
   unsigned long dest_addr;
   unsigned long cleanup_addr;
-  unsigned long oldxoffset;
-  unsigned long xoffset;
+  unsigned long old_vert_xoffset;
+  unsigned long vert_xoffset;
+  unsigned long old_horiz_xoffset;
+  unsigned long horiz_xoffset;
   word x = 0;
   word oldx = 0;
   word tmp_oldx = 0;
@@ -154,38 +156,54 @@ int main() {
   clock_t start = clock();
   byte col;
 
+#define CYCLES 150
+
   for (word x = 0; x < CYCLES; x++) {
 
     logbase_addr = (unsigned long)logbase;
 
     vertical_wall_src_y = x % 16;
-    vertical_wall_src_addr = sprite_screen_addr + (vertical_wall_src_y * BYTES_PER_LINE);
-    horiz_wall_src_y = 30 + (x % 32);
-    horiz_wall_src_addr = sprite_screen_addr + (horiz_wall_src_y * BYTES_PER_LINE);
+    vertical_wall_src_addr = sprite_screen_addr + (vertical_wall_src_y * LINE_SIZE_BYTES);
+    horiz_wall_chunk1_src_y = 30 + (x % 32);
+    horiz_wall_chunk1_src_addr = sprite_screen_addr + (horiz_wall_chunk1_src_y * LINE_SIZE_BYTES);
+
+    //cleanup
+    for (col = 0; col < COLS; col++) {
+      old_vert_xoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / CHUNK_SIZE_BYTES) * 8);
+      old_horiz_xoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / 32 ) * 16);
+
+      for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
+        cleanup_addr = line + old_vert_xoffset;
+        memcpy((void*)cleanup_addr, zeros, 2);
+      };
+      word dest_y = (1+col % 2) * COL_WIDTH_PX;
+      cleanup_addr = (dest_y * LINE_SIZE_BYTES) + old_horiz_xoffset;
+      memcpy((void*)cleanup_addr, zeros, CHUNK_SIZE_BYTES*2);
+    }
 
     for (col = 0; col < COLS; col++) {
-      oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / 16) * 8);
-      xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / 16) * 8);
+      vert_xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / CHUNK_SIZE_BYTES) * 8);
       // vert lines
-      for (word line = 0; line < (HEIGHT * BYTES_PER_LINE); line = line + BYTES_PER_LINE) {
-        cleanup_addr = line + oldxoffset;
-        memcpy((void*)cleanup_addr, zeros, 2);
-        dest_addr = line + xoffset;
-        memcpy((void*)dest_addr, (void*)vertical_wall_src_addr, 2);
+      for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
+        if (!(line ==32 || line==64)) {
+          dest_addr = line + vert_xoffset;
+          memcpy((void*)dest_addr, (void*)vertical_wall_src_addr, 2);
+        }
       };
-      // horiz lines
-      word dest_y = (1+col % 2) * COL_WIDTH_PX;
-      cleanup_addr = (dest_y * BYTES_PER_LINE) + oldxoffset;
-      memcpy((void*)cleanup_addr, zeros, HORIZ_WALL_BYTES);
-      dest_addr = (dest_y * BYTES_PER_LINE) + xoffset;
-      memcpy((void*)dest_addr, (void*)horiz_wall_src_addr, HORIZ_WALL_BYTES);
    }
+
+    for (col = 0; col < COLS; col++) {
+      // horiz lines
+      horiz_xoffset = logbase_addr + (((x + col * COL_WIDTH_PX) / 32) * 16);
+      word dest_y = (1+col % 2) * COL_WIDTH_PX;
+      dest_addr = (dest_y * LINE_SIZE_BYTES) + horiz_xoffset;
+      memcpy((void*)dest_addr,(void*)horiz_wall_chunk1_src_addr,32);
+    }
 
     swap_pages(&logbase, &physbase);
     oldx = tmp_oldx;
     tmp_oldx = x;
     frames++;
-    getchar();
   }
   clock_t end = clock();
   the_end(start,end,physbase,original_screen,frames);

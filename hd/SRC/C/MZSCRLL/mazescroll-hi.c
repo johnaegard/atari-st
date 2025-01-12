@@ -152,7 +152,7 @@ int main() {
     for (col = 0; col < COLS; col++) {
       oldxoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
       xoffset = logbase_addr + (((x + col * COL_WIDTH_PX)  / CHUNK_WIDTH_PIXELS) * CHUNK_WIDTH_BYTES);
-      for (word line = 0; line < HEIGHT; line++) {
+      for (word line = 0; line < COL_HEIGHT_PX; line++) {
         cleanup_addr = line * LINE_WIDTH_BYTES + oldxoffset;
         memcpy((void*)cleanup_addr, zeros, CHUNK_WIDTH_BYTES);
         dest_addr = line * LINE_WIDTH_BYTES + xoffset;
@@ -174,7 +174,7 @@ int main() {
   double fps = frames / total_time;
 
   Setscreen(physbase, physbase, -1);
-  printf("%d cols\n%d height\n%d lines\n", COLS, HEIGHT, COLS*HEIGHT);
+  printf("%d cols\n%d height\n%d lines\n", COLS, COL_HEIGHT_PX, COLS*COL_HEIGHT_PX);
   printf("%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
 
   getchar();
