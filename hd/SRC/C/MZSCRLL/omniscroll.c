@@ -130,15 +130,12 @@ word **generate_maze(int cols, int rows) {
     printf("Memory allocation failed!\n");
     exit(1);
   }
-
   for (int r = 0; r < rows; r++) {
     map_data[r] = (word *)malloc(cols * sizeof(word));
     if (map_data[r] == NULL) {
       printf("Memory allocation failed!\n");
       exit(1);
     }
-
-    // Fill the row with random words
     for (int c = 0; c < cols; c++) {
       word roll = rand() & 0XF;
       if (roll <= 3) {
