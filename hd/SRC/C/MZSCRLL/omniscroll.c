@@ -157,6 +157,9 @@ void print_maze(word **mazedata, int cols, int rows) {
     printf("\n");
   }
 }
+void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *logbase) {
+
+}
 
 int main() {
   srand(time(NULL));
@@ -170,8 +173,8 @@ int main() {
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   memset(physbase, 0, 32000);
 
-  word **maze_data = generate_maze(MAZE_WIDTH, MAZE_HEIGHT);
-  print_maze(maze_data, MAZE_WIDTH, MAZE_HEIGHT);
+  word **maze = generate_maze(MAZE_WIDTH, MAZE_HEIGHT);
+  print_maze(maze, MAZE_WIDTH, MAZE_HEIGHT);
   getchar();
 
   byte vertical_wall_src_y, horiz_wall_chunk1_src_y, horiz_wall_chunk2_src_y;
@@ -206,7 +209,6 @@ int main() {
     for (col = 0; col < COLS; col++) {
       old_vert_xoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / CHUNK_SIZE_BYTES) * 8);
       old_horiz_xoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / 32) * 16);
-
       for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
         cleanup_addr = line + old_vert_xoffset;
         memcpy((void *)cleanup_addr, zeros, 2);
@@ -242,6 +244,6 @@ int main() {
   the_end(start, end, physbase, original_screen, frames);
   free_screen(sprite_screen);
   free_aligned_buffer(altpage_ram);
-  free(maze_data);
+  free(maze);
   return 0;
 }
