@@ -168,11 +168,11 @@ void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *lo
   addr spritebase_addr = (addr) spritebase;
   addr dest_addr;
 
-  word vertical_wall_src_y = (16 - cx % 16) % 16; // x % 16;
-  addr vertical_wall_src_addr = spritebase_addr + (vertical_wall_src_y * LINE_SIZE_BYTES);
+  word vwall_src_y = (16 - cx % 16) % 16; // x % 16;
+  addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
 
-  word horiz_wall_chunk1_src_y = 30; //+ (x % 32);
-  addr horiz_wall_chunk1_src_addr = spritebase_addr + (horiz_wall_chunk1_src_y * LINE_SIZE_BYTES);
+  word hwall_chunk1_src_y = 30 + (32-cx%32) %32;
+  addr hwall_chunk1_src_addr = spritebase_addr + (hwall_chunk1_src_y * LINE_SIZE_BYTES);
 
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row = (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
@@ -189,7 +189,7 @@ void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *lo
                 yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES); 
                 yoffset = yoffset + LINE_SIZE_BYTES) {
            dest_addr = logbase_addr + yoffset + xoff;
-           memcpy((void *)dest_addr, (void *)vertical_wall_src_addr, 2);
+           memcpy((void *)dest_addr, (void *)vwall_src_addr, 2);
         }
       };
       if ((maze[row][col] & 2) == 2) {
@@ -197,7 +197,7 @@ void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *lo
         addr xoffset = ((col * CELL_SIZE_PX) / 32) * 16;
         word yoffset = row * CELL_SIZE_PX * LINE_SIZE_BYTES;
         dest_addr = logbase_addr  + xoffset + yoffset;
-        memcpy((void *)dest_addr, (void *)horiz_wall_chunk1_src_addr, 32);
+        memcpy((void *)dest_addr, (void *)hwall_chunk1_src_addr, 32);
       }
     }
   }
