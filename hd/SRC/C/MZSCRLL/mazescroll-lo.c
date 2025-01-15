@@ -109,7 +109,7 @@ void swap_pages(void **a, void **b){
     tmpbase = *b;
     *b = *a;
     *a = tmpbase;
-//    Vsync();
+
     Setscreen(*a, *b, -1);
 }
 void the_end(clock_t start, clock_t end,void *physbase,Screen original_screen, word frames){
