@@ -100,6 +100,8 @@ void clear_screen(Screen screen) {
 
 int main() {
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
+  AlignedBuffer sprite_buffer = new_aligned_buffer(32000);
+  put_screen(sprite_screen,sprite_buffer.aligned_ptr);
 
   OP_TAB optab = {
     .fg0bg0 = 0X03,
@@ -115,7 +117,11 @@ int main() {
 	// short 	bl_nxln;		/* Offset to next line in plane */
 	// short 	bl_nxpl;		/* Offset to next plane 	*/
 
-  SDDB source = {};
+  SDDB source = {
+    .bl_xmin = 0,
+    .bl_ymin = 193,
+
+  };
   SDDB dest = {};
 
   BBPB bbpb = {
@@ -151,5 +157,6 @@ int main() {
   linea7(&bbpb);
   getchar();
   free_screen(sprite_screen);
+  free_aligned_buffer(sprite_buffer);
   return 0;
 }

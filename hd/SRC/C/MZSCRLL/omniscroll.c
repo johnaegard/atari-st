@@ -17,6 +17,7 @@
 
 typedef unsigned char byte;
 typedef unsigned short word;
+typedef unsigned long addr;
 
 typedef struct {
   void *aligned_ptr;
@@ -157,8 +158,34 @@ void print_maze(word **mazedata, int cols, int rows) {
     printf("\n");
   }
 }
+
 void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *logbase) {
 
+  addr logbase_addr = (addr)logbase;
+  //    vertical_wall_src_y = x % 16;
+    vertical_wall_src_addr = sprite_screen_addr + (vertical_wall_src_y * LINE_SIZE_BYTES);
+
+  addr vert_xoffset, dest_addr;
+
+  // render new page 
+  for(word row = 0; row < 6 ; row++) {
+    for(word col = 0; col < 6 ; col++) {
+      if (maze[row][col] & 1 == 1) {
+        vert_xoffset = logbase_addr + (((col * COL_WIDTH_PX) / CHUNK_SIZE_BYTES) * 8);
+        // vert lines
+        for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
+        dest_addr = line + vert_xoffset;
+        memcpy((void *)dest_addr, (void *)vertical_wall_src_addr, 2);
+        //}
+      };
+
+      }
+      if (maze[row][col] & 2 == 2) {
+        // horiz line here
+
+      }
+    }
+  }
 }
 
 int main() {

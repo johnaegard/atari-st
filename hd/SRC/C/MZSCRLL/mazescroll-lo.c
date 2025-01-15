@@ -109,7 +109,7 @@ void swap_pages(void **a, void **b){
     tmpbase = *b;
     *b = *a;
     *a = tmpbase;
-    Vsync();
+//    Vsync();
     Setscreen(*a, *b, -1);
 }
 void the_end(clock_t start, clock_t end,void *physbase,Screen original_screen, word frames){
@@ -131,13 +131,14 @@ int main() {
   void* logbase = altpage_ram.aligned_ptr;
   void* physbase = Physbase();
   Cursconf(0, 1);
+  Setscreen(physbase,physbase,-1);
 
   Screen original_screen = copy_screen(physbase);
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   memcpy(physbase,sprite_screen.bitmap,32000);
   getchar();
   memset(physbase,0,32000);
-
+  
   byte vertical_wall_src_y, horiz_wall_chunk1_src_y, horiz_wall_chunk2_src_y;
   unsigned long vertical_wall_src_addr, horiz_wall_chunk1_src_addr, horiz_wall_chunk2_src_addr;
   unsigned long sprite_screen_addr = (unsigned long) sprite_screen.bitmap;
@@ -168,6 +169,7 @@ int main() {
     horiz_wall_chunk1_src_addr = sprite_screen_addr + (horiz_wall_chunk1_src_y * LINE_SIZE_BYTES);
 
     //cleanup
+    Vsync();
     for (col = 0; col < COLS; col++) {
       old_vert_xoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / CHUNK_SIZE_BYTES) * 8);
       old_horiz_xoffset = logbase_addr + (((oldx + col * COL_WIDTH_PX) / 32 ) * 16);
@@ -199,6 +201,7 @@ int main() {
       memcpy((void*)dest_addr,(void*)horiz_wall_chunk1_src_addr,32);
     }
     swap_pages(&logbase, &physbase);
+//    getchar();
     oldx = tmp_oldx;
     tmp_oldx = x;
     frames++;
