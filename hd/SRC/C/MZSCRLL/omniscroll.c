@@ -14,6 +14,8 @@
 #define CHUNK_SIZE_BYTES 16
 #define MAZE_WIDTH 6
 #define MAZE_HEIGHT 6
+#define VIEWPORT_WIDTH 192
+#define VIEWPORT_HEIGHT 192
 
 typedef unsigned char byte;
 typedef unsigned short word;
@@ -164,24 +166,29 @@ void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *lo
 
   addr logbase_addr = (addr) logbase;
   addr spritebase_addr = (addr) spritebase;
+  addr dest_addr;
+
   word vertical_wall_src_y = 0; // x % 16;
   addr vertical_wall_src_addr = spritebase_addr + (vertical_wall_src_y * LINE_SIZE_BYTES);
-
-  addr xoffset, dest_addr;
 
   word horiz_wall_chunk1_src_y = 30; //+ (x % 32);
   addr horiz_wall_chunk1_src_addr = spritebase_addr + (horiz_wall_chunk1_src_y * LINE_SIZE_BYTES);
 
-  for(word row = 0; row < 6 ; row++) {
-    for(word col = 0; col < 6 ; col++) {
+  word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_row = (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+
+  for(word row = start_row; row < end_row ; row++) {
+    for(word col = start_col; col < end_col ; col++) {
       if ((maze[row][col] & 1) == 1) {
         // low bit - vert lines
-        word xoffset = (((col * CELL_SIZE_PX) / CHUNK_SIZE_BYTES) * 8);
-        word starting_yoffset = row * CELL_SIZE_PX * LINE_SIZE_BYTES;
-        for (word yoffset = starting_yoffset; 
-                yoffset < starting_yoffset + (CELL_SIZE_PX * LINE_SIZE_BYTES); 
+        word xoff = (((col * CELL_SIZE_PX) / CHUNK_SIZE_BYTES) * 8);
+        word start_yoff = row * CELL_SIZE_PX * LINE_SIZE_BYTES;
+        for (word yoffset = start_yoff; 
+                yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES); 
                 yoffset = yoffset + LINE_SIZE_BYTES) {
-           dest_addr = logbase_addr + yoffset + xoffset;
+           dest_addr = logbase_addr + yoffset + xoff;
            memcpy((void *)dest_addr, (void *)vertical_wall_src_addr, 2);
         }
       };
@@ -192,8 +199,6 @@ void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *lo
         dest_addr = logbase_addr  + xoffset + yoffset;
         memcpy((void *)dest_addr, (void *)horiz_wall_chunk1_src_addr, 32);
       }
-      // printf("row=%d col=%d, %d\n",row,col,maze[row][col]);
-      // getchar();
     }
   }
 }
@@ -218,7 +223,7 @@ int main() {
   word frames = 0;
   clock_t start = clock();
 
-  render_maze(maze,0,0,0,0,physbase,sprite_screen.base);
+  render_maze(maze,96,96,0,0,physbase,sprite_screen.base);
 
   // byte vertical_wall_src_y, horiz_wall_chunk1_src_y, horiz_wall_chunk2_src_y;
   // unsigned long vertical_wall_src_addr, horiz_wall_chunk1_src_addr, horiz_wall_chunk2_src_addr;
