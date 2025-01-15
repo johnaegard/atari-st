@@ -168,7 +168,7 @@ void render_maze(word **maze, word cx, word cy, word oldcx, word oldcy, void *lo
   addr spritebase_addr = (addr) spritebase;
   addr dest_addr;
 
-  word vertical_wall_src_y = 0; // x % 16;
+  word vertical_wall_src_y = (16 - cx % 16) % 16; // x % 16;
   addr vertical_wall_src_addr = spritebase_addr + (vertical_wall_src_y * LINE_SIZE_BYTES);
 
   word horiz_wall_chunk1_src_y = 30; //+ (x % 32);
