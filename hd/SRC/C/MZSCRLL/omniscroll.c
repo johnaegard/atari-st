@@ -196,7 +196,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row   = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col   = 1+(cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col   = 2+(cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
   // when cy=162, start_row=2 start_row_top_y is -2
   // when cy=161, start_row=2 start_row_top_y is -1
@@ -215,7 +215,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
 
   fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, vwall_pixel=%d, vwall_src_y=%d, vwall_chunk_offset=%d, vwall_col_offset=%d\n", 
   cx, cy, start_row, start_col, end_row, end_col, vwall_pixel, vwall_src_y, vwall_chunk_offset, vwall_col_offset);
-  fflush(log_file);
+  // fflush(log_file);
 
   word screen_row = 0;
   for (word maze_row = start_row; maze_row < end_row; maze_row++) {
@@ -224,14 +224,15 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // low bit - vert lines
         signed short xoff = ((screen_col) * CELL_WIDTH_BYTES) + vwall_col_offset + vwall_chunk_offset;
-        fprintf(log_file, "maze_col=%d, screen_col=%d, xoff=%d\n",maze_col, screen_col, xoff);
+        fprintf(log_file, "maze_col=%d, screen_col=%d, xoff=%d",maze_col, screen_col, xoff);
         if (xoff < 0 || xoff > VIEWPORT_WIDTH_BYTES) {
-          fprintf(log_file,"skipping column, xoff out of range");
-          fflush(log_file);
+          fprintf(log_file,".....skipping column, xoff out of range\n");
+          // fflush(log_file);
           screen_col++;
           continue;
         }
-        fflush(log_file);
+        fprintf(log_file, "\n");
+        // fflush(log_file);
 
         signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
@@ -257,6 +258,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
     }
     screen_row++;
   }
+  fflush(log_file);
 }
 
 int main() {
