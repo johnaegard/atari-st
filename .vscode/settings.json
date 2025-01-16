@@ -5,7 +5,7 @@
         "linea.h": "c"
     },
         "workbench.colorCustomizations": {
-        "editorCursor.foreground": "#FF6600",
-        "terminalCursor.foreground": "#FF6600"
+        "editorCursor.foreground": "#be2a10",
+        "terminalCursor.foreground": "#be2a10"
     }
 }

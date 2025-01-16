@@ -5,4 +5,4 @@ BraceWrapping:
   AfterStruct: false
   AfterClass: false
   AfterEnum: false
-ColumnLimit: 120
+ColumnLimit: 140

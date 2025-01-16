@@ -44,13 +44,13 @@ FILE* log_file;
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = malloc(size + 255);
   if (!original_ptr) {
-    return (AlignedBuffer){NULL, NULL};  // Return NULL if malloc fails
+    return (AlignedBuffer) { NULL, NULL };  // Return NULL if malloc fails
   }
   memset(original_ptr, 0, size + 255);
   unsigned long addr = (unsigned long)original_ptr;
   unsigned long aligned_addr = (addr + 255) & ~255;
 
-  AlignedBuffer buffer = {(void*)aligned_addr, original_ptr};
+  AlignedBuffer buffer = { (void*)aligned_addr, original_ptr };
   // printf("Original pointer: %p\n", buffer.original_ptr);
   // printf("Aligned pointer:  %p\n", buffer.aligned_ptr);
 
@@ -151,7 +151,8 @@ word** generate_maze(int cols, int rows) {
       map_data[r][c] = 1;
       if (roll <= 3) {
         map_data[r][c] = roll;
-      } else {
+      }
+      else {
         map_data[r][c] = 0;
       }
     }
@@ -161,7 +162,7 @@ word** generate_maze(int cols, int rows) {
 }
 void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int ecol) {
   fprintf(log_file, "rows=%d, cols=%d, pixel height=%d, pixel_width=%d\n\n", rows, cols, rows * CELL_SIZE_PX,
-          cols * CELL_SIZE_PX);
+    cols * CELL_SIZE_PX);
   for (int r = 0; r < cols; r++) {
     for (int c = 0; c < cols; c++) {
       fprintf(log_file, "%d", maze[r][c]);
@@ -197,32 +198,46 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word end_row = (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_col = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d\n", cx, cy, start_row, start_col,
-          end_row, end_col);
+
+  // when cy=162, start_row=2 start_row_top_y is -2
+  // when cy=161, start_row=2 start_row_top_y is -1
+  // when cy=160, start_row=2 start_row_top_y is zero
+  // when cy=159, start_row=1 start_row_top_y is -31
+  // when cy=158, start_row=1 start_row_top_y is -30
+
+  signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
+
+  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, start_row_top_y=%d\n", cx, cy, start_row, start_col,
+    end_row, end_col, start_row_top_y);
   fflush(log_file);
 
   word screen_row = 0;
-
   for (word maze_row = start_row; maze_row < end_row; maze_row++) {
     word screen_col = 0;
     for (word maze_col = start_col; maze_col < end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // low bit - vert lines
         word xoff = (((screen_col * CELL_SIZE_PX) / CHUNK_SIZE_BYTES) * 8);
-        word start_yoff = screen_row * CELL_SIZE_PX * LINE_SIZE_BYTES;
-        for (word yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
-             yoffset = yoffset + LINE_SIZE_BYTES) {
+        signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
+          yoffset = yoffset + LINE_SIZE_BYTES) {
           dest_addr = logbase_addr + yoffset + xoff;
-          memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+//          fprintf(log_file, "maze_row=%d, logbase_addr=%p, yoffset=%d, xoff=%d, dest_addr=%p\n", 
+//          maze_row,logbase_addr,yoffset,xoff,dest_addr);
+//          fflush(log_file);
+          // CLIP
+          if (dest_addr>=logbase_addr && dest_addr<=logbase_addr+32000) {
+            memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+          }
         }
       };
-      if ((maze[maze_row][maze_col] & 2) == 2) {
-        // second bit - horiz line here
-        addr xoffset = ((screen_col * CELL_SIZE_PX) / 32) * 16;
-        word yoffset = screen_row * CELL_SIZE_PX * LINE_SIZE_BYTES;
-        dest_addr = logbase_addr + xoffset + yoffset;
-        memcpy((void*)dest_addr, (void*)hwall_chunk1_src_addr, 32);
-      }
+      // if ((maze[maze_row][maze_col] & 2) == 2) {
+      //   // second bit - horiz line here
+      //   addr xoffset = ((screen_col * CELL_SIZE_PX) / 32) * 16;
+      //   word yoffset = screen_row * CELL_SIZE_PX * LINE_SIZE_BYTES;
+      //   dest_addr = logbase_addr + xoffset + yoffset;
+      //   memcpy((void*)dest_addr, (void*)hwall_chunk1_src_addr, 32);
+      // }
       screen_col++;
     }
     screen_row++;
@@ -268,23 +283,23 @@ int main() {
     key = Bconin(2);
     char scancode = (key >> 16) & 0xFF;
     switch (scancode) {
-      case KEY_UP:
-        vy--;
-        break;
-      case KEY_DOWN:
-        vy++;
-        break;
-      case KEY_LEFT:
-        vx--;
-        break;
-      case KEY_RIGHT:
-        vx++;
-        break;
-      case KEY_ESC:
-        keep_looping = 0;
-        break;
+    case KEY_UP:
+      vy--;
+      break;
+    case KEY_DOWN:
+      vy++;
+      break;
+    case KEY_LEFT:
+      vx--;
+      break;
+    case KEY_RIGHT:
+      vx++;
+      break;
+    case KEY_ESC:
+      keep_looping = 0;
+      break;
     }
-    memset(physbase,0,32000);
+    memset(physbase, 0, 32000);
   }
 
   clock_t end = clock();
