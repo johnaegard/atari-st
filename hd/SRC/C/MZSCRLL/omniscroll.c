@@ -195,7 +195,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   addr hwall_chunk1_src_addr = spritebase_addr + (hwall_chunk1_src_y * LINE_SIZE_BYTES);
 
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_row = (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_row = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_col = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
@@ -226,7 +226,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
 //          maze_row,logbase_addr,yoffset,xoff,dest_addr);
 //          fflush(log_file);
           // CLIP
-          if (dest_addr>=logbase_addr && dest_addr<=logbase_addr+32000) {
+          if (dest_addr>=logbase_addr && dest_addr<=logbase_addr+VIEWPORT_HEIGHT*LINE_SIZE_BYTES) {
             memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
           }
         }
