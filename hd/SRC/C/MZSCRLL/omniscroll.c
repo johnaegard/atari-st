@@ -9,6 +9,7 @@
 #define COL_HEIGHT_PX 200
 #define COLS 5
 #define CELL_SIZE_PX 32
+#define CELL_WIDTH_BYTES 16
 #define LINE_SIZE_BYTES 160
 #define HORIZ_WALL_BYTES 32
 #define CHUNK_SIZE_BYTES 16
@@ -16,6 +17,7 @@
 #define MAZE_HEIGHT 32
 #define VIEWPORT_WIDTH 192
 #define VIEWPORT_HEIGHT 192
+#define VIEWPORT_WIDTH_BYTES VIEWPORT_WIDTH / 2
 #define KEYBOARD 2
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -194,7 +196,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row   = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col   = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col   = 1+(cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
   // when cy=162, start_row=2 start_row_top_y is -2
   // when cy=161, start_row=2 start_row_top_y is -1
@@ -203,13 +205,16 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   // when cy=158, start_row=1 start_row_top_y is -30
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
-  signed short start_col_top_x = -1 * (cx % 16);
 
-  word vwall_src_y    = start_col_top_x * -1;
+  word vwall_pixel = cx % 32;
+  word vwall_src_y = (16 - (vwall_pixel % 16)) % 16;
   addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
+  
+  word vwall_chunk_offset = ((vwall_pixel >= 1 && vwall_pixel <= 16) ? 1 : 0) * 8;
+  signed short vwall_col_offset = ((vwall_pixel   != 0) ? -1 : 0) * 16;
 
-  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, start_row_top_y=%d, start_col_top_x=%d, vwall_src_y=%d\n", 
-  cx, cy, start_row, start_col, end_row, end_col, start_row_top_y, start_col_top_x, vwall_src_y);
+  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, vwall_pixel=%d, vwall_src_y=%d, vwall_chunk_offset=%d, vwall_col_offset=%d\n", 
+  cx, cy, start_row, start_col, end_row, end_col, vwall_pixel, vwall_src_y, vwall_chunk_offset, vwall_col_offset);
   fflush(log_file);
 
   word screen_row = 0;
@@ -218,7 +223,16 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
     for (word maze_col = start_col; maze_col < end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // low bit - vert lines
-        signed short xoff = (((screen_col * CELL_SIZE_PX) ) / CHUNK_SIZE_BYTES) * 8;
+        signed short xoff = ((screen_col) * CELL_WIDTH_BYTES) + vwall_col_offset + vwall_chunk_offset;
+        fprintf(log_file, "maze_col=%d, screen_col=%d, xoff=%d\n",maze_col, screen_col, xoff);
+        if (xoff < 0 || xoff > VIEWPORT_WIDTH_BYTES) {
+          fprintf(log_file,"skipping column, xoff out of range");
+          fflush(log_file);
+          screen_col++;
+          continue;
+        }
+        fflush(log_file);
+
         signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
           yoffset = yoffset + LINE_SIZE_BYTES) {
@@ -265,7 +279,7 @@ int main() {
   memset(physbase, 0, 32000);
 
   word** maze = generate_maze(MAZE_WIDTH, MAZE_HEIGHT);
-  // log_maze(maze,MAZE_HEIGHT, MAZE_WIDTH,2,2,8,8);
+  log_maze(maze,MAZE_HEIGHT, MAZE_WIDTH,2,2,8,8);
 
   //  memset(physbase, 0, 32000);
 
