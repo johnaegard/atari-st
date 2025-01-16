@@ -188,16 +188,13 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   addr spritebase_addr = (addr)spritebase;
   addr dest_addr;
 
-  word vwall_src_y = (16 - cx % 16) % 16;  // x % 16;
-  addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
-
-  word hwall_chunk1_src_y = 30 + (32 - cx % 32) % 32;
+  word hwall_chunk1_src_y    = 30 + (32 - cx % 32) % 32;
   addr hwall_chunk1_src_addr = spritebase_addr + (hwall_chunk1_src_y * LINE_SIZE_BYTES);
 
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_row = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_row   = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col   = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
   // when cy=162, start_row=2 start_row_top_y is -2
   // when cy=161, start_row=2 start_row_top_y is -1
@@ -206,9 +203,13 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   // when cy=158, start_row=1 start_row_top_y is -30
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
+  signed short start_col_top_x = -1 * (cx % 16);
 
-  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, start_row_top_y=%d\n", cx, cy, start_row, start_col,
-    end_row, end_col, start_row_top_y);
+  word vwall_src_y    = start_col_top_x * -1;
+  addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
+
+  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, start_row_top_y=%d, start_col_top_x=%d, vwall_src_y=%d\n", 
+  cx, cy, start_row, start_col, end_row, end_col, start_row_top_y, start_col_top_x, vwall_src_y);
   fflush(log_file);
 
   word screen_row = 0;
@@ -217,7 +218,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
     for (word maze_col = start_col; maze_col < end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // low bit - vert lines
-        word xoff = (((screen_col * CELL_SIZE_PX) / CHUNK_SIZE_BYTES) * 8);
+        signed short xoff = (((screen_col * CELL_SIZE_PX) ) / CHUNK_SIZE_BYTES) * 8;
         signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
           yoffset = yoffset + LINE_SIZE_BYTES) {
