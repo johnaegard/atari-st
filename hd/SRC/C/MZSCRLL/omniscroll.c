@@ -244,7 +244,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
       if ((maze[maze_row][maze_col] & 2) == 2) {
         // second bit - horiz line here
         addr xoffset = ((screen_col * CELL_SIZE_PX) / 32) * 16;
-        word yoffset = screen_row * CELL_SIZE_PX * LINE_SIZE_BYTES;
+        word yoffset = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         dest_addr = logbase_addr + xoffset + yoffset;
         memcpy((void*)dest_addr, (void*)hwall_chunk1_src_addr, 32);
       }
