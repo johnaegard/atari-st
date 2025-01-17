@@ -17,7 +17,7 @@
 #define MAZE_HEIGHT 32
 #define VIEWPORT_WIDTH 192
 #define VIEWPORT_HEIGHT 192
-#define VIEWPORT_WIDTH_BYTES VIEWPORT_WIDTH / 2
+#define VIEWPORT_WIDTH_BYTES 96
 #define KEYBOARD 2
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -196,7 +196,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row   = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col   = 2+(cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col   = 1+(cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
   // when cy=162, start_row=2 start_row_top_y is -2
   // when cy=161, start_row=2 start_row_top_y is -1
@@ -278,7 +278,8 @@ int main() {
 
   Screen original_screen = copy_screen(physbase);
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
-  memset(physbase, 0, 32000);
+  Screen background_screen = read_degas_file(".\\RES\\BKGD.PI1");
+  memcpy(physbase, background_screen.base, screen_size_bytes);
 
   word** maze = generate_maze(MAZE_WIDTH, MAZE_HEIGHT);
   log_maze(maze,MAZE_HEIGHT, MAZE_WIDTH,2,2,8,8);
@@ -316,7 +317,7 @@ int main() {
       keep_looping = 0;
       break;
     }
-    memset(physbase, 0, 32000);
+    memcpy(physbase, background_screen.base, screen_size_bytes);
   }
 
   clock_t end = clock();
