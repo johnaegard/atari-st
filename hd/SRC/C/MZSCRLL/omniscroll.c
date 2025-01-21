@@ -24,6 +24,7 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 #define KEY_ESC 1
+#define HWALL_SPRITE_START_LINE 30
 
 typedef unsigned char byte;
 typedef unsigned short word;
@@ -195,20 +196,21 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_col   = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
-  word hwall_src_y    = 30 + (32 - cx % 32) % 32;
-  addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
-
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
-  word vwall_camera = cx % 32;
-  word vwall_src_y = (16 - (vwall_camera % 16)) % 16;
+  word cx_mod = cx % 32;
+  word vwall_src_y = (16 - (cx_mod % 16)) % 16;
   addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
 
-  signed short vwall_col_offset = (vwall_camera == 0) ? 0 : -16;
-  word vwall_chunk_offset = (vwall_camera > 0 && vwall_camera <= 16 ) ? 8 : 0;
+  signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
+  word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16 ) ? 8 : 0;
 
-  fprintf(log_file, "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, vwall_pixel=%d, vwall_src_y=%d, vwall_chunk_offset=%d, vwall_col_offset=%d\n", 
-  cx, cy, start_row, start_col, end_row, end_col, vwall_camera, vwall_src_y, vwall_chunk_offset, vwall_col_offset);
+  word hwall_src_y    = HWALL_SPRITE_START_LINE + ((cx_mod == 0) ? 0 : (32 - cx_mod));
+  addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
+
+  fprintf(log_file, 
+  "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, vwall_src_y=%d, vwall_chunk_offset_bytes=%d, vwall_col_offset_bytes=%d\n", 
+    cx, cy, start_row, start_col, end_row, end_col, cx_mod, vwall_src_y, vwall_chunk_offset_bytes, vwall_col_offset_bytes);
   // fflush(log_file);
 
   word screen_row = 0;
@@ -217,25 +219,19 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
     for (word maze_col = start_col; maze_col < end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // low bit - vert lines
-        word screen_col_offset =  screen_col * CELL_WIDTH_BYTES ;
-        signed short xoff = screen_col_offset + vwall_col_offset + vwall_chunk_offset;
-        fprintf(log_file, "maze_col=%d, screen_col=%d, vwall_pixel=%d, screen_col_offset=%d, vwall_col_offset=%d, vwall_chunk_offset=%d, xoff=%d\n",
-        maze_col, screen_col, vwall_camera, screen_col_offset, vwall_col_offset, vwall_chunk_offset, xoff);
+        word screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES ;
+        signed short xoff = screen_col_offset_bytes + vwall_col_offset_bytes + vwall_chunk_offset_bytes;
+        //fprintf(log_file, "maze_col=%d, screen_col=%d, cxmod=%d, screen_col_offset_bytes=%d, vwall_col_offset_bytes=%d, vwall_chunk_offset_bytes=%d, xoff=%d\n",
+        // maze_col, screen_col, cx_mod, screen_col_offset_bytes, vwall_col_offset_bytes, vwall_chunk_offset_bytes, xoff);
         if (xoff < 0 || xoff > VIEWPORT_WIDTH_BYTES) {
-          fprintf(log_file,".....skipping column, xoff out of range\n");
-          fflush(log_file);
+          //fprintf(log_file,".....skipping column, xoff out of range\n");
           screen_col++;
           continue;
         }
-        // fflush(log_file);
-
         signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
           yoffset = yoffset + LINE_SIZE_BYTES) {
           dest_addr = logbase_addr + yoffset + xoff;
-        //  fprintf(log_file, "maze_row=%d, logbase_addr=%p, yoffset=%d, xoff=%d, dest_addr=%p\n", 
-        //  maze_row,logbase_addr,yoffset,xoff,dest_addr);
-        //  fflush(log_file);
           // CLIP
           if (dest_addr>=logbase_addr && dest_addr<=logbase_addr+VIEWPORT_HEIGHT*LINE_SIZE_BYTES) {
             memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
@@ -243,15 +239,16 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
         }
       };
       if ((maze[maze_row][maze_col] & 2) == 2) {
-        
         // second bit - horiz line here
-        // addr hwall_xoffset_bytes = ((screen_col * CELL_SIZE_PX) / 32) * 16;
-        // unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
-        // dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
-        // fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
-        // maze_row, maze_col, screen_row, screen_col, hwall_src_y, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
-        // fflush(log_file);
-        // memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
+        word screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES; 
+        word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
+        word hwall_xoffset_bytes = screen_col_offset_bytes + hwall_screen_col_offset_bytes;
+
+        unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
+        fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, cxmod=%d, screen_col_offset_bytes=%d, hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
+          maze_row, maze_col, screen_row, screen_col, hwall_src_y, cx_mod, screen_col_offset_bytes, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
+        memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
       }
       screen_col++;
     }
