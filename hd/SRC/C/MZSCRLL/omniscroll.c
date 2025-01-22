@@ -1,11 +1,11 @@
 #include <osbind.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <stdbool.h>
 
 #define COL_HEIGHT_PX 200
 #define COLS 5
@@ -25,7 +25,15 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 #define KEY_ESC 1
-#define HWALL_SPRITE_START_LINE 30
+
+#define HWALL_NO_SPRITE 0
+#define HWALL_END_SPRITE 1
+#define HWALL_START_SPRITE 2
+#define HWALL_FULL_SPRITE 3
+
+#define HWALL_END_SPRITES_Y 30
+#define HWALL_START_SPRITES_Y 70
+#define HWALL_FULL_SPRITE_Y 110
 
 typedef unsigned char byte;
 typedef unsigned short word;
@@ -48,13 +56,13 @@ FILE* log_file;
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = malloc(size + 255);
   if (!original_ptr) {
-    return (AlignedBuffer) { NULL, NULL };  // Return NULL if malloc fails
+    return (AlignedBuffer){NULL, NULL};  // Return NULL if malloc fails
   }
   memset(original_ptr, 0, size + 255);
   unsigned long addr = (unsigned long)original_ptr;
   unsigned long aligned_addr = (addr + 255) & ~255;
 
-  AlignedBuffer buffer = { (void*)aligned_addr, original_ptr };
+  AlignedBuffer buffer = {(void*)aligned_addr, original_ptr};
   // printf("Original pointer: %p\n", buffer.original_ptr);
   // printf("Aligned pointer:  %p\n", buffer.aligned_ptr);
 
@@ -151,29 +159,30 @@ word** generate_maze(int rows, int cols) {
       exit(1);
     }
     for (int c = 0; c < cols; c++) {
-      word roll = rand() & 0XF;
+      word roll = 4 + (rand() & 0X1F );
       map_data[r][c] = 1;
       if (roll <= 3) {
         map_data[r][c] = roll;
-      }
-      else {
+      } else {
         map_data[r][c] = 0;
       }
-      map_data[0][c] =2;
-      //map_data[rows-1][c] =2;  // crasher  :()
+      map_data[0][c] = 2;
+      // map_data[rows-1][c] =2;  // crasher  :()
     }
     map_data[r][0] = 1;
-    // map_data[r][cols-1] = 1;   // crasher  :( 
+    // map_data[r][cols-1] = 1;   // crasher  :(
   }
 
-  map_data[5][5]=2;
-  map_data[5][6]=3;
+  map_data[4][2] = 2;
+  map_data[4][5] = 1;
+  map_data[5][4] = 2;
+  map_data[5][5] = 3;
+  map_data[6][7] = 2;
 
   return map_data;
 }
 void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int ecol) {
-  fprintf(log_file, "rows=%d, cols=%d, pixel height=%d, pixel_width=%d\n\n", rows, cols, rows * CELL_SIZE_PX,
-    cols * CELL_SIZE_PX);
+  fprintf(log_file, "rows=%d, cols=%d, pixel height=%d, pixel_width=%d\n\n", rows, cols, rows * CELL_SIZE_PX, cols * CELL_SIZE_PX);
   for (int r = 0; r < cols; r++) {
     for (int c = 0; c < cols; c++) {
       fprintf(log_file, "%d", maze[r][c]);
@@ -184,7 +193,7 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
   for (int r = srow; r < erow; r++) {
     for (int c = scol; c < ecol; c++) {
       fprintf(log_file, "%d", maze[r][c]);
-      printf("%d%d%d ", r,c,maze[r][c]);
+      printf("%d%d%d ", r, c, maze[r][c]);
     }
     printf("\n\n\n\n");
     fprintf(log_file, "\n");
@@ -200,9 +209,9 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   addr dest_addr;
 
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_row   = 1+(cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_row = 1 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col   = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
@@ -211,11 +220,12 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
 
   signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
-  word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16 ) ? 8 : 0;
+  word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
 
-  fprintf(log_file, 
-  "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, vwall_src_y=%d, vwall_chunk_offset_bytes=%d, vwall_col_offset_bytes=%d\n", 
-    cx, cy, start_row, start_col, end_row, end_col, cx_mod, vwall_src_y, vwall_chunk_offset_bytes, vwall_col_offset_bytes);
+  fprintf(log_file,
+          "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, vwall_src_y=%d, vwall_chunk_offset_bytes=%d, "
+          "vwall_col_offset_bytes=%d\n",
+          cx, cy, start_row, start_col, end_row, end_col, cx_mod, vwall_src_y, vwall_chunk_offset_bytes, vwall_col_offset_bytes);
   // fflush(log_file);
 
   word screen_row = 0;
@@ -223,60 +233,104 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
     word screen_col = 0;
     for (word maze_col = start_col; maze_col < end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
-        // low bit - vert lines
-        word screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES ;
+        // 
+        // vert lines
+        //
+        word screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short xoff = screen_col_offset_bytes + vwall_col_offset_bytes + vwall_chunk_offset_bytes;
-        //fprintf(log_file, "maze_col=%d, screen_col=%d, cxmod=%d, screen_col_offset_bytes=%d, vwall_col_offset_bytes=%d, vwall_chunk_offset_bytes=%d, xoff=%d\n",
-        // maze_col, screen_col, cx_mod, screen_col_offset_bytes, vwall_col_offset_bytes, vwall_chunk_offset_bytes, xoff);
+        // fprintf(log_file, "maze_col=%d, screen_col=%d, cxmod=%d, screen_col_offset_bytes=%d, vwall_col_offset_bytes=%d,
+        // vwall_chunk_offset_bytes=%d, xoff=%d\n",
+        //  maze_col, screen_col, cx_mod, screen_col_offset_bytes, vwall_col_offset_bytes, vwall_chunk_offset_bytes, xoff);
         if (xoff < 0 || xoff > VIEWPORT_WIDTH_BYTES) {
-          //fprintf(log_file,".....skipping column, xoff out of range\n");
+          // fprintf(log_file,".....skipping column, xoff out of range\n");
           screen_col++;
           continue;
         }
         signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
-          yoffset = yoffset + LINE_SIZE_BYTES) {
+             yoffset = yoffset + LINE_SIZE_BYTES) {
           dest_addr = logbase_addr + yoffset + xoff;
           // CLIP
-          if (dest_addr>=logbase_addr && dest_addr<=logbase_addr+VIEWPORT_HEIGHT*LINE_SIZE_BYTES) {
+          if (dest_addr >= logbase_addr && dest_addr <= logbase_addr + VIEWPORT_HEIGHT * LINE_SIZE_BYTES) {
             memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
           }
         }
       }
+
+      //
       // hwalls
-      bool prev_cell_has_hwall = (screen_col != 0) ? ((maze[maze_row][maze_col-1] & 2)==2) : false;
+      ///
+      bool prev_cell_has_hwall = (screen_col != 0) ? ((maze[maze_row][maze_col - 1] & 2) == 2) : false;
       bool this_cell_has_hwall = ((maze[maze_row][maze_col] & 2) == 2);
 
+      word hwall_sprite_type;
 
-      // if (prev_cell_has_hwall)
+      if (this_cell_has_hwall){
+        if (cx_mod ==0) {
+          hwall_sprite_type = HWALL_FULL_SPRITE;
+        }
+        else if (prev_cell_has_hwall) {
+          hwall_sprite_type = HWALL_FULL_SPRITE;
+        }
+        else {
+          hwall_sprite_type = HWALL_START_SPRITE;
+        }
+      }
+      else {
+        if (prev_cell_has_hwall) {
+          hwall_sprite_type = HWALL_END_SPRITE;
+        }
+        else {
+          hwall_sprite_type = HWALL_NO_SPRITE;
+        }
+      }
+        
+      word hwall_src_y;
 
+      if (hwall_sprite_type != HWALL_NO_SPRITE) {
+        if (hwall_sprite_type == HWALL_END_SPRITE) {
+          hwall_src_y = HWALL_END_SPRITES_Y + cx_mod;
+        }
+        else if (hwall_sprite_type == HWALL_START_SPRITE) {
+          hwall_src_y = HWALL_START_SPRITES_Y + cx_mod;
+        }
+        else if (hwall_sprite_type == HWALL_FULL_SPRITE) {
+          hwall_src_y = HWALL_FULL_SPRITE_Y;
+        }
+        else {
+          perror("wtf?");
+          exit(1);
+        }
+        addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
+        word hwall_screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES;
+        unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        dest_addr = logbase_addr + hwall_screen_col_offset_bytes + hwall_yoffset_bytes;
 
+        fprintf(log_file,
+                "\ncx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\nprev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\nhwall_screen_col_offset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
+                cx,cy,maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_yoffset_bytes, dest_addr);
+        fflush(log_file);
 
-      // addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
-
-      // word screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES; 
-      // unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
-      // dest_addr = logbase_addr + screen_col_offset_bytes + hwall_yoffset_bytes;
-      // memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
-
-
-
-
+        memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+      }
       screen_col++;
     }
     screen_row++;
   }
+  fprintf(log_file,"\n");
   fflush(log_file);
 }
 
-      //   word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
-      //   word hwall_xoffset_bytes = screen_col_offset_bytes + hwall_screen_col_offset_bytes;
+//   word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
+//   word hwall_xoffset_bytes = screen_col_offset_bytes + hwall_screen_col_offset_bytes;
 
-      //   dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
-      //   fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, cxmod=%d, screen_col_offset_bytes=%d, hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
-      //     maze_row, maze_col, screen_row, screen_col, hwall_src_y, cx_mod, screen_col_offset_bytes, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
-      //   memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
-      // }
+//   dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
+//   fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, cxmod=%d, screen_col_offset_bytes=%d,
+//   hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
+//     maze_row, maze_col, screen_row, screen_col, hwall_src_y, cx_mod, screen_col_offset_bytes, hwall_screen_col_offset_bytes,
+//     hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
+//   memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
+// }
 
 int main() {
   // Open the log file in append mode
@@ -299,7 +353,7 @@ int main() {
   memcpy(physbase, background_screen.base, screen_size_bytes);
 
   word** maze = generate_maze(MAZE_HEIGHT, MAZE_WIDTH);
-  log_maze(maze,MAZE_HEIGHT, MAZE_WIDTH,2,2,8,8);
+  log_maze(maze, MAZE_HEIGHT, MAZE_WIDTH, 2, 2, 8, 8);
 
   //  memset(physbase, 0, 32000);
 
@@ -318,21 +372,21 @@ int main() {
     key = Bconin(2);
     char scancode = (key >> 16) & 0xFF;
     switch (scancode) {
-    case KEY_UP:
-      vy--;
-      break;
-    case KEY_DOWN:
-      vy++;
-      break;
-    case KEY_LEFT:
-      vx--;
-      break;
-    case KEY_RIGHT:
-      vx++;
-      break;
-    case KEY_ESC:
-      keep_looping = 0;
-      break;
+      case KEY_UP:
+        vy--;
+        break;
+      case KEY_DOWN:
+        vy++;
+        break;
+      case KEY_LEFT:
+        vx--;
+        break;
+      case KEY_RIGHT:
+        vx++;
+        break;
+      case KEY_ESC:
+        keep_looping = 0;
+        break;
     }
     memcpy(physbase, background_screen.base, screen_size_bytes);
   }
