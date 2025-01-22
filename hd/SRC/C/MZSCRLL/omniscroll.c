@@ -135,7 +135,7 @@ void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen,
     perror("Error closing log file");
   }
 }
-word** generate_maze(int cols, int rows) {
+word** generate_maze(int rows, int cols) {
   srand(time(NULL));
 
   word** map_data = (word**)malloc(rows * sizeof(word*));
@@ -158,8 +158,15 @@ word** generate_maze(int cols, int rows) {
       else {
         map_data[r][c] = 0;
       }
+      map_data[0][c] =2;
+      //map_data[rows-1][c] =2;  // crasher  :()
     }
+    map_data[r][0] = 1;
+    // map_data[r][cols-1] = 1;   // crasher  :( 
   }
+
+  map_data[5][5]=2;
+  map_data[5][6]=3;
 
   return map_data;
 }
@@ -176,7 +183,7 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
   for (int r = srow; r < erow; r++) {
     for (int c = scol; c < ecol; c++) {
       fprintf(log_file, "%d", maze[r][c]);
-      printf("%d   ", maze[r][c]);
+      printf("%d%d%d ", r,c,maze[r][c]);
     }
     printf("\n\n\n\n");
     fprintf(log_file, "\n");
@@ -277,7 +284,7 @@ int main() {
   Screen background_screen = read_degas_file(".\\RES\\BKGD.PI1");
   memcpy(physbase, background_screen.base, screen_size_bytes);
 
-  word** maze = generate_maze(MAZE_WIDTH, MAZE_HEIGHT);
+  word** maze = generate_maze(MAZE_HEIGHT, MAZE_WIDTH);
   log_maze(maze,MAZE_HEIGHT, MAZE_WIDTH,2,2,8,8);
 
   //  memset(physbase, 0, 32000);
