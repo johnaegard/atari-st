@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #define COL_HEIGHT_PX 200
 #define COLS 5
@@ -212,9 +213,6 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
   word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16 ) ? 8 : 0;
 
-  word hwall_src_y    = HWALL_SPRITE_START_LINE + ((cx_mod == 0) ? 0 : (32 - cx_mod));
-  addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
-
   fprintf(log_file, 
   "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, vwall_src_y=%d, vwall_chunk_offset_bytes=%d, vwall_col_offset_bytes=%d\n", 
     cx, cy, start_row, start_col, end_row, end_col, cx_mod, vwall_src_y, vwall_chunk_offset_bytes, vwall_col_offset_bytes);
@@ -244,25 +242,41 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
             memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
           }
         }
-      };
-      if ((maze[maze_row][maze_col] & 2) == 2) {
-        // second bit - horiz line here
-        word screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES; 
-        word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
-        word hwall_xoffset_bytes = screen_col_offset_bytes + hwall_screen_col_offset_bytes;
-
-        unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
-        dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
-        fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, cxmod=%d, screen_col_offset_bytes=%d, hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
-          maze_row, maze_col, screen_row, screen_col, hwall_src_y, cx_mod, screen_col_offset_bytes, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
-        memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
       }
+      // hwalls
+      bool prev_cell_has_hwall = (screen_col != 0) ? ((maze[maze_row][maze_col-1] & 2)==2) : false;
+      bool this_cell_has_hwall = ((maze[maze_row][maze_col] & 2) == 2);
+
+
+      // if (prev_cell_has_hwall)
+
+
+
+      // addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
+
+      // word screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES; 
+      // unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+      // dest_addr = logbase_addr + screen_col_offset_bytes + hwall_yoffset_bytes;
+      // memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+
+
+
+
       screen_col++;
     }
     screen_row++;
   }
   fflush(log_file);
 }
+
+      //   word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
+      //   word hwall_xoffset_bytes = screen_col_offset_bytes + hwall_screen_col_offset_bytes;
+
+      //   dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
+      //   fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, cxmod=%d, screen_col_offset_bytes=%d, hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
+      //     maze_row, maze_col, screen_row, screen_col, hwall_src_y, cx_mod, screen_col_offset_bytes, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
+      //   memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
+      // }
 
 int main() {
   // Open the log file in append mode
