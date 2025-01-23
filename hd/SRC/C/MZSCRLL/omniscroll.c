@@ -234,7 +234,8 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
   addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
 
-  signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
+  signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 :  
+                                        (cx_mod >=16) ? 0 : -16;
   word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
 
   fprintf(log_file,
