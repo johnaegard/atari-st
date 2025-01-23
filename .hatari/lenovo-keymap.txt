@@ -53,3 +53,6 @@ CapsLock,29
 # square brackets
 [,26
 ],27
+
+# minus and underscore
+-,12

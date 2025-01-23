@@ -173,11 +173,14 @@ word** generate_maze(int rows, int cols) {
     // map_data[r][cols-1] = 1;   // crasher  :(
   }
 
-  map_data[4][2] = 2;
-  map_data[4][5] = 1;
-  map_data[5][4] = 2;
-  map_data[5][5] = 3;
-  map_data[6][7] = 2;
+  map_data[3][2] = 2;
+  map_data[3][5] = 1;
+  map_data[4][4] = 2;
+  map_data[4][5] = 3;
+  map_data[5][7] = 2;
+  map_data[7][3] = 2;
+  map_data[7][4] = 2;
+  map_data[7][5] = 2;
 
   return map_data;
 }
@@ -302,9 +305,12 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
           exit(1);
         }
         addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
-        word hwall_screen_col_offset_bytes =  screen_col * CELL_WIDTH_BYTES;
-        unsigned short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
-        dest_addr = logbase_addr + hwall_screen_col_offset_bytes + hwall_yoffset_bytes;
+
+        word hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
+        signed short hwall_col_offset_bytes = (cx_mod==0) ? 0 : -16; 
+        word hwall_xoffset_bytes = hwall_screen_col_offset_bytes + hwall_col_offset_bytes;
+        word hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        dest_addr = logbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
         fprintf(log_file,
                 "\ncx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\nprev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\nhwall_screen_col_offset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
