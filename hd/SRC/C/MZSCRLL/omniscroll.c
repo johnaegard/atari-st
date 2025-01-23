@@ -16,9 +16,9 @@
 #define CHUNK_SIZE_BYTES 16
 #define MAZE_WIDTH 32
 #define MAZE_HEIGHT 32
-#define VIEWPORT_WIDTH 192
+#define VIEWPORT_WIDTH 224
+#define VIEWPORT_WIDTH_BYTES 112
 #define VIEWPORT_HEIGHT 192
-#define VIEWPORT_WIDTH_BYTES 96
 #define KEYBOARD 2
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -213,8 +213,8 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
 
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row = 1 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col = 1+ (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word start_col = (cx - VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
+  word end_col = 1+ (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
