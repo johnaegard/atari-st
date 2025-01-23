@@ -214,7 +214,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row = 1 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_col = (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_col = 1+ (cx + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
