@@ -51,7 +51,9 @@ typedef struct {
 
 void* tmpbase;
 
+#ifdef LOG
 FILE* log_file;
+#endif
 
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = malloc(size + 255);
@@ -136,13 +138,17 @@ void swap_pages(void** a, void** b) {
 void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
   double fps = frames / total_time;
-  fprintf(log_file, "%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
+
   put_screen(original_screen, physbase);
   Setscreen(physbase, physbase, -1);
 
+#ifdef LOG  
+  fprintf(log_file, "%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
   if (fclose(log_file) != 0) {
     perror("Error closing log file");
   }
+#endif
+
 }
 word** generate_maze(int rows, int cols) {
   srand(time(NULL));
@@ -193,10 +199,12 @@ word** generate_maze(int rows, int cols) {
   map_data[7][3] = 2;
   map_data[7][4] = 2;
   map_data[7][5] = 2;
+  map_data[7][7] = 1;
 
   return map_data;
 }
 void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int ecol) {
+#ifdef LOG
   fprintf(log_file, "rows=%d, cols=%d, pixel height=%d, pixel_width=%d\n\n", rows, cols, rows * CELL_SIZE_PX, cols * CELL_SIZE_PX);
   for (int r = 0; r < cols; r++) {
     for (int c = 0; c < cols; c++) {
@@ -215,6 +223,7 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
   }
 
   fflush(log_file);
+#endif
 }
 void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* logbase, void* spritebase) {
   Vsync();
@@ -226,7 +235,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row = 1 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
-  word end_col =  (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
+  word end_col = (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
@@ -238,12 +247,13 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
                                         (cx_mod >=16) ? 0 : -16;
   word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
 
+#ifdef LOG
   fprintf(log_file,
     "cx=%d, cy=%d, start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, vwall_src_y=%d, vwall_chunk_offset_bytes=%d, "
     "vwall_col_offset_bytes=%d\n",
     cx, cy, start_row, start_col, end_row, end_col, cx_mod, vwall_src_y, vwall_chunk_offset_bytes, vwall_col_offset_bytes);
   // fflush(log_file);
-
+#endif
   word screen_row = 0;
   for (word maze_row = start_row; maze_row < end_row; maze_row++) {
     word screen_col = 0;
@@ -326,10 +336,12 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
         word hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         dest_addr = logbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
+#ifdef LOG
         fprintf(log_file,
           "\ncx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\nprev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\nhwall_screen_col_offset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
           cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_yoffset_bytes, dest_addr);
         fflush(log_file);
+#endif
         if (hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES) {
           memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
         }
@@ -338,8 +350,11 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
     }
     screen_row++;
   }
+
+#ifdef LOG
   fprintf(log_file, "\n");
   fflush(log_file);
+#endif
 }
 
 //   word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
@@ -355,11 +370,14 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
 
 int main() {
   // Open the log file in append mode
+
+#ifdef LOG  
   log_file = fopen("stolo.log", "w");
   if (log_file == NULL) {
     perror("Error opening log file");
     return EXIT_FAILURE;
   }
+#endif
 
   srand(time(NULL));
   const size_t screen_size_bytes = 32000;  // Set the size of the buffer
