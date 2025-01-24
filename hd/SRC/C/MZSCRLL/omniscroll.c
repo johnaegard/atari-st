@@ -7,6 +7,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#define SCREEN_SIZE_BYTES 32000
 #define COL_HEIGHT_PX 200
 #define COLS 5
 #define CELL_SIZE_PX 32
@@ -30,6 +31,9 @@
 #define HWALL_END_SPRITE 1
 #define HWALL_START_SPRITE 2
 #define HWALL_FULL_SPRITE 3
+
+#define DRAW_MODE 0
+#define ERASE_MODE 1
 
 #define HWALL_END_SPRITES_Y 30
 #define HWALL_START_SPRITES_Y 70
@@ -132,7 +136,6 @@ void swap_pages(void** a, void** b) {
   tmpbase = *b;
   *b = *a;
   *a = tmpbase;
-  Vsync();
   Setscreen(*a, *b, -1);
 }
 void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames) {
@@ -148,8 +151,10 @@ void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen,
     perror("Error closing log file");
   }
 #endif
-
 }
+
+const word zeroes[32] = {0};
+
 word** generate_maze(int rows, int cols) {
   srand(time(NULL));
 
@@ -180,16 +185,16 @@ word** generate_maze(int rows, int cols) {
   }
 
   for (int r = 0; r < rows; r++) {
-    map_data[r][cols-1] = 1;
+    map_data[r][cols - 1] = 1;
     map_data[r][0] = 1;
   }
   for (int c = 0; c < cols; c++) {
     map_data[0][c] = 2;
-    map_data[rows-1][c] = 2;
+    map_data[rows - 1][c] = 2;
   }
 
   map_data[0][0] = 3;
-  map_data[0][rows-1] =3;
+  map_data[0][rows - 1] = 3;
 
   map_data[3][2] = 2;
   map_data[3][5] = 1;
@@ -216,19 +221,19 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
   for (int r = srow; r < erow; r++) {
     for (int c = scol; c < ecol; c++) {
       fprintf(log_file, "%d", maze[r][c]);
- //     printf("%d%d%d ", r, c, maze[r][c]);
+      //     printf("%d%d%d ", r, c, maze[r][c]);
     }
- //   printf("\n\n\n\n");
+    //   printf("\n\n\n\n");
     fprintf(log_file, "\n");
   }
 
   fflush(log_file);
 #endif
 }
-void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* logbase, void* spritebase) {
+void render_maze(byte mode, word** maze, word cx, word cy, void* screenbase, void* spritebase) {
   Vsync();
 
-  addr logbase_addr = (addr)logbase;
+  addr screenbase_addr = (addr)screenbase;
   addr spritebase_addr = (addr)spritebase;
   addr dest_addr;
 
@@ -241,10 +246,9 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
 
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
-  addr vwall_src_addr = spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
+  addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr) zeroes;
 
-  signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 :  
-                                        (cx_mod >=16) ? 0 : -16;
+  signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 : (cx_mod >= 16) ? 0 : -16;
   word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
 
 #ifdef LOG
@@ -275,9 +279,9 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
         signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
           yoffset = yoffset + LINE_SIZE_BYTES) {
-          dest_addr = logbase_addr + yoffset + xoff;
+          dest_addr = screenbase_addr + yoffset + xoff;
           // CLIP
-          if (dest_addr >= logbase_addr && dest_addr <= logbase_addr + VIEWPORT_HEIGHT * LINE_SIZE_BYTES) {
+          if (dest_addr >= screenbase_addr && dest_addr <= screenbase_addr + VIEWPORT_HEIGHT * LINE_SIZE_BYTES) {
             memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
           }
         }
@@ -330,11 +334,11 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
         addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
 
         word hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
-        signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 : 
-                                              (cx_mod >= 16) ? 0 : -16;
+        signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 :
+          (cx_mod >= 16) ? 0 : -16;
         word hwall_xoffset_bytes = hwall_screen_col_offset_bytes + hwall_col_offset_bytes;
         word hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
-        dest_addr = logbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
+        dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
 #ifdef LOG
         fprintf(log_file,
@@ -357,19 +361,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
 #endif
 }
 
-//   word hwall_screen_col_offset_bytes = (cx_mod == 0) ? 0 : -16;
-//   word hwall_xoffset_bytes = screen_col_offset_bytes + hwall_screen_col_offset_bytes;
-
-//   dest_addr = logbase_addr + hwall_xoffset_bytes + hwall_yoffset_bytes;
-//   fprintf(log_file, "  maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d, hwall_src_y=%d, cxmod=%d, screen_col_offset_bytes=%d,
-//   hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%p\n",
-//     maze_row, maze_col, screen_row, screen_col, hwall_src_y, cx_mod, screen_col_offset_bytes, hwall_screen_col_offset_bytes,
-//     hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
-//   memcpy((void*)dest_addr, (void*)hwall_src_addr, 32);
-// }
-
 int main() {
-  // Open the log file in append mode
 
 #ifdef LOG  
   log_file = fopen("stolo.log", "w");
@@ -380,8 +372,7 @@ int main() {
 #endif
 
   srand(time(NULL));
-  const size_t screen_size_bytes = 32000;  // Set the size of the buffer
-  AlignedBuffer altpage_ram = new_aligned_buffer(screen_size_bytes);
+  AlignedBuffer altpage_ram = new_aligned_buffer(SCREEN_SIZE_BYTES);
   void* logbase = altpage_ram.aligned_ptr;
   void* physbase = Physbase();
   Cursconf(0, 1);
@@ -389,15 +380,20 @@ int main() {
   Screen original_screen = copy_screen(physbase);
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   Screen background_screen = read_degas_file(".\\RES\\BKGD.PI1");
-  memcpy(physbase, background_screen.base, screen_size_bytes);
+  memcpy(physbase, background_screen.base, SCREEN_SIZE_BYTES);
+  memcpy(logbase, background_screen.base, SCREEN_SIZE_BYTES);
+  free_screen(background_screen);
+  Setscreen(logbase,physbase,-1);
 
   word** maze = generate_maze(MAZE_HEIGHT, MAZE_WIDTH);
   log_maze(maze, MAZE_HEIGHT, MAZE_WIDTH, 2, 2, 8, 8);
 
-  //  memset(physbase, 0, 32000);
-
-  int vx = 160;
-  int vy = 160;
+  word vx = 160;
+  word vy = 160;
+  word old_vx = vx;
+  word old_vy = vy;
+  word tmp_old_vx = vx;
+  word tmp_old_vy =vy;
 
   word frames = 0;
   clock_t start = clock();
@@ -405,29 +401,34 @@ int main() {
   byte keep_looping = 1;
 
   while (keep_looping) {
-    render_maze(maze, vx, vy, 0, 0, physbase, sprite_screen.base);
-    while (Bconstat(2) == 0) {
+    render_maze(ERASE_MODE, maze, old_vx, old_vy, logbase, sprite_screen.base);
+    render_maze(DRAW_MODE, maze, vx, vy, logbase, sprite_screen.base);
+    if (Bconstat(2) != 0) {
+      key = Bconin(2);
+      char scancode = (key >> 16) & 0xFF;
+      switch (scancode) {
+      case KEY_UP:
+        vy--;
+        break;
+      case KEY_DOWN:
+        vy++;
+        break;
+      case KEY_LEFT:
+        vx--;
+        break;
+      case KEY_RIGHT:
+        vx++;
+        break;
+      case KEY_ESC:
+        keep_looping = 0;
+        break;
+      }
     }
-    key = Bconin(2);
-    char scancode = (key >> 16) & 0xFF;
-    switch (scancode) {
-    case KEY_UP:
-      vy--;
-      break;
-    case KEY_DOWN:
-      vy++;
-      break;
-    case KEY_LEFT:
-      vx--;
-      break;
-    case KEY_RIGHT:
-      vx++;
-      break;
-    case KEY_ESC:
-      keep_looping = 0;
-      break;
-    }
-    memcpy(physbase, background_screen.base, screen_size_bytes);
+    old_vx = tmp_old_vx;
+    tmp_old_vx = vx;
+    old_vy = tmp_old_vy;
+    tmp_old_vy = vy;
+    swap_pages(&logbase, &physbase);
   }
 
   clock_t end = clock();
@@ -436,66 +437,4 @@ int main() {
   free_aligned_buffer(altpage_ram);
   free(maze);
   return 0;
-
-  // byte vertical_wall_src_y, horiz_wall_chunk1_src_y, horiz_wall_chunk2_src_y;
-  // unsigned long vertical_wall_src_addr, horiz_wall_chunk1_src_addr, horiz_wall_chunk2_src_addr;
-  // unsigned long sprite_screen_addr = (unsigned long)sprite_screen.bitmap;
-  // unsigned long logbase_addr;
-  // unsigned long dest_addr;
-  // unsigned long cleanup_addr;
-  // unsigned long old_vert_xoffset;
-  // unsigned long vert_xoffset;
-  // unsigned long old_horiz_xoffset;
-  // unsigned long horiz_xoffset;
-  // word x = 0;
-  // word oldx = 0;
-  // word tmp_oldx = 0;
-  // byte zeros[32] = {0};
-  // byte col;
-
-  // #define CYCLES 150
-
-  //   for (word x = 0; x < CYCLES; x++) {
-  //     logbase_addr = (unsigned long)logbase;
-
-  //     vertical_wall_src_y = x % 16;
-  //     vertical_wall_src_addr = sprite_screen_addr + (vertical_wall_src_y * LINE_SIZE_BYTES);
-  //     horiz_wall_chunk1_src_y = 30 + (x % 32);
-  //     horiz_wall_chunk1_src_addr = sprite_screen_addr + (horiz_wall_chunk1_src_y * LINE_SIZE_BYTES);
-
-  //     // cleanup
-  //     for (col = 0; col < COLS; col++) {
-  //       old_vert_xoffset = logbase_addr + (((oldx + col * CELL_SIZE_PX) / CHUNK_SIZE_BYTES) * 8);
-  //       old_horiz_xoffset = logbase_addr + (((oldx + col * CELL_SIZE_PX) / 32) * 16);
-  //       for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
-  //         cleanup_addr = line + old_vert_xoffset;
-  //         memcpy((void *)cleanup_addr, zeros, 2);
-  //       };
-  //       word dest_y = (1 + col % 2) * CELL_SIZE_PX;
-  //       cleanup_addr = (dest_y * LINE_SIZE_BYTES) + old_horiz_xoffset;
-  //       memcpy((void *)cleanup_addr, zeros, 32);
-  //     }
-
-  //     for (col = 0; col < COLS; col++) {
-  //       vert_xoffset = logbase_addr + (((x + col * CELL_SIZE_PX) / CHUNK_SIZE_BYTES) * 8);
-  //       // vert lines
-  //       for (word line = 0; line < (COL_HEIGHT_PX * LINE_SIZE_BYTES); line = line + LINE_SIZE_BYTES) {
-  //         // if (!(line ==32 || line==64)) {
-  //         dest_addr = line + vert_xoffset;
-  //         memcpy((void *)dest_addr, (void *)vertical_wall_src_addr, 2);
-  //         //}
-  //       };
-  //     }
-  //     for (col = 0; col < COLS; col++) {
-  //       // horiz lines
-  //       horiz_xoffset = logbase_addr + (((x + col * CELL_SIZE_PX) / 32) * 16);
-  //       word dest_y = (1 + col % 2) * CELL_SIZE_PX;
-  //       dest_addr = (dest_y * LINE_SIZE_BYTES) + horiz_xoffset;
-  //       memcpy((void *)dest_addr, (void *)horiz_wall_chunk1_src_addr, 32);
-  //     }
-  //     swap_pages(&logbase, &physbase);
-  //     oldx = tmp_oldx;
-  //     tmp_oldx = x;
-  //     frames++;
-  //   }
 }
