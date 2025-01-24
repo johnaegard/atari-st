@@ -208,9 +208,9 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
   for (int r = srow; r < erow; r++) {
     for (int c = scol; c < ecol; c++) {
       fprintf(log_file, "%d", maze[r][c]);
-      printf("%d%d%d ", r, c, maze[r][c]);
+ //     printf("%d%d%d ", r, c, maze[r][c]);
     }
-    printf("\n\n\n\n");
+ //   printf("\n\n\n\n");
     fprintf(log_file, "\n");
   }
 
@@ -226,7 +226,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word end_row = 1 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = (cx - VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
-  word end_col =  1+(cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
+  word end_col =  (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
@@ -247,7 +247,7 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
   word screen_row = 0;
   for (word maze_row = start_row; maze_row < end_row; maze_row++) {
     word screen_col = 0;
-    for (word maze_col = start_col; maze_col < end_col; maze_col++) {
+    for (word maze_col = start_col; maze_col <= end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // 
         // vert lines
@@ -329,9 +329,10 @@ void render_maze(word** maze, word cx, word cy, word oldcx, word oldcy, void* lo
         fprintf(log_file,
           "\ncx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\nprev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\nhwall_screen_col_offset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
           cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_yoffset_bytes, dest_addr);
-//        fflush(log_file);
-
-        memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+        fflush(log_file);
+        if (hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES) {
+          memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+        }
       }
       screen_col++;
     }
