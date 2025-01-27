@@ -32,8 +32,8 @@
 #define HWALL_START_SPRITE 2
 #define HWALL_FULL_SPRITE 3
 
-#define DRAW_MODE false
-#define ERASE_MODE true
+#define DRAW_MODE true
+#define ERASE_MODE false
 
 #define HWALL_END_SPRITES_Y 30
 #define HWALL_START_SPRITES_Y 70
@@ -53,13 +53,16 @@ typedef struct {
   word* base;
 } Screen;
 
-void* tmpbase;
+typedef struct {
+  void* base;
+  word last_cx;
+  word last_cy;
+} Base;
 
 FILE* log_file;
 
 AlignedBuffer new_aligned_buffer(size_t size) {
-
-  void* original_ptr = Malloc(size + 255);
+  void* original_ptr = (void*)Malloc(size + 255);
 
   if (!original_ptr) {
     return (AlignedBuffer) { NULL, NULL };  // Return NULL if malloc fails
@@ -69,8 +72,8 @@ AlignedBuffer new_aligned_buffer(size_t size) {
   unsigned long aligned_addr = (addr + 255) & ~255;
 
   AlignedBuffer buffer = { (void*)aligned_addr, original_ptr };
-  fprintf(log_file,"Original pointer: %p\n", buffer.original_ptr);
-  fprintf(log_file,"Aligned pointer:  %p\n", buffer.aligned_ptr);
+  fprintf(log_file, "Original pointer: %p\n", buffer.original_ptr);
+  fprintf(log_file, "Aligned pointer:  %p\n", buffer.aligned_ptr);
 
   return buffer;
 }
@@ -132,12 +135,16 @@ void free_screen(Screen screen) {
   free(screen.palette);
 }
 void clear_screen(Screen screen) { memset(screen.base, 0, 32000); }
-void swap_pages(void** logbase, void** physbase) {
+
+Base tmpbase;
+
+void swap_pages(Base* logbase, Base* physbase) {
   tmpbase = *physbase;
   *physbase = *logbase;
   *logbase = tmpbase;
-  Setscreen(*logbase, *physbase, -1);
+  Setscreen(logbase->base, physbase->base, -1);
 }
+
 void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
   double fps = frames / total_time;
@@ -229,13 +236,24 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
 #endif
 }
 
-const word zeroes_arry[32] = {0};
-void *zeroes = (void *) zeroes_arry;
+const word zeroes_arry[32] = { 0 };
+void* zeroes = (void*)zeroes_arry;
 
-void render_maze(bool mode, word** maze, word cx, word cy, void* screenbase, void* spritebase) {
-   Vsync();
+void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase) {
+  Vsync();
 
-  addr screenbase_addr = (addr)screenbase;
+  // Setscreen(screenbase->base,screenbase->base,-1);
+
+  if (mode == ERASE_MODE) {
+    cx = screenbase->last_cx;
+    cy = screenbase->last_cy;
+    // fprintf(log_file,"  erasing cx=%d, cy=%d\n",cx,cy);
+  }
+  else {
+    // fprintf(log_file,"  drawing cx=%d, cy=%d\n",cx,cy);
+  }
+
+  addr screenbase_addr = (addr)screenbase->base;
   addr spritebase_addr = (addr)spritebase;
   addr dest_addr;
 
@@ -248,7 +266,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, void* screenbase, voi
 
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
-  addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr) zeroes;
+  addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
   // addr vwall_src_addr = sourcebase_addr + (vwall_src_y * LINE_SIZE_BYTES);
 
   signed short vwall_col_offset_bytes = (cx_mod == 0) ? 0 : (cx_mod >= 16) ? 0 : -16;
@@ -285,7 +303,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, void* screenbase, voi
           dest_addr = screenbase_addr + yoffset + xoff;
           // CLIP
           if (dest_addr >= screenbase_addr && dest_addr <= screenbase_addr + VIEWPORT_HEIGHT * LINE_SIZE_BYTES) {
-             memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+            memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
           }
         }
       }
@@ -334,7 +352,8 @@ void render_maze(bool mode, word** maze, word cx, word cy, void* screenbase, voi
           perror("wtf?");
           exit(1);
         }
-        addr hwall_src_addr = spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES);
+
+        addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) :(addr)zeroes;
 
         word hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 :
@@ -350,18 +369,22 @@ void render_maze(bool mode, word** maze, word cx, word cy, void* screenbase, voi
         fflush(log_file);
 #endif
         if (hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES) {
-          // memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+          memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
         }
       }
       screen_col++;
     }
     screen_row++;
   }
+ 
+  if (mode == DRAW_MODE) {
+    screenbase->last_cx = cx;
+    screenbase->last_cy = cy;
+  }
 
-// #ifdef LOG
-//   fprintf(log_file, "\n");
-//   fflush(log_file);
-// #endif
+  // fflush(log_file);
+  // getchar();
+
 }
 
 int main() {
@@ -373,24 +396,24 @@ int main() {
   }
 
   srand(time(NULL));
-  AlignedBuffer starting_logbase = new_aligned_buffer(SCREEN_SIZE_BYTES);
-  AlignedBuffer starting_physbase = new_aligned_buffer(SCREEN_SIZE_BYTES);
-  
-  void* logbase = starting_logbase.aligned_ptr;
-  void* physbase = starting_physbase.aligned_ptr;
-  fprintf(log_file, "a logbase=%p, physbase=%p\n",logbase,physbase);
+
+  AlignedBuffer logbase_buffer = new_aligned_buffer(SCREEN_SIZE_BYTES);
+  AlignedBuffer physbase_buffer = new_aligned_buffer(SCREEN_SIZE_BYTES);
+  void* logbase_ptr = logbase_buffer.aligned_ptr;
+  void* physbase_ptr = physbase_buffer.aligned_ptr;
+  fprintf(log_file, "a logbase=%p, physbase=%p\n", logbase_ptr, physbase_ptr);
+
   Cursconf(0, 1);
 
-  Screen original_screen = copy_screen(physbase);
+  Screen original_screen = copy_screen(physbase_ptr);
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   Screen background_screen = read_degas_file(".\\RES\\BKGD.PI1");
-  memcpy(physbase, background_screen.base, SCREEN_SIZE_BYTES);
-  memcpy(logbase, background_screen.base, SCREEN_SIZE_BYTES);
+  memcpy(physbase_ptr, background_screen.base, SCREEN_SIZE_BYTES);
+  memcpy(logbase_ptr, background_screen.base, SCREEN_SIZE_BYTES);
   free_screen(background_screen);
-  fprintf(log_file, "b logbase=%p, physbase=%p\n",logbase,physbase);
-  Setscreen(logbase,physbase,-1);
-  fprintf(log_file, "c logbase=%p, physbase=%p\n",logbase,physbase);
-
+  fprintf(log_file, "b logbase=%p, physbase=%p\n", logbase_ptr, physbase_ptr);
+  Setscreen(logbase_ptr, physbase_ptr, -1);
+  fprintf(log_file, "c logbase=%p, physbase=%p\n", logbase_ptr, physbase_ptr);
 
   word** maze = generate_maze(MAZE_HEIGHT, MAZE_WIDTH);
   log_maze(maze, MAZE_HEIGHT, MAZE_WIDTH, 2, 2, 8, 8);
@@ -400,17 +423,20 @@ int main() {
   word old_vx = vx;
   word old_vy = vy;
   word tmp_old_vx = vx;
-  word tmp_old_vy =vy;
+  word tmp_old_vy = vy;
 
   word frames = 0;
   clock_t start = clock();
   long key;
   byte keep_looping = 1;
 
+  Base physbase = { physbase_ptr, vx,vy };
+  Base logbase = { logbase_ptr, vx,vy };
+
   while (keep_looping) {
-    //render_maze(ERASE_MODE, maze, vx, vy, logbase, sprite_screen.base);
-    fprintf(log_file, "frame %d, logbase=%p, physbase=%p, vx=%d, vy=%d, oldvx=%d, oldvy=%d\n",frames,logbase,physbase,vx,vy,old_vx,old_vy);
-    render_maze(DRAW_MODE, maze, vx, vy, logbase, sprite_screen.base);
+//    fprintf(log_file, "frame %d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
+    render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base);
+    render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base);
     if (Bconstat(2) != 0) {
       key = Bconin(2);
       char scancode = (key >> 16) & 0xFF;
@@ -432,18 +458,15 @@ int main() {
         break;
       }
     }
-    old_vx = tmp_old_vx;
-    tmp_old_vx = vx;
-    old_vy = tmp_old_vy;
-    tmp_old_vy = vy;
-    swap_pages(&logbase, &physbase);
+    swap_pages(&logbase, &physbase);   
+    //fflush(log_file);
     frames++;
   }
 
   clock_t end = clock();
-  the_end(start, end, physbase, original_screen, frames);
+  the_end(start, end, physbase_ptr, original_screen, frames);
   free_screen(sprite_screen);
-  free_aligned_buffer(starting_logbase);
+  free_aligned_buffer(logbase_buffer);
   free(maze);
   return 0;
 }
