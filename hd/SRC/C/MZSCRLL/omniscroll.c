@@ -144,7 +144,6 @@ void swap_pages(Base* logbase, Base* physbase) {
   *logbase = tmpbase;
   Setscreen(logbase->base, physbase->base, -1);
 }
-
 void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
   double fps = frames / total_time;
@@ -159,7 +158,6 @@ void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen,
   }
 #endif
 }
-
 word** generate_maze(int rows, int cols) {
   srand(time(NULL));
 
@@ -242,15 +240,9 @@ void* zeroes = (void*)zeroes_arry;
 void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase) {
   Vsync();
 
-  // Setscreen(screenbase->base,screenbase->base,-1);
-
   if (mode == ERASE_MODE) {
     cx = screenbase->last_cx;
     cy = screenbase->last_cy;
-    // fprintf(log_file,"  erasing cx=%d, cy=%d\n",cx,cy);
-  }
-  else {
-    // fprintf(log_file,"  drawing cx=%d, cy=%d\n",cx,cy);
   }
 
   addr screenbase_addr = (addr)screenbase->base;
@@ -289,11 +281,8 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
         //
         word screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short xoff = screen_col_offset_bytes + vwall_col_offset_bytes + vwall_chunk_offset_bytes;
-        // fprintf(log_file, "maze_col=%d, screen_col=%d, cxmod=%d, screen_col_offset_bytes=%d, vwall_col_offset_bytes=%d,
-        // vwall_chunk_offset_bytes=%d, xoff=%d\n",
-        //  maze_col, screen_col, cx_mod, screen_col_offset_bytes, vwall_col_offset_bytes, vwall_chunk_offset_bytes, xoff);
-        if (xoff < 0 || xoff > VIEWPORT_WIDTH_BYTES) {
-          // fprintf(log_file,".....skipping column, xoff out of range\n");
+        fprintf(log_file,"xoff=%d, VIEWPORT_W_B=%d\n",xoff,VIEWPORT_WIDTH_BYTES);
+        if (xoff < 0 || xoff >= VIEWPORT_WIDTH_BYTES) {
           screen_col++;
           continue;
         }
@@ -353,7 +342,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
           exit(1);
         }
 
-        addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) :(addr)zeroes;
+        addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
         word hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 :
@@ -376,7 +365,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
     }
     screen_row++;
   }
- 
+
   if (mode == DRAW_MODE) {
     screenbase->last_cx = cx;
     screenbase->last_cy = cy;
@@ -434,32 +423,33 @@ int main() {
   Base logbase = { logbase_ptr, vx,vy };
 
   while (keep_looping) {
-//    fprintf(log_file, "frame %d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
+    fprintf(log_file, "frame %d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
     render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base);
     render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base);
-    if (Bconstat(2) != 0) {
-      key = Bconin(2);
-      char scancode = (key >> 16) & 0xFF;
-      switch (scancode) {
-      case KEY_UP:
-        vy--;
-        break;
-      case KEY_DOWN:
-        vy++;
-        break;
-      case KEY_LEFT:
-        vx--;
-        break;
-      case KEY_RIGHT:
-        vx++;
-        break;
-      case KEY_ESC:
-        keep_looping = 0;
-        break;
-      }
+    // if (Bconstat(2) != 0) {
+    while (Bconstat(2) == 0) {}
+    key = Bconin(2);
+    char scancode = (key >> 16) & 0xFF;
+    switch (scancode) {
+    case KEY_UP:
+      vy--;
+      break;
+    case KEY_DOWN:
+      vy++;
+      break;
+    case KEY_LEFT:
+      vx--;
+      break;
+    case KEY_RIGHT:
+      vx++;
+      break;
+    case KEY_ESC:
+      keep_looping = 0;
+      break;
     }
-    swap_pages(&logbase, &physbase);   
-    //fflush(log_file);
+    // }
+    swap_pages(&logbase, &physbase);
+    fflush(log_file);
     frames++;
   }
 
