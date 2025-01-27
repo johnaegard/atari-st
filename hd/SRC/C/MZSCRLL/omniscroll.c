@@ -26,6 +26,8 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 #define KEY_ESC 1
+#define KEY_L 38
+#define KEY_D 32
 
 #define HWALL_NO_SPRITE 0
 #define HWALL_END_SPRITE 1
@@ -60,6 +62,9 @@ typedef struct {
 } Base;
 
 FILE* log_file;
+Base tmpbase;
+const word zeroes_arry[32] = { 0 };
+void* zeroes = (void*)zeroes_arry;
 
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = (void*)Malloc(size + 255);
@@ -84,6 +89,42 @@ void get_current_palette(word* palette) {
     // printf("color %d = %04X\n",i,palette[i]);
     Setcolor(i, palette[i]);
   }
+}
+void dump_degas_file(word* palette, void* base) {
+  FILE* file = fopen("DUMP.PI1", "wb");
+  if (!file) {
+    perror("Error opening file");
+    exit(EXIT_FAILURE);
+  }
+  // low-res word
+  size_t written = fwrite(zeroes, 2, 1, file);
+  if (written != 1) {
+    perror("Failed to write header data");
+    fclose(file);
+    return;
+  }
+  // palette
+  written = fwrite(palette, 32, 1, file);
+  if (written != 1) {
+    perror("Failed to write all palette data");
+    fclose(file);
+    return;
+  }
+  // screen
+  written = fwrite(base, 32000, 1, file);
+  if (written != 1) {
+    perror("Failed to write all screen data");
+    fclose(file);
+    return;
+  }
+  // color cycle
+  written = fwrite(zeroes, 32, 1, file);
+  if (written != 1) {
+    perror("Failed to write all screen data");
+    fclose(file);
+    return;
+  }
+  fclose(file);
 }
 Screen read_degas_file(const char* filename) {
   Screen screen;  // Struct to hold the arrays
@@ -135,9 +176,6 @@ void free_screen(Screen screen) {
   free(screen.palette);
 }
 void clear_screen(Screen screen) { memset(screen.base, 0, 32000); }
-
-Base tmpbase;
-
 void swap_pages(Base* logbase, Base* physbase) {
   tmpbase = *physbase;
   *physbase = *logbase;
@@ -234,10 +272,7 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
 #endif
 }
 
-const word zeroes_arry[32] = { 0 };
-void* zeroes = (void*)zeroes_arry;
-
-void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase) {
+void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log) {
   Vsync();
 
   if (mode == ERASE_MODE) {
@@ -345,16 +380,16 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
         addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
         signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
-        signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 :
-          (cx_mod >= 16) ? 0 : -16;
+        signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 : (cx_mod >= 16) ? 0 : -16;
         signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + hwall_col_offset_bytes;
         word hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
-        // fprintf(log_file,
-        //   "draw_mode=%d, cx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\nprev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\nhwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n\n",
-        //   mode,cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
-
+        if (log) {
+        fprintf(log_file,
+          "  draw_mode=%d, cx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\n  prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n  hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n\n",
+          mode,cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
+        }
         if (hwall_xoffset_bytes >= 0 && hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES) {
           memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
         }
@@ -418,32 +453,47 @@ int main() {
   Base physbase = { physbase_ptr, vx,vy };
   Base logbase = { logbase_ptr, vx,vy };
 
+  bool log=false;
+  bool screendump=false;
+
   while (keep_looping) {
-    fprintf(log_file, "\nFRAME=%d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
-    render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base);
-    render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base);
-    // if (Bconstat(2) != 0) {
-    while (Bconstat(2) == 0) {}
-    key = Bconin(2);
-    char scancode = (key >> 16) & 0xFF;
-    switch (scancode) {
-    case KEY_UP:
-      vy--;
-      break;
-    case KEY_DOWN:
-      vy++;
-      break;
-    case KEY_LEFT:
-      vx--;
-      break;
-    case KEY_RIGHT:
-      vx++;
-      break;
-    case KEY_ESC:
-      keep_looping = 0;
-      break;
+    if (log) {
+      fprintf(log_file, "\nFRAME=%d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
     }
-    // }
+    render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base,false);
+    render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base,log);
+    if(log){
+      fflush(log_file);
+      log=false;
+    }
+    if (Bconstat(2) != 0) {
+      //while (Bconstat(2) == 0) {}
+      key = Bconin(2);
+      char scancode = (key >> 16) & 0xFF;
+      switch (scancode) {
+      case KEY_UP:
+        vy--;
+        break;
+      case KEY_DOWN:
+        vy++;
+        break;
+      case KEY_LEFT:
+        vx--;
+        break;
+      case KEY_RIGHT:
+        vx++;
+        break;
+      case KEY_L:
+        log=true;
+        break;
+      case KEY_D:
+        dump_degas_file(sprite_screen.palette, physbase.base);
+        break;  
+      case KEY_ESC:
+        keep_looping = 0;
+        break;
+      }
+    }
     swap_pages(&logbase, &physbase);
     //fflush(log_file);
     frames++;
