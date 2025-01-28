@@ -237,7 +237,7 @@ word** generate_maze(int rows, int cols) {
   // map_data[3][2] = 2;
   // map_data[3][5] = 1;
   // map_data[4][4] = 2;
-   map_data[4][5] = 3;
+  map_data[4][5] = 3;
   // map_data[5][7] = 2;
   // map_data[7][3] = 2;
   // map_data[7][4] = 2;
@@ -280,7 +280,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
   addr dest_addr;
 
   word start_row = (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_row = 1 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  word end_row = 2 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
   word start_col = -1 + (cx - VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
   word end_col = (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
 
@@ -313,6 +313,9 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
         signed short xoff = screen_col_offset_bytes + vwall_col_offset_bytes + vwall_chunk_offset_bytes;
         // fprintf(log_file,"xoff=%d, VIEWPORT_W_B=%d\n",xoff,VIEWPORT_WIDTH_BYTES);
         if (xoff < 0 || xoff >= VIEWPORT_WIDTH_BYTES) {
+          if (log) {
+            fprintf(log_file, "    vwall xoff=%d out of bounds, skipping screen_col=%d\n", xoff, screen_col);
+          }
           screen_col++;
           continue;
         }
@@ -381,11 +384,14 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
         dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
         if (log) {
-        fprintf(log_file,
-          "  draw_mode=%d, cx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\n  prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n  hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n\n",
-          mode,cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
+          fprintf(log_file,
+            "  draw_mode=%d, cx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\n  prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n  hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n\n",
+            mode, cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
         }
-        if (hwall_xoffset_bytes >= 0 && hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES && hwall_yoffset_bytes >=0) {
+        if (hwall_xoffset_bytes >= 0 &&
+          hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES &&
+          hwall_yoffset_bytes >= 0 &&
+          hwall_yoffset_bytes <= VIEWPORT_HEIGHT * LINE_SIZE_BYTES) {
           memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
         }
       }
@@ -448,18 +454,18 @@ int main() {
   Base physbase = { physbase_ptr, vx,vy };
   Base logbase = { logbase_ptr, vx,vy };
 
-  bool log=false;
-  bool screendump=false;
+  bool log = false;
+  bool screendump = false;
 
   while (keep_looping) {
     if (log) {
       fprintf(log_file, "\nFRAME=%d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
     }
-    render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base,false);
-    render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base,log);
-    if(log){
+    render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base, false);
+    render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base, log);
+    if (log) {
       fflush(log_file);
-      log=false;
+      log = false;
     }
     if (Bconstat(2) != 0) {
       //while (Bconstat(2) == 0) {}
@@ -479,11 +485,11 @@ int main() {
         vx++;
         break;
       case KEY_L:
-        log=true;
+        log = true;
         break;
       case KEY_D:
         dump_degas_file(sprite_screen.palette, physbase.base);
-        break;  
+        break;
       case KEY_ESC:
         keep_looping = 0;
         break;
