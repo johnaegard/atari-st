@@ -189,12 +189,10 @@ void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen,
   put_screen(original_screen, physbase);
   Setscreen(physbase, physbase, -1);
 
-#ifdef LOG  
   fprintf(log_file, "%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
   if (fclose(log_file) != 0) {
     perror("Error closing log file");
   }
-#endif
 }
 word** generate_maze(int rows, int cols) {
   srand(time(NULL));
@@ -211,8 +209,7 @@ word** generate_maze(int rows, int cols) {
       exit(1);
     }
     for (int c = 0; c < cols; c++) {
-      word roll = 4 + (rand() & 0X1F);
-      map_data[r][c] = 1;
+      word roll = (rand() & 0X7);
       if (roll <= 3) {
         map_data[r][c] = roll;
       }
@@ -220,7 +217,7 @@ word** generate_maze(int rows, int cols) {
         map_data[r][c] = 0;
       }
       map_data[0][c] = 2;
-      byte last_row = rows - 1;
+      map_data[r][c] = 3;
     }
     map_data[r][0] = 1;
   }
@@ -237,24 +234,23 @@ word** generate_maze(int rows, int cols) {
   map_data[0][0] = 3;
   map_data[0][rows - 1] = 3;
 
-  map_data[3][2] = 2;
-  map_data[3][5] = 1;
-  map_data[4][4] = 2;
-  map_data[4][5] = 3;
-  map_data[5][7] = 2;
-  map_data[7][3] = 2;
-  map_data[7][4] = 2;
-  map_data[7][5] = 2;
-  map_data[7][7] = 1;
+  // map_data[3][2] = 2;
+  // map_data[3][5] = 1;
+  // map_data[4][4] = 2;
+  // map_data[4][5] = 3;
+  // map_data[5][7] = 2;
+  // map_data[7][3] = 2;
+  // map_data[7][4] = 2;
+  // map_data[7][5] = 2;
+  // map_data[7][7] = 1;
 
   return map_data;
 }
 void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int ecol) {
-#ifdef LOG
   fprintf(log_file, "rows=%d, cols=%d, pixel height=%d, pixel_width=%d\n\n", rows, cols, rows * CELL_SIZE_PX, cols * CELL_SIZE_PX);
   for (int r = 0; r < cols; r++) {
     for (int c = 0; c < cols; c++) {
-      fprintf(log_file, "%d", maze[r][c]);
+      fprintf(log_file, "%d ", maze[r][c]);
     }
     fprintf(log_file, "\n");
   }
@@ -269,7 +265,6 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
   }
 
   fflush(log_file);
-#endif
 }
 
 void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log) {
