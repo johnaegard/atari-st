@@ -385,7 +385,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
           "  draw_mode=%d, cx=%d, cy=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d,\n  prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n  hwall_screen_col_offset_bytes=%d, hwall_xoffset_bytes=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n\n",
           mode,cx, cy, maze_row, maze_col, screen_row, screen_col, prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y, hwall_screen_col_offset_bytes, hwall_xoffset_bytes, hwall_yoffset_bytes, dest_addr);
         }
-        if (hwall_xoffset_bytes >= 0 && hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES) {
+        if (hwall_xoffset_bytes >= 0 && hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES && hwall_yoffset_bytes >=0) {
           memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
         }
       }
