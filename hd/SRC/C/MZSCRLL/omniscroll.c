@@ -19,7 +19,7 @@
 #define MAZE_HEIGHT 32
 #define VIEWPORT_WIDTH 224
 #define VIEWPORT_WIDTH_BYTES 112
-#define VIEWPORT_HEIGHT 192
+#define VIEWPORT_HEIGHT 191
 #define KEYBOARD 2
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -237,7 +237,7 @@ word** generate_maze(int rows, int cols) {
   // map_data[3][2] = 2;
   // map_data[3][5] = 1;
   // map_data[4][4] = 2;
-  // map_data[4][5] = 3;
+   map_data[4][5] = 3;
   // map_data[5][7] = 2;
   // map_data[7][3] = 2;
   // map_data[7][4] = 2;
@@ -377,7 +377,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
         signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short hwall_col_offset_bytes = (cx_mod == 0) ? 0 : (cx_mod >= 16) ? 0 : -16;
         signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + hwall_col_offset_bytes;
-        word hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        signed short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
         dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
         if (log) {
