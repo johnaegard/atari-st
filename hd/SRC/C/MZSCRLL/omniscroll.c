@@ -305,7 +305,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
   }
   word screen_row = 0;
   for (word maze_row = start_row; maze_row < end_row; maze_row++) {
-    signed short screen_col = -1;
+    signed short screen_col = 0;
     for (word maze_col = start_col; maze_col <= end_col; maze_col++) {
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // 
