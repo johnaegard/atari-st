@@ -19,7 +19,7 @@
 #define MAZE_HEIGHT 32
 #define VIEWPORT_WIDTH 224
 #define VIEWPORT_WIDTH_BYTES 112
-#define VIEWPORT_HEIGHT 191
+#define VIEWPORT_HEIGHT 192
 #define KEYBOARD 2
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -286,10 +286,6 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
-  if (start_row_top_y == -31) {
-    start_row = start_row-1;
-  }
-
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
   addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
@@ -445,7 +441,7 @@ int main() {
   Setscreen(logbase_ptr, physbase_ptr, -1);
 
   word** maze = generate_maze(MAZE_HEIGHT, MAZE_WIDTH);
-  log_maze(maze, MAZE_HEIGHT, MAZE_WIDTH, 2, 2, 8, 8);
+  //log_maze(maze, MAZE_HEIGHT, MAZE_WIDTH, 2, 0, 8, 8);
 
   word vx = 160;
   word vy = 160;
@@ -481,16 +477,16 @@ int main() {
       char scancode = (key >> 16) & 0xFF;
       switch (scancode) {
       case KEY_UP:
-        vy--;
+        vy = vy -2;
         break;
       case KEY_DOWN:
-        vy++;
+        vy = vy +2;
         break;
       case KEY_LEFT:
-        vx--;
+        vx = vx -2;
         break;
       case KEY_RIGHT:
-        vx++;
+        vx=vx+2;
         break;
       case KEY_L:
         log = true;
