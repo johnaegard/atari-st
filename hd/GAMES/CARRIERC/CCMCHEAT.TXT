@@ -1,0 +1,61 @@
+        CCMCHEAT.TOS
+        ------------
+
+The program 'ccmcheat.tos' is for use 
+with CARRIER COMMAND version 1.01, but
+should work with other versions.
+
+The cheat programs are written
+entirely in assembly language, and run
+on all Atari ST computers. They have 
+been written in such a way that they do 
+not alter your original game disk, so
+you don't need to worry that is is 
+being messed around with by an unknown 
+hand.
+
+It has been designed to allow you as
+much flexiblity as possible in making
+your choices as to what features to
+have active. The 'user interface' has
+been designed to be simple functional
+as well as being consistent from
+program to program.
+
+Any feature can be switched on or off 
+by pressing the appropriate function key.
+Pressing the escape key exits back to the
+desktop, and pressing the F10 key once
+your game disk has been put in the disk
+drive will run the game.
+
+The wide number of possibilities for 
+ccmcheat.tos does initially present 
+a fairly formidable choice. By careful 
+choice of certain options game can be 
+transformed. For example, by chosing F1
+- instantaneous carrier movement - you 
+can go and help an island under attack 
+and launch a decisive attack on the 
+enemy carrier which will be stationed 
+nearby, or you could just go exploring. 
+Using infinite manta weapons F6, gives
+you an air superiority role - it is 
+quite a sight to watch ten of your 
+missiles track and kill an enemy 
+aircraft. Not that this will mean that
+you don't get shot down - the enemy 
+aircraft are pretty mean fighters. With 
+an unlimited number of mantas you can 
+practise dog-fighting with lasers.
+You could concentrate on practising 
+bombing runs, or ground attack. The 
+opportunities are endless. Careful 
+choice of the options can make things 
+just  bit  asier for you without
+making things too easy. 
+
+Hopefully, by using these cheat 
+programs your enjoyment of the games 
+will be increased. That is the 
+intention. 

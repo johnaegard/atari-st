@@ -1,0 +1,12 @@
+  Carrier Command for Atari ST
+
+Works from hard disk (or floppy) on any ST(E), Falcon.
+
+If 1MB or more RAM is in machine will load sampled
+music in top RAM, and play it if wait about  min.
+at intro screen (rotating carrier).
+
+Still small problem with Falcon and
+'Load old game' - looses cursor.
+
+ PP
