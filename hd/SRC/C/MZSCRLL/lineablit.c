@@ -120,9 +120,20 @@ int main() {
   SDDB source = {
     .bl_xmin = 0,
     .bl_ymin = 193,
-
+    .bl_form = (char *) sprite_buffer.aligned_ptr,
+    .bl_nxwd = 8,
+    .bl_nxln = 160,
+    .bl_nxpl = 2
   };
-  SDDB dest = {};
+
+  SDDB dest = {
+    .bl_xmin = 100,
+    .bl_ymin = 100,
+    .bl_form = (char *) Physbase(),
+    .bl_nxwd = 8,
+    .bl_nxln = 160,
+    .bl_nxpl = 2
+  };
 
   BBPB bbpb = {
    .bb_b_wd = 7,           /*	 width of block in pixels 		     */
@@ -136,8 +147,7 @@ int main() {
    .bb_p_addr=0,           /*	 pattern buffer address 		       */
    .bb_p_nxln=0,           /*	 offset to next line in pattern 	     */
    .bb_p_nxpl=0,           /*	 offset to next plane in pattern 	     */
-   .bb_p_mask=0,           /*	 pattern index mask 			     */
-   .bb_fill ={0}	         /*	 work space				     */
+   .bb_p_mask=0            /*	 pattern index mask 			     */
   };
 
   //  short   bb_b_wd;     /*	 width of block in pixels 		     */

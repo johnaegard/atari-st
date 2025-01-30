@@ -1,0 +1,70 @@
+DEFLINE 1,3
+BOX 0,0,60,60
+CIRCLE 30,30,20
+LINE 0,0,60,60
+LINE 0,60,60,0
+DEFFILL 3,2,5
+FILL 15,5
+FILL 15,58
+FILL 15,30
+FILL 46,30
+' screen width in pixels
+b_wd=0
+' screen height in pixels
+b_ht=1
+' bitplanes
+plane_ct=2
+' fg color
+fg_col=3
+' bg color
+bg_col=4
+' op_tab
+op_tab=5
+' x offset for source
+s_xmin=6
+' y offset for source
+s_ymin=7
+' address of source screen
+s_form=8
+' offset to next word of bitplane 2=hires,4=medres,8=lowres
+s_nxwd=9
+' offset to next line in source plane
+s_nxln=10
+' always has value 2
+s_nxpl=11
+' x offset for destination
+d_xmin=12
+' y offset for destination
+d_ymin=13
+' address of destination screen
+d_form=14
+' offset to next word of bitplane 2=hires,4=medres,8=lowres
+d_nxwd=15
+' offset to next line in dest plane
+d_nxln=16
+' always has value 2
+d_nxpl=17
+DIM b%(50)
+b%(b_wd)=61
+b%(b_ht)=61
+b%(plane_ct)=4
+b%(fg_col)=0
+b%(bg_col)=0
+b%(op_tab)=&H3030303
+b%(s_xmin)=0
+b%(s_ymin)=0
+b%(s_form)=XBIOS(3)
+b%(s_nxwd)=8
+b%(s_nxln)=160
+b%(s_nxpl)=2
+b%(d_xmin)=100
+b%(d_ymin)=100
+b%(d_form)=XBIOS(3)
+b%(d_nxwd)=8
+b%(d_nxln)=160
+b%(d_nxpl)=2
+b%(18)=0
+b%(19)=0
+b%(20)=0
+b%(21)=0
+BITBLT b%()

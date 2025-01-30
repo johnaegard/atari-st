@@ -77,8 +77,6 @@ AlignedBuffer new_aligned_buffer(size_t size) {
   unsigned long aligned_addr = (addr + 255) & ~255;
 
   AlignedBuffer buffer = { (void*)aligned_addr, original_ptr };
-  fprintf(log_file, "Original pointer: %p\n", buffer.original_ptr);
-  fprintf(log_file, "Aligned pointer:  %p\n", buffer.aligned_ptr);
 
   return buffer;
 }
@@ -209,7 +207,7 @@ word** generate_maze(int rows, int cols) {
       exit(1);
     }
     for (int c = 0; c < cols; c++) {
-      word roll = (rand() & 0X7);
+      word roll = (rand() & 0XF);
       if (roll <= 3) {
         map_data[r][c] = roll;
       }
@@ -279,10 +277,10 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
   addr spritebase_addr = (addr)spritebase;
   addr dest_addr;
 
-  word start_row =      (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word end_row   =  2 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
-  word start_col = -1 + (cx - VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
-  word end_col   =      (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
+  signed short start_row =      (cy - VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  signed short end_row   =  2 + (cy + VIEWPORT_HEIGHT / 2) / CELL_SIZE_PX;
+  signed short start_col = -1 + (cx - VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
+  signed short end_col   =      (cx + VIEWPORT_WIDTH / 2) / CELL_SIZE_PX;
 
   signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
 
@@ -300,9 +298,17 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
     start_row, start_col, end_row, end_col, cx_mod);
   }
   word screen_row = 0;
-  for (word maze_row = start_row; maze_row < end_row; maze_row++) {
+  for (signed short maze_row = start_row; maze_row < end_row; maze_row++) {
     signed short screen_col = 0;
-    for (word maze_col = start_col; maze_col <= end_col; maze_col++) {
+    if (maze_row < 0 || maze_row >= MAZE_WIDTH) {
+      screen_row++;
+      continue;
+    }
+    for (signed short maze_col = start_col; maze_col <= end_col; maze_col++) {
+      if (maze_col < 0 || maze_col >= MAZE_WIDTH) {
+        screen_col++;
+        continue;
+      }
       if ((maze[maze_row][maze_col] & 1) == 1) {
         // 
         // vert lines
@@ -397,6 +403,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
           hwall_yoffset_bytes >= 0 &&
           hwall_yoffset_bytes <= VIEWPORT_HEIGHT * LINE_SIZE_BYTES) {
           memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+
         }
       }
       screen_col++;
@@ -408,10 +415,6 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
     screenbase->last_cx = cx;
     screenbase->last_cy = cy;
   }
-
-  // fflush(log_file);
-  // getchar();
-
 }
 
 int main() {
@@ -477,16 +480,16 @@ int main() {
       char scancode = (key >> 16) & 0xFF;
       switch (scancode) {
       case KEY_UP:
-        vy = vy -2;
+        vy = vy -1;
         break;
       case KEY_DOWN:
-        vy = vy +2;
+        vy = vy +1;
         break;
       case KEY_LEFT:
-        vx = vx -2;
+        vx = vx -1;
         break;
       case KEY_RIGHT:
-        vx=vx+2;
+        vx=vx + 1;
         break;
       case KEY_L:
         log = true;
