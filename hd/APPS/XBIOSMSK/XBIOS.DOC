@@ -1,0 +1,196 @@
+                     XBIOS MUSIC CONSTRUCTION KIT
+
+
+          Make music like Mozart (or Motorhead) with maestro
+               David O'Connell's powerful song editor
+
+
+With this program you can easily include superb music in your programs, and it
+works in BASIC, too. Using only about six commands you can load into your game
+or demo music that was written with this program and it will play in the
+background while your program runs uninterrupted. By including a few more
+commands you can detect the end of the music and either restart it or load in
+more music
+
+    Don't worry if you don't can't compose to save your life and understand all
+those tadpoles and telegraph wires as you can simply buy some sheet music and
+copy it into the program. (However, most music is copyright so don't pass your
+- copied - music around.)
+
+
+                   ****************************************
+
+
+                            MENU BAR FUNCTIONS
+
+CHANGE PAGE   - Takes you to the voice editing page
+QUIT          - Quits program
+SAVE VOICES   - Saves voices created with the program
+SAVE SONG     - Saves song in program's internal format
+LOAD VOICES   - Loads a set of voices
+LOAD SONG     - Loads a song into program for editing
+VOICE CHANGE  - When editing a song you can include voice changes
+COPY          - Copy part of song to new location
+SAVE FOR XBIOS- Saves song as an XBIOS file - use this in your programs
+TEST XBIOS FILE- Loads and plays an XBIOS file
+NEW           -Deletes all song
+SET MARK      -Sets a mark in the song
+FIND MARK     -Finds mark set with "SET MARK"
+REDUCE SONG   -Reduces size of song to end of the two bars displayed
+
+
+                   ****************************************
+
+
+                           MAIN PAGE FUNCTIONS
+
+Top left is the bar indicator which shows the number of the bar displayed
+onscreen. Under this are the arrows for moving the display of your song up one
+bar, up two bars, back one bar and back two bars.
+
+    Below this is the mark indicator which shows the part of the song being
+edited. Clicking on this will also take you to the FIND MARK menu. Double
+clicking lets you set a new mark at the current bar.
+
+    To the right and at the top of the page is "TRACK 3 FEATURE" for switching
+in the special effects of track three (more about this later). Below this is
+"TRACK 2 FEATURE" which enables you to split track to at any point and assign
+different voices to the upper and lower parts. To the right are the note values
+and to the right of these is TIE to tie two notes together. Just click on TIE
+then on the note you want to tie and it will be tied to the note in front.
+
+    Next is SLUR. If two notes are slurred together the second note starts its
+envelope from where the first note finished. Also there is a slight slide to
+the second note. Because of the limitations in the ST's XBIOS routine the tempo
+change is quite limited. When you click on PLAY a menu will appear giving you
+options on where to play from. STOP, stops playback of song.
+
+    To input notes on to screen just click mouse on the stave. Some rests are
+added automatically, but you can also input a note of the same value then
+finish the bar and go back and delete the note where you want the rest. To
+delete a note double click on the track and a rubber band will appear. Hold
+down the mouse button and drag the box to enclose all notes you want to delete
+then let go of the mouse button.
+
+    When you move the bar display the bars shown are included in the length of
+the song even if you don't input any notes. This is why you can reduce the song
+so that when you compile it for an XBIOS file these unwanted bars aren't
+included.
+
+
+Resolution differences
+HI REZ: All three channels (tracks) of the ST are shown and to MUTE a track
+click on the track number. On the voice edit page the "TEST SEQUENCE" is
+displayed.
+
+IN MED REZ: Only one channel (track) is displayed and to display other tracks
+click on the track number to right of "EDIT TRACK". To mute a track click on
+track number to right of mute track. On the voice edit page to edit the test
+sequence click on "EDIT TEST EQUENCE"
+
+
+                   ****************************************
+
+
+                            VOICE EDITING PAGE
+
+VOICE No.?: These are the voices you can create. To the right of each one is a
+small box and clicking here will enable you to edit it. Double clicking on the
+name enables you to rename it.
+
+ENVELOPE: Displays the envelope of the voice being edited.
+
+SLIDERS: UP/DOWN is the volume of the envelope.
+         LEFT/RIGHT is the envelope speed.
+
+NOISE GEN.: Turns the noise effect on/off for each voice and sets the
+frequency. (The ST has only one noise frequency control therefore you will get
+peculiar results by having noise on more than one track.) The two boxes under
+the NOISE GEN. box display the voice name and number of the voice being
+edited.
+
+VIBRATO/TREMOLO: Click here toggle from one effect to the other.
+
+VIBRATO:  Makes voices sound more realistic, but uses a lot of memory when
+compiled for playing in your program.
+
+TREMELO: Like vibrato, but changes the volume, not pitch.
+
+If a voice file with the name DEF.VOC is on the disk when the program loads it
+will be automatically loaded into the program.
+
+
+                   ****************************************
+
+
+                             EDIT MODE FUNCTIONS
+
+VOICE: Edits the voices
+
+TRACK: Clicking on track puts you into another edit mode hear the voices are
+assigned to a note(like a drum machine) this means you can make up complex drum
+patterns without making voice changes every note.To the left are the Different
+Notes by clicking on a note number you can edit it The note value can now be
+edited in the box witch is now under the Noise Gen.Box when this note is played
+during your song it will have the note value you have set
+hear for it THIS WILL ONLY WORK ON TRACK THREE AND ONLY WHEN THIS FEATURE IS
+ON
+
+
+                   ****************************************
+
+
+                         FILE TYPES AND EXTENDERS
+
+.VOC   All voice info and the two sort sequences on voice edit page
+
+.SNG   Song info for reloading into this program
+
+.XBS   This is the file to use in you programs
+
+
+                   ****************************************
+
+
+                             MUSIC FROM BASIC
+
+There are two program examples in GFA BASIC. One of these is a demo which came
+free with GFA BASIC and has been changed to include sound files. The commands
+in GFA BASIC to load the XBIOS music are:
+
+OPEN "I",#1,F$                    !F$=name of file
+A%=LOF(#1)                        !find length of music
+DIM MUSIC_ADDR%(A%/4)             !and reserve memory
+BLOAD F$,VARPTR(MUSIC_ADDR%(0))   !load
+CLOSE #1
+
+    To play music from GFA BASIC:
+
+VOID XBIOS(32,l:VARPTR(MUSIC_ADDR%(0))
+
+
+    To detect the end of the music:
+
+A%=xBIOS(28,0,7)
+IF A%=255 ... then the music has ended
+
+    When music is playing using the Xbios routine it will be stopped by the
+keyboard's key click, but this can be disabled with:
+
+SPOKE &H484,PEEK(&H484) AND NOT 1
+
+    And turned back on again with:
+
+SPOKE &H484,PEEK(&H484) OR 1
+
+
+    To halt the music while its playing:
+
+NO_PLAY$=CHR$(8)+CHR$(0)+CHR$(9)+CHR$(0)+CHR$(10)+CHR$(7)+CHR$(255)+
+         CHR$(-1)+CHR$(0)
+VOID XBIOS(32,l:VARPTR(NO_PLAY$))
+
+
+HARDWARE: ALL STs, MONO AND MEDIUM RES COLOUR
+
+
