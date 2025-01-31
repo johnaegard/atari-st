@@ -1,0 +1,13 @@
+INFO : Hatari v2.5.0, compiled on:  Jan  9 2025, 20:03:47
+INFO : Image '/home/johnzo/emu/atari-st/floppies/passback.st' not found
+INFO : GEMDOS HDD emulation, C: <-> /home/johnzo/emu/atari-st/hd.
+WARN : Bus Error reading at address $ffff860f, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6c4710, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $5d1234, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $6d3148, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $400000, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : Bus Error reading at address $d003c3, PC=$e00c24 addr_e3=e00c24 op_e3=4a10
+WARN : No GEMDOS dir '/home/johnzo/emu/atari-st/hd/AUTO'
+WARN : No GEMDOS dir '/home/johnzo/emu/atari-st/hd/etc'
+8 repeats of: WARN : No GEMDOS dir '/home/johnzo/emu/atari-st/hd/etc'
