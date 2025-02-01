@@ -12,8 +12,8 @@
 #define COLS 5
 #define CELL_SIZE_PX 32
 #define CELL_WIDTH_BYTES 16
-#define STARTING_CX 160
-#define STARTING_CY 160
+#define STARTING_CX 960
+#define STARTING_CY 960
 #define LINE_SIZE_BYTES 160
 #define HORIZ_WALL_BYTES 32
 #define CHUNK_SIZE_BYTES 16
@@ -209,7 +209,7 @@ word** generate_maze(int rows, int cols) {
       exit(1);
     }
     for (int c = 0; c < cols; c++) {
-      word roll = 4+ (rand() & 0XF);
+      word roll = (rand() & 0XF);
       if (roll <= 3) {
         map_data[r][c] = roll;
       }
@@ -217,7 +217,7 @@ word** generate_maze(int rows, int cols) {
         map_data[r][c] = 0;
       }
       map_data[0][c] = 2;
-      // map_data[r][c] = 3;
+      map_data[r][c] = 3;
     }
     map_data[r][0] = 1;
   }
@@ -347,9 +347,13 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
 
       //
       // hwalls
-      ///
-      bool prev_cell_has_hwall = (screen_col != -1) ? ((maze[maze_row][maze_col - 1] & 2) == 2) : false;
-      bool this_cell_has_hwall = ((maze[maze_row][maze_col] & 2) == 2);
+      //
+      bool prev_cell_has_hwall = (maze_col <= 0)                   ? false : 
+                                 (screen_col == -1)                ? false : 
+                                   ((maze[maze_row][maze_col - 1] & 2) == 2);
+
+      bool this_cell_has_hwall = (maze_col >= MAZE_WIDTH_CELLS) ? false : 
+                                 ((maze[maze_row][maze_col] & 2) == 2);
 
       word hwall_sprite_type;
 
@@ -400,7 +404,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
         if (log) {
           fprintf(log_file,
             "    hwall draw_mode=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d\n",
-            mode, cx, cy, maze_row, maze_col, screen_row, screen_col);
+            mode, maze_row, maze_col, screen_row, screen_col);
           fprintf(log_file,
             "          prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n",
             prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y);
@@ -412,11 +416,10 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
             screen_row, screen_yoffset, hwall_yoffset_bytes, dest_addr);
         }
         if (hwall_xoffset_bytes >= 0 &&
-          hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES &&
-          hwall_yoffset_bytes >= 0 &&
-          hwall_yoffset_bytes <= VIEWPORT_HEIGHT_PX * LINE_SIZE_BYTES) {
+          hwall_xoffset_bytes   < VIEWPORT_WIDTH_BYTES &&
+          hwall_yoffset_bytes   >= 0 &&
+          hwall_yoffset_bytes   <= VIEWPORT_HEIGHT_PX * LINE_SIZE_BYTES) {
           memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
-
         }
       }
       screen_col++;
@@ -444,7 +447,6 @@ int main() {
   AlignedBuffer physbase_buffer = new_aligned_buffer(SCREEN_SIZE_BYTES);
   void* logbase_ptr = logbase_buffer.aligned_ptr;
   void* physbase_ptr = physbase_buffer.aligned_ptr;
-  //fprintf(log_file, "a logbase=%p, physbase=%p\n", logbase_ptr, physbase_ptr);
 
   Cursconf(0, 1);
 
