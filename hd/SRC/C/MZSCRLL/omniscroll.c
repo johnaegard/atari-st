@@ -12,11 +12,13 @@
 #define COLS 5
 #define CELL_SIZE_PX 32
 #define CELL_WIDTH_BYTES 16
+#define STARTING_CX 160
+#define STARTING_CY 160
 #define LINE_SIZE_BYTES 160
 #define HORIZ_WALL_BYTES 32
 #define CHUNK_SIZE_BYTES 16
-#define MAZE_WIDTH 32
-#define MAZE_HEIGHT 32
+#define MAZE_WIDTH_CELLS 32
+#define MAZE_HEIGHT_CELLS 32
 #define VIEWPORT_WIDTH_PX 224
 #define VIEWPORT_WIDTH_BYTES 112
 #define VIEWPORT_HEIGHT_PX 192
@@ -207,7 +209,7 @@ word** generate_maze(int rows, int cols) {
       exit(1);
     }
     for (int c = 0; c < cols; c++) {
-      word roll = 4+(rand() & 0XF);
+      word roll = 4+ (rand() & 0XF);
       if (roll <= 3) {
         map_data[r][c] = roll;
       }
@@ -235,7 +237,7 @@ word** generate_maze(int rows, int cols) {
   // map_data[3][2] = 2;
   // map_data[3][5] = 1;
   // map_data[4][4] = 2;
-  map_data[4][2] = 3;
+  map_data[2][2] = 3;
   // map_data[5][7] = 2;
   // map_data[7][3] = 2;
   // map_data[7][4] = 2;
@@ -283,14 +285,14 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
   signed short end_col   =      (cx + VIEWPORT_WIDTH_PX / 2) / CELL_SIZE_PX;
   signed short topleft_x = cx - (VIEWPORT_WIDTH_PX / 2);
   signed short topleft_y = cy - (VIEWPORT_HEIGHT_PX / 2);
-
-  signed short start_row_top_y = -1 * (cy % CELL_SIZE_PX);
+  signed short screen_yoffset = (topleft_y > 0) ? ( -1 * (cy % CELL_SIZE_PX)) : 
+                                -1 * (topleft_y % CELL_SIZE_PX);
 
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
   addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
-  // TODO JFC
+  // TODO LOL
   signed short col_offset_bytes = (topleft_x < -79) ? 16 :
                                   (topleft_x < -63) ? 0  : 
                                   (topleft_x < -47) ? 16 : 
@@ -303,18 +305,18 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
 
   if (log) {
   fprintf(log_file,
-    "  start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, topleft_x=%d, topleft_y=%d\n",
-    start_row, start_col, end_row, end_col, cx_mod, topleft_x, topleft_y);
+    "  start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, topleft_x=%d, topleft_y=%d screen_yoffset=%d\n",
+    start_row, start_col, end_row, end_col, cx_mod, topleft_x, topleft_y, screen_yoffset);
   }
   word screen_row = 0;
   for (signed short maze_row = start_row; maze_row < end_row; maze_row++) {
     signed short screen_col = 0;
-    if (maze_row < 0 || maze_row >= MAZE_WIDTH) {
+    if (maze_row < 0 || maze_row >= MAZE_WIDTH_CELLS) {
       screen_row++;
       continue;
     }
     for (signed short maze_col = start_col; maze_col <= end_col; maze_col++) {
-      if (maze_col < 0 || maze_col >= MAZE_WIDTH) {
+      if (maze_col < 0 || maze_col >= MAZE_WIDTH_CELLS) {
         screen_col++;
         continue;
       }
@@ -332,7 +334,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
           screen_col++;
           continue;
         }
-        signed short start_yoff = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        signed short start_yoff = ((screen_row * CELL_SIZE_PX) + screen_yoffset) * LINE_SIZE_BYTES;
         for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
           yoffset = yoffset + LINE_SIZE_BYTES) {
           dest_addr = screenbase_addr + yoffset + xoff;
@@ -392,7 +394,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
 
         signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + col_offset_bytes;
-        signed short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + start_row_top_y) * LINE_SIZE_BYTES;
+        signed short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + screen_yoffset) * LINE_SIZE_BYTES;
         dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
 
         if (log) {
@@ -403,8 +405,11 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
             "          prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n",
             prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y);
           fprintf(log_file,
-            "          hwall_screen_col_offset_bytes=%d, col_offset_bytes=%d hwall_xoffset_bytes=%d, screen_row=%d, start_row_top_y=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
-            hwall_screen_col_offset_bytes, col_offset_bytes, hwall_xoffset_bytes, screen_row, start_row_top_y, hwall_yoffset_bytes, dest_addr);
+            "          hwall_screen_col_offset_bytes=%d, col_offset_bytes=%d hwall_xoffset_bytes=%d\n",
+            hwall_screen_col_offset_bytes, col_offset_bytes, hwall_xoffset_bytes);
+          fprintf(log_file,
+            "          screen_row=%d, screen_yoffset=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
+            screen_row, screen_yoffset, hwall_yoffset_bytes, dest_addr);
         }
         if (hwall_xoffset_bytes >= 0 &&
           hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES &&
@@ -451,33 +456,29 @@ int main() {
   free_screen(background_screen);
   Setscreen(logbase_ptr, physbase_ptr, -1);
 
-  word** maze = generate_maze(MAZE_HEIGHT, MAZE_WIDTH);
-  //log_maze(maze, MAZE_HEIGHT, MAZE_WIDTH, 2, 0, 8, 8);
+  word** maze = generate_maze(MAZE_HEIGHT_CELLS, MAZE_WIDTH_CELLS);
+  //log_maze(maze, MAZE_HEIGHT_CELLS, MAZE_WIDTH_CELLS, 2, 0, 8, 8);
 
-  word vx = 160;
-  word vy = 160;
-  word old_vx = vx;
-  word old_vy = vy;
-  word tmp_old_vx = vx;
-  word tmp_old_vy = vy;
+  word cx = STARTING_CX;
+  word cy = STARTING_CY;
 
   word frames = 0;
   clock_t start = clock();
   long key;
   byte keep_looping = 1;
 
-  Base physbase = { physbase_ptr, vx,vy };
-  Base logbase = { logbase_ptr, vx,vy };
+  Base physbase = { physbase_ptr, cx,cy };
+  Base logbase = { logbase_ptr, cx,cy };
 
   bool log = false;
   bool screendump = false;
 
   while (keep_looping) {
     if (log) {
-      fprintf(log_file, "\nFRAME=%d, logbase=%p, physbase=%p, vx=%d, vy=%d\n", frames, logbase.base, physbase.base, vx, vy);
+      fprintf(log_file, "\nFRAME=%d, logbase=%p, physbase=%p, vx=%d, cy=%d\n", frames, logbase.base, physbase.base, cx, cy);
     }
-    render_maze(ERASE_MODE, maze, vx, vy, &logbase, sprite_screen.base, false);
-    render_maze(DRAW_MODE, maze, vx, vy, &logbase, sprite_screen.base, log);
+    render_maze(ERASE_MODE, maze, cx, cy, &logbase, sprite_screen.base, false);
+    render_maze(DRAW_MODE, maze, cx, cy, &logbase, sprite_screen.base, log);
     if (log) {
       fflush(log_file);
       log = false;
@@ -488,16 +489,16 @@ int main() {
       char scancode = (key >> 16) & 0xFF;
       switch (scancode) {
       case KEY_UP:
-        vy = vy -1;
+        cy = cy -1;
         break;
       case KEY_DOWN:
-        vy = vy +1;
+        cy = cy +1;
         break;
       case KEY_LEFT:
-        vx = vx -1;
+        cx = cx -1;
         break;
       case KEY_RIGHT:
-        vx=vx + 1;
+        cx=cx + 1;
         break;
       case KEY_L:
         log = true;
@@ -511,7 +512,6 @@ int main() {
       }
     }
     swap_pages(&logbase, &physbase);
-    //fflush(log_file);
     frames++;
   }
 
