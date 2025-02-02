@@ -350,9 +350,9 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
       //
       bool prev_cell_has_hwall = (maze_col <= 0)                   ? false : 
                                  (screen_col == -1)                ? false : 
-                                   ((maze[maze_row][maze_col - 1] & 2) == 2);
+                                 ((maze[maze_row][maze_col - 1] & 2) == 2);
 
-      bool this_cell_has_hwall = (maze_col >= MAZE_WIDTH_CELLS) ? false : 
+      bool this_cell_has_hwall = (maze_col >= MAZE_WIDTH_CELLS-1) ? false : 
                                  ((maze[maze_row][maze_col] & 2) == 2);
 
       word hwall_sprite_type;
