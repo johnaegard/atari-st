@@ -12,7 +12,7 @@
 #define COLS 5
 #define CELL_SIZE_PX 32
 #define CELL_WIDTH_BYTES 16
-#define STARTING_CX 960
+#define STARTING_CX 160
 #define STARTING_CY 960
 #define LINE_SIZE_BYTES 160
 #define HORIZ_WALL_BYTES 32
@@ -217,7 +217,6 @@ word** generate_maze(int rows, int cols) {
         map_data[r][c] = 0;
       }
       map_data[0][c] = 2;
-      map_data[r][c] = 3;
     }
     map_data[r][0] = 1;
   }
