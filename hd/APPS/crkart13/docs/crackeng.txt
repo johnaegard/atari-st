@@ -1,0 +1,1412 @@
+Translator's Note:  This is a first draft and has not been
+edited; it may contain errors.   Neither I nor the Miami Valley
+Atari  Computer Enthusiasts will assume responsibility for any
+loss of  income, hardware, or software which you may think
+resulted from  the use of Crack Art.  The risk is yours.
+
+
+I have tried to follow the spirit of the German text, but having 
+no color monitor, I have not been able to check my work.  In some
+places I had to guess at what the authors meant.  Nonetheless, 
+the description shows this to be a very powerful drawing program,
+equal to those from the Mac or DOS camps costing hundreds of 
+dollars.
+
+Translation Copyright 1992 by Kervyn D. Mach and the Miami Valley
+Atari Computer Enthusiasts, Inc.  Permission to copy and 
+distribute is given as long as this notice remains with the 
+document.  Commercial sale of this translation is forbidden.
+
+Miami Valley Atari Computer Enthusiasts
+P.O. Box. 24221
+Dayton, Ohio 45424
+$3.00 For Disk Library Listing
+
+This is part one of the Crack Art Doc this file contains the
+Graphic Part of the Manual
+
+Foreword to CRACK ART
+________________________________________________________________
+
+CRACK ART is, after long delay, now shareware and may not be sold
+commercially.  The program may be further copied only together 
+with this introduction.  If you use it a lot, or just feel like 
+it, send us DM20 (no play money, please) [about $13.33 US in Feb
+'92 - ed]  
+
+The source code for CRACK ART consists of:
+
+- 13080 lines of GFA Basic - 148 principal assembler routines
+(compressed, about 1.5MBytes)
+
+The graphics claim about 134 kBytes.
+
+Programmers interested in the GFA source code can get it complete
+(including assembler INLINES and graphics) for about 0.5734 
+Pfennig per line [one third of a cent per line].  That would be 
+then a ridiculous 75 marks [$50.00].  Therefore, laugh and cough 
+up.
+
+The programmers accept no liability for possible damage to hard- 
+or software resulting from the use of CRACK ART.  (Since we've 
+had not one problem in three years, we don't think you'll be the 
+first.)
+
+It goes without saying that you should first of all make a 
+tenpack of backup copies [also if you prefer sixpacks].
+
+We had originally planned on a commercial enterprise through a 
+firm whose name sounds like that of a classic 3D game in which a 
+spaceship flies diagonally through the cosmos.   Though their 
+proposal sounded generous and had us thinking of huge profits, we
+were in the end outmaneuvered.  Though we'd get DM 2.50 per unit
+sold (which we'd have to split) immediately, we hope that the 
+shareware route will lead to surer (hard earned) money. 
+
+Horn Blowing:  The history of CRACK ART is quite amusing for 
+those involved, probably more so for those who have run into the 
+program or who know us.
+
+From the authors (early 1990)
+
+      Jan 'Jaybee' Borchers
+-----------------------------------------------------------------
+
+It all started with a Holsten...  No...and...yes...  It all 
+started with the old Atari 800.  As Atari then introduced its new
+XL series, I traded for a 600XL, later for an 800XL, which after
+a short time was traded in toward a pool table.  Suddenly in
+1987  an Atari 1040 STF stood on my 2.65 meter [8'9"] wide
+computer  table.  An Atari 520 ST was added to enable faster
+programming  and test runs.  (Networking research has
+unfortunately remained  just that.).  The 520 ST was soon sold
+again and in the meantime  the 1040 grew to have little in common
+with the purchased item  (PC case with two drives, modem,
+switchable operating system,  built-in video digitizer, sound
+sampler, MHz indicator and NMI  interrupt.  The stereo and the
+sound distorter were taken back  out.)  Had you noticed?  I'm a
+hardware hacker.  Next is my TT8  (crappy sound from the internal
+speaker).
+
+Back to CRACK ART.  Why the name?  There is a diskette monitor by
+the name of CRACK, which, not yet full fledged, was designed for
+hacking about in every data Babel one could find on a disk.  
+After we put this project on ice and decided on a pixel oriented 
+drawing program to fulfill the same demands, we kind of adopted 
+the name.  To account for the artistic part, we tacked on the 
+ART.  The name was there; all we needed was the software.
+
+Detlef "Roy" Roettger
+----------------------------------------------------------------- 
+I had my first contact with computers when a classmate showed me
+his newest acquisition.  I don't remember its name any more. 
+Anyway, he soon traded it toward an Atari 400 (Price at that time
+about DM 1250 [$833 at today's rate of exchange]).  With this
+computer, astounding things were possible and my interest grew.
+Later I bought myself an Atari 800XL.  Shortly before I started
+college, I blew my savings on an Atari 260ST, which I still have,
+along with the 800XL, by the way.
+
+After experiencing various painting, drawing, and construction
+programs, we wanted to develop our own program, which would be
+superior to other programs in spe ed and especially in ease of
+use.
+
+That brought Alex, at the time an Information Sciences student in
+Erlangen, to the careless statement that this project, too, would
+be broken off before it was finished (sadly, it has happened).
+
+...................  
+CRACK ART grew and grew, becoming a goal in itself as we
+implemented more and more new ideas.
+
+Existence to everything - no program without its own picture
+format.  The depackers and packers for the various graphic
+programs were so numerous that the idea for a pack algorithm of
+our own grew and grew.  Therefore, files with the CA1 extension
+are low resolution pictures, with CA2 and CA3 being medium and
+high re solution pictures respectively.  Thanks to certain
+tricks, the packer compresses very effectively.  We know of no
+other graphics program that compresses its own files more
+effectively than CRACK ART. (Except for a new one of mine, in
+which the menu graphics were written.  It uses the LZW packing
+algorithm.)
+
+Additional Comments (May 1991)
+----------------------------------------------------
+
+Jan now owns a TT.  And guess what.  Despite "incompatible" (Hey
+Julian!) programming methods, CRACK ART runs on it as well!!! 
+Because we wrote most of the routines in assembler, the faster
+processor with the mind blowing speed has no trouble at all.
+
+CRACK ART Handbook 1.00 TT+
+
+Copyright Detlef Roettger and Jan Borchers
+---------------------------------------------------------------
+-----------------------------------------------------------------
+
+CRACK ART runs on every Atari ST/TT with at least 1 MB memory,
+TOS in ROM, and color monitor.  We recommend at least 1.5 MB. 
+The STE was not tested, but should have no problems.
+
+The Handbook 
+-----------------------------
+
+We have tried to make the handbook as thorough as possible,
+though it is really easier to show the operation to someone than
+to describe it in hairsplitting detail (One picture says more
+than a thousand words).  Should a function seem unbelievably
+complicated at the first reading, you're probably right, but in
+practice it will prove to be simple and useful.  Therefore, you
+should try each function as you read about it, on line as it were
+(assuming you have printed this out or own two computers).
+
+With this program, you have a powerful tool for producing and
+modifying graphics in ST low resolution.  We've had great fun
+with the development and we wouldn't like to be without the
+program.  We believe that you will see that when you use the
+program and moreover that opportunities for creating useful
+programs are not yet gone.
+
+We hope the explanations in this handbook are not too dry.  We
+have strewn numerous small examples (and occasional wacky
+comments from Jan...) liberally in the text.  These should
+clarify the operation of the program and lead the user through
+the tiny details. 
+
+For those in a hurry, there is a list of keyboard commands for
+the elementary operations at the end of this handbook.  These
+alone, however, won't clarify most functions.  After that is an
+appendix with the HAVE YOU EVER SEEN...? details of the program.
+
+On the Construction of the Menus
+-------------------------------------------------
+
+The various functions are represented on the menu by colored
+icons.  You will immediately distinguish five groups:
+
+-Icons for the elementary drawing functions (in shades of gray)
+-Icons for block operations (multicolored) 
+-Icons for disk operations (disk icon) 
+-Icons for choice of screen (numbered in sequence) 
+-Icons for special functions (strange)
+
+Functions are selected with the left mouse button.  Some drawing
+functions allow specification of parameters after a double click.
+The right mouse button togg les between the menu and the drawing
+screen(s).
+
+Exit the program by clicking on the desktop icon in the lower
+right corner.  If all drawing screens are empty, the program
+simply quits.  Otherwise, it enumerates the occupied screens and
+gives you the opportunity to save or abandon them.
+
+Date and time are easy to set; the day of the week is then
+automatically calculated.  The displayed time changes only when
+you click on a menu selection.  (Mor e about this later.)
+
+General Overview of Alert- and Dialog Boxes. 
+---------------------------------------------------------------
+
+    Alert Boxes 
+--------------------
+
+The alert boxes used in CRACK ART were entirely developed by us
+so there would be no breaks in the appearance of the menus. 
+Their function is easily explained .   All alert boxes contain up
+to ten lines of text and as many buttons as necessary in the
+bottom row.  Default selections are ringed with red and can be
+sele cted with RETURN.  Otherwise, make your choice with the left
+mouse button.  All buttons have exit status.
+
+   Dialog Boxes
+---------------------
+
+The dialog boxes are somewhat more flexible in construction than
+the alert boxes.  The first line of text names the function of
+the alert box, after which usu ally folow several lines denoting
+a function and buttons to activate them.  The last line always
+consists of the buttons 'OK' and 'CANCEL.'  Currently active 
+functions are ringed with red.  Parameters can be changed any way
+you wish.  They will take effect only after you leave the box by
+clicking on OK and the next  time you call the dialog box, your
+last inputs will show as current, i.e. ringed in red.  If you
+click on CANCEL, the old values remain.
+
+  File Select Box 
+----------------------
+
+See under Disk Operations.
+
+   Menu Icons 
+-----------------------
+
+   -MENU SETS- 
+---------------------------
+
+The very first button in the menu allows global parameters to be
+set.
+
+Parameter:
+  Bootvirus Test: On Off                  
+  Double Click:   Slow Normal Fast        
+  Mouse Form:     Shaded Normal Stripes    
+  Mouse Color:    Red Yellow Green Blue   
+  Mouse Shadow:   On Off                  
+  Menu Frames:    Red Yellow Green Blue   
+
+When SAVE SETTINGS is selected, these parameters are saved in a
+file called CRACKART.INF.  The next time you load CRACK ART, they
+will be automatically set.
+
+-----------------------------------------------------------------
+        - WORK SETS - 
+-----------------------------------------------------------------  
+So far, only three parameters may be set here.
+
+Parameter:
+  Preview Zoom: On Off
+  Zoom Grid:    On Off
+  Colors:       Neochrome Cube
+
+Preview Zoom toggles the real time loupe between the function
+keys and the shifted function keys.  Zoom Grid determines whether
+a pixel splitting raster is act ive in the loupe.  Colors alters
+the format of the color selection after a double click on a color
+in the color menu (which also see).
+
+-----------------------------------------------------------------
+        - ASM - 
+----------------------------------------------------------------- 
+Should somehow you want a function we haven't built in already,
+you can hang one of your own, up to 5000 bytes, here.  From the
+stack, the routine will get the address of the working screen,
+the address of its color palette,and the addresses of three
+additional screens you can use as working storage.  Be very
+carefu l not to exceed 32000 bytes per screen, or the program
+will probably crash.  An example follows:
+
+;-Example-------------------------------
+        .TEXT ; Save registers before proceeding.
+        movem.l d1-d7/a0-a6,-(sp)
+
+;These addresses are on the stack and can be fetched like so.
+(Caution! When using this simple method in subroutines, pay
+attention, because the offsets are adjusted by the return
+address) 
+        move.l  60(sp),a0       ; Address of the current screen
+        move.l  64(sp),a1       ; Address of the color palette
+(16 words)
+        move.l  68(sp),a2       ; Address of the first workscreen
+        move.l  72(sp),a3       ; Address of the second
+workscreen
+        move.l  76(sp),a4       ; Address of the third workscreen
+
+; Or you can replace the preceding five lines with       
+      ; movem.l 60(sp),a0-a4 
+
+;Your routine starts here
+     .
+     .
+     .; And ends here 
+;Before returning, restore the registers
+        movem.l (sp)+,d1-d7/a0-a6
+        rts   
+
+        .DATA
+        .EVEN ; Within the 5000 Bytes some storage is available
+ label_1: .DC.W ...  ...  label_n:.DC.W ...
+        .END;
+
+The routine must be written completely PC relative and, naturally
+can't contain a Block Storage Segment (.BSS).  Assemble as a
+.PRG.  If you haven't mastered Assembler, forget the whole thing
+here and now.  If you're a C professional (I hate C! - Jan) [Me
+too! - ed], you might try that.  Additionally, you can use the
+Physbase as working storage.  On return from your routine, the
+menu is redrawn.
+
+       Drawing Functions:
+---------------------------------------------------------------
+
++*  Draw        D    = Freehand drawing                  
++   Eraser      E    = Eraser  
++   Point       P    = Single points 
++   Line        L    = Draw single line 
++*  K-Line      K    = Polyline              
++   Rays        R    = Rays 
++   Frame       F    = Rectangle 
++*  Circle      C    = Circle and Ellipse                        
+*   Airbrush    A    = Spray can 
++*  Box         X    = Filled rectangle 
++*  Disc        Y    = Filled Circles and Ellipses 
++*  Polygon     W    = Filled polygon 
+*   Spline      I    = Two different spline algorithms and one
+                       curve routine 
+*   Smear       S    = Smear pixels on the screen 
+*   Outline     O    = Add borders to Lines and areas 
++   Fill        Z    = Fill a screen region 
+*   Mirror      M    = Draw with symmetry axes 
+*   Text        T    = Put text on the screen
+
+The functions marked with a plus sign work also with blocks.  The
+block then serves as a paintbrush, or for functions that operate
+on surfaces, as a fill pattern using the current pattern (See
+also Color Menu).  The functions marked with an asterisk control
+parameters which can be changed after double clicking on the 
+icon.  The letter after the function name is the keyboard
+equivalent of the menu icon.
+
+A colored border around the icon shows that it has been selected.
+The permissible MIRRORed drawing operations are automatically
+recognized and corrected if necessary.  Drawing functions which
+require several operations are cancelled or ended with the right
+mouse button.
+
+The Drawing Functions: 
+---------------------------------
+
+   -DRAW- 
+---------------------------------- 
+Freehand drawing with the mouse button down.
+
+Brush or Block.
+
+Parameters:
+  Tint:   Opaque Scrape
+  Source: 1 2 3 4 5 6 7 8 9
+
+When Opaque is selected, you can't see through the drawn lines.  
+With Scrape you scratch through the background of the screen
+selected via Source.  This function is especially handy for
+trimming blocks whose edges were not neatly cut out.
+
+Limitations:  You can't draw polylines with Opaque in block mode.
+Hint:  Use slow mouse movements.  Scrape works only pointwise
+and not with Block.  Scrape large areas with BOX (which see). 
+
+    -POINT- 
+--------------------------- 
+Set single points.
+
+Brush or Block
+
+Point, in conjunction with the SHIFT and CONTROL keys, turns on
+special functions.
+
+SHIFT:    The block is copied behind the current picture.
+CONTROL:  The block is copied onto the current picture and the
+part of the picture that was covered up becomes the new block. 
+With this, arbitrarily complicated blocks (especially in OBJECT
+mode) can be brought onto a picture.  Try it once!
+
+    -LINE-
+----------------------
+
+Draw lines by specifying the end points.
+
+Brush or Block
+
+    -K-LINE-
+--------------------
+Draw arbitrarily long chains of connected straight lines or
+regular polygons.  End a line chain with the right mouse button. 
+On completion of a polygon, the mouse is set in the center so
+that you can draw concentric polygons without having to mark the
+center point.
+
+Brush or block.
+Parameters:
+  Mode:  Free Regular
+  Edges: 3 4 5 6 7 8 9
+
+Limitations: - Blocks can't be used with regular polygons.
+
+    - FRAME -
+---------------------
+Draw squares by marking two corners with the mouse.
+
+Brush or block.
+
+    - CIRCLE -
+------------------------
+Draw circles and ellipses.  On completion of a circle, the mouse
+is set at the center so you can draw concentric circles [or
+ellipses? -ed] without having to locate the center point.
+
+Brush or block.
+
+Parameters:
+  Mode: Center 2-Point 3-Point
+
+In center mode, circles and ellipses are specified with the
+center point and the radius or two semiaxes.  To get true
+circles, hold down the ALTERNATE key while drawing.
+
+In 2-Point mode, you mark two points which are taken as the ends
+of a diameter and the circle is drawn between them.  In 3-Point
+mode, you specify three points [not in a straight line] and a
+circle is fit to them.
+
+Limitations:  CIRCLE works in Center mode only with the block.
+
+   - ERASER -
+--------------------------
+Brush: Mark the size of your eraser with a rectangle.  With it,
+you can wipe the screen clean, except for the frame of the
+rectangle itself.  Resize the rectangle by pressing the right
+mouse button.
+
+Block:  The block is your eraser.  The form of the block comes
+from the block mode (which see).
+
+    - AIRBRUSH -
+------------------------------
+Spray can
+
+Parameters:
+  Form:  Flat  Center  - Uniform density across the spray or 
+                         heavier in the middle
+  Flow:  Low Medium High  Rate of flow
+
+Before spraying, set the spray size with a circle.
+
+Limitations:  Works only with Brush.
+
+    - RAYS -
+----------------
+Draw lines with a common start point.
+
+Brush or block.
+
+    - POLYGON -
+------------------------
+Draw filled polygons, regular or no.  Use the right mouse button
+when drawing irregular polygons.
+
+Brush:  The polygon will be filled with the current background
+pattern.
+
+Block:  The polygon will be filled with the background associated
+with the block.
+
+Limitations:  Not more than 128 sides, please.
+
+    - BOX -
+--------------------
+Draw a filled rectangle or carry out a special function inside a
+rectangular region.
+
+Set two corner points of the rectangle with the mouse.
+
+
+Parameters:
+  Tint: Opaque Scrape Glass Effects
+  Source 1 2 3 4 5 6 7 8 9
+
+Opaque:
+  Brush:  The rectangle will be filled with the current
+          background pattern.
+  Block:  The rectangle will be filled with the background 
+          pattern associated with the block.  (Try a checkerboard
+          pattern and a multi-colored block.) 
+
+  Scrape: A rectangular region will be 'scraped' out of the
+          screen specified by Source and the colors will be 
+          adjusted simultaneously.
+
+  Glass:  The current color will be applied transparently over
+          the rectangle.  (Good for multiple levels of a color.)
+
+Effects:  An effect routine will be applied over the rectangle. 
+The effects are specified in Source:
+
+  1 = ANTI 4            5 = EROSION
+  2 = ANTI 8            6 = MEDIAN -
+  3 = ROUND             7 = MEDIAN
+  4 = CONTRAST          8 = MEDIAN +
+                        9 = DILATATION
+
+Limitations:  With a block, only opaque mode is available.
+
+    - DISC -
+------------------
+Draw filled circles or ellipses.
+
+Brush or block.
+
+Parameters:
+  Mode:  Center  2-Point  3-Point
+
+Same as CIRCLE, above.  In brush mode, the current background is
+the fill pattern, while block mode uses the pattern associated
+with the block.
+
+    - TEXT -
+------------------
+Add lines of text with either standard or a user-defined font. 
+Specify the standard font's parameters in the Color menu (which
+see).
+
+Further Parameters:  
+User-defined fonts may be no more than 32x32 pixels in 16
+colors.  CAUTION:  User-defined fonts are always loaded on the
+current screen!
+   
+   Settings: 
+        Width    - of the character
+        Height   - of the character
+        Distance - between two characters in proportional spacing.
+        Screen  - which one do you want the font on?
+
+Save Parameters:  A file with the name of the current screen and
+the extension DEF will be written with the current parameters. 
+When a picture in the format C A1, IC1, PI1, or PC1 is loaded, a
+matching DEF file will be sought, and if found, read.
+
+To load SIGNUM! editor fonts:  The characters are 16x24 pixels
+and are always in color #15.  (Can be changed with EXCHANGE in
+the color menu.)  These values will be automatically set. 
+Distance is set to 1.  In the color menu, EXTRA and PROP are
+chosen in order to be able to work with the fonts immediately.
+
+To load editor FNT fonts (TEMPUS, EDIMAX, DEGAS...)  Up to 8x16
+pixels, the above holds.
+
+    - OUTLINE -
+----------------------------
+Put a colored border around an area.  Select the area and/or the 
+color with the mouse.
+
+Parameters:
+  Form:  Round  Square  -  Mark the corners of the border.
+  Part:  Local  Global  -  Put a border around only this area or
+     around all areas of the same color on the screen.
+  Mode:  Initial  All  Put a border around only the selected
+     color or bring all neighboring colors into the area.
+  Type:  Stay  Grow  -  The bounded area remains or is wiped out.
+
+Limitations:  Works only on the background color.
+
+    - FILL -
+---------------------
+Fill areas (Flood Fill).  Brush:  The current background pattern 
+is the fill pattern.  Block:  The background pattern connected to 
+the block is used.
+
+    - SMEAR -
+-------------------
+Wiping of pixels.  
+
+Parameters:
+  Flow: Low Medium High  - Flow velocity of the smear function.
+  Size: 02 04 08 16      - Edge length of the smearing rectangle 
+                           in pixels.
+
+Limitations:  Works only in Brush mode.
+
+    - MIRROR -
+--------------------
+Reflection about axes of symmetry.
+
+Parameters: Mirror Mode:
+     Horizontal - Reflection about the horizontal axis of
+                  symmetry.
+     Vertical   - Reflection about the vertical axis of symmetry.
+     Both       - Simultaneous reflection about both axes
+
+Limitations:  Doesn't work with 
+  ERASER, AIRBRUSH, TEXT, OUTLINE, FILL, SMEAR, SPLINE
+
+Should one of these functions be active when MIRROR is selected, 
+the program shifts automatically to DRAW.  If you select one of 
+these functions while in MIRROR, you will be switched out.  The 
+fill pattern of area-related functions like POLYGON, BOX, and 
+DISC is not reflected.
+
+    - SPLINE -
+-----------------
+Drawing spline curves with two different algorithms and arcs
+between two points.
+
+Parameters:
+  Mode:        Bezier    - Spline that is tangent to a polyline
+               Smooth    - Spline that passes through the corner 
+                           points of a polyline
+               Curve     - Arc between two endpoints.  
+                           Intersection (below) is ignored.
+  Intersection: 04 06 08 10 - Number of support points between 
+                           two end points.
+
+Limitations:  Doesn't work with Block.
+
+
+    The Working Screens
+    -------------------
+
+In the lower left corner of the main menu, you will see nine 
+numbered buttons, each with two light diodes.  They represent the 
+working screens.  Depending on memory size, the available screens 
+will be marked with blue LEDs on startup.  (The blue LEDs have a 
+further meaning for animation, which see.)  The current working 
+screen is marked with a red LED.  Switch screens with the mouse 
+or by typing the corresponding number.  The right mouse button 
+toggles you between the current screen and the main menu.  The 
+ESC key will get you back to the current screen from the main 
+menu, but the reverse DOES NOT work.  In the current screen, the 
+ESC key cuts out a block.
+
+    Functions with the Working Screens
+-----------------------------------------
+
+     Screen Erase:  Holding the left mouse button down, drag the 
+desired screen icon into the trash can.  For safety, the program 
+asks whether you really want to erase screen #n.
+
+     Copying, Swapping, Flowing:  Drag one icon onto a second.  A 
+dialog box appears, allowing:
+
+     Everything     | Picture | Color Palette
+     Copy           | Swap    | Flow
+
+and, if it makes sense, recolor to match the current palette.
+
+     Add to Animation List:  A double click on the working screen 
+icon turns the blue LED on or off (if the screen is available).  
+The screens with the blue lights on are in the animation list; 
+the others are not.  (See ANIMATION)  By the way, if you hold the 
+mouse button down on an unavailable icon, the current one will be 
+grabbed!
+
+
+    - SHOW - (The gray button)
+-------------------------------
+Next to the nine buttons is a similar one, labeled SUPER.  With 
+this one it is possible to get an overview of all active screens.
+
+A double click on this button allows the setting of parameters:
+  Mode: Black/White Color(/TT-View)
+
+With Black/White, all occupied screens will be drawn in little 
+gray-scale pictures.  That takes a certain amount of time.  After 
+that, little frames are drawn around them all simultaneously.  
+Under each picture is its name or a blue DISUSED.  Empty screens 
+are marked with a graffiti EMPTY SCREEN.
+
+With Color, all nine (or as many as available) screens will be 
+drawn in reduced size using the color palette of the current 
+screen.  Thereby, it is possible to draw pictures larger than one 
+screen.  In order to match the edges of the component pictures, 
+each can be "rolled out" like piecrust.  Use the cursor keys and 
+the pictures will be copied in the corresponding direction by one 
+half the screen width or height.  (Only the available screens, 
+naturally.)  This makes sense only for 1, 2, 3, 4, 6, and nine 
+pictures.  (You will see why when you try it.)  The working 
+screens will then show the seam lines and you can doctor them to 
+match.
+
+Finally, all pictures can be restored to their original 
+positions.
+
+With TT-View, screens 1-4 are shown in middle TT resolution with 
+the current color palette.
+
+    Blocks
+--------------
+
+The menu may give you the idea that we're crazy about blocks.  To 
+be honest, we carry out nearly all our picture manipulations with 
+blocks.  On the other hand, we create our pictures with the 
+loupe.  This is one reason why the loupe got special attention, 
+but more on that later.
+
+How, then, can one cut out the desired part of the screen?  CRACK 
+ART offers four (!!!!) possible ways to cut out a block.  The ESC 
+key always works.  If you change your mind or find an error, just 
+press ESC again or press the right mouse button and the previous 
+block is still there.  But, if you do something with the new 
+block and then change your mind, you lose the previous block.
+
+     1.  Cutting out a rectangular block
+------------------------------------------
+
+After you press the ESC key, a screen-sized cross hair appears.  
+The current X and Y coordinates are shown in the lower left 
+corner.  With the mouse, move the cross hair to one corner of 
+your block.  It doesn't matter which corner.  Press the left 
+mouse button and hold it down.  The cross hair disappears and a 
+rectangle appears.  Moving the mouse, draw a frame around the 
+block you want.  When you release the left button, the block is 
+captured and all functions are directed at the block.  Depending 
+on which function was previously active, either a small, hollow 
+cross hair or the block itself will follow the mouse motion.  By 
+way of explanation, all functions which do drawing operations on 
+an area will use the block and its associated background pattern 
+as a fill pattern.  If you want to use the block as a pure fill 
+pattern, a fully filled background pattern must be active.  
+(Background patterns are set in the color menu.  See there.)  If 
+you want to see your block, turn the DRAW function on by typing 
+D.  This guarantees that your block is tied to the mouse.  You 
+can draw as usual, but marked with the block.  With the B key, 
+you toggle between Block and Brush.
+
+     2.  Cutting out a round block
+-------------------------------------
+
+If you want to cut circular or elliptical blocks (Yes, that 
+works, too.) press CONTROL+ESC.  The large cross hair appears 
+again, with which you mark the center of your block.  Press and 
+hold the left mouse button while you pull an ellipse around the 
+desired area.  See CIRCLE, above, for a review.  When you release 
+the mouse button, the round (elliptical) block is cut out.  From 
+here on, everything works as it did for rectangular blocks, only 
+the block mode is OBJECT.  More on that at the end.
+
+     3.  Cutting a block with a lasso
+-------------------------------------
+
+If rectangular or round blocks aren't enough, CRACK ART offers 
+the possibility of cutting out blocks of arbitrary shape.  Press 
+SHIFT+ESC.  A small cross hair, like those used by the drawing 
+functions, appears.  Move the cross hair to the start point of 
+your cut and click (don't hold) the left mouse button to mark the 
+point.  Now, without pressing any mouse buttons, draw your 
+lasso loop.  No fair crossing your loop; CRACK ART inscribes a 
+polygon inside it and fills it.  Click the right button when 
+you're done.  Now, with the left mouse button, you can choose 
+either what's inside or what's outside the loop as your block.  
+From here on, everything works as described for rectangles and 
+round blocks.
+  
+
+Some programs allow maybe only 27 or 1000 corners on your 
+polygon.  You don't have to worry about such piddly numbers with 
+CRACK ART.  You will probably never need its maximum 10,000 
+points.  TIP:  If you want a block in the form of wild lines, 
+scribble all over the screen, then cut off a tiny loop at the 
+end.  Only this part will be filled.  Depending on the density of 
+lasso lines, the resulting block is more or less recognizable.  
+The block mode is OBJECT.
+
+When selecting a block by one of the three foregoing methods, if 
+you hold down the ALT key, the spot occupied by the block will be 
+erased when you cut the block out.  You will have a hole in the 
+picture, which you can restore with the UNDO key.
+
+     4.  Cutting out a block via a fill function
+-------------------------------------------------
+
+If you want to cut out a complicated looking (but connected) 
+block, press ALT+ESC and click on the screen region which you 
+want to take as a block..  Pixels of color 0 (background color) 
+will be interpreted as borders of the block.  The object within 
+the border will be taken as a block.  The block mode is OBJECT.
+
+     What do the various block modes have to say?
+--------------------------------------------------
+
+In the menu you will see in the top row a button with an artist's 
+paintbrush on it.  To its right is a button with a highlighted 
+block.  You can toggle back and forth between them with the mouse 
+or the B key (radio buttons).  Farther to the right are the 
+buttons for setting the block mode and the block boundaries on 
+the screen.
+
+    - XRAY -
+----------------
+In this mode, all parts of the block having the background color 
+(color 0) are transparent.
+
+    - OBJECT -
+----------------
+This block mode is something quite special.  It is produced by 
+cutting with the lasso or the ellipse, through which the block 
+mask is determined.  All regions within the mask are opaque.  If 
+this mode is inactive, it can be turned on via the menu and 
+produces an object mask.  (See CUT and OBJECT.)
+
+    - BLOCKED -
+------------------
+In this block mode, all regions of the block are opaque 
+(rectangles).
+
+     More about block modes:
+-----------------------------
+You can switch back and forth between XRAY and BLOCKED without 
+loss of information.  You can use the menu buttons or the left 
+and right parentheses on the keyboard. [Note - the German 
+keyboard layout is different; you may have to experiment here.]
+If you shift from OBJECT to another block mode, you lose the old 
+object mask.
+
+For example, take a block containing an unfilled circle.  If you 
+cut this block out in circular form, probably not exactly 
+centered on the unfilled circle, you will have an Object Block 
+with a mask which renders the inner area opaque, but which 
+follows the contour well.  If you switch to XRAY, the circle is 
+transparent inside and out, but in BLOCKED mode, the circle is 
+opaque inside and out, with a rectangular mask surrounding.  Now, 
+when you apply the OBJECT function to this block, you get a block 
+that is opaque inside and transparent outside, with the circle 
+perfectly bordering the mask.  [Remember 'way back in the 
+introduction when the authors suggested trying the various 
+functions as you go along?  This is a good place to do so.]
+
+     Bordering the block with the screen edges
+----------------------------------------------
+With the buttons FREE-MOVE and EDGE-STOP, or the '/' and '*' 
+keys, you can toggle back and forth between the two kinds of 
+border specifying.  EDGE-STOP means that the block can't pass 
+beyond the screen boundaries, while FREE-MOVE lets the block 
+cross half way over the boundary, that is till the middle of the 
+block reaches the boundary.
+
+     The Color Menu
+-------------------
+
+The color menu allows access to some very powerful functions 
+which are suitable not only for color manipulation but also for 
+direct picture and block manipulation.  As one of the primary 
+tools in CRACK ART, it should not be underestimated.
+
+Because CRACK ART supports up to nine work screens with 
+individual color palettes, it is pointless to set colors from the 
+main menu.  Thus, the color menu is reachable only from the work 
+screens.  To get it, press the SPACE bar, or, with the mouse 
+cursor on the extreme edge of the screen, press the right mouse 
+button.  A pop-up menu will appear, with the 16 current colors 
+displayed side by side.  Above and below the color register are 
+arrows.  The upper arrow marks the current drawing color and the 
+lower one points to the so-called EXCHANGE color, which we will 
+cover below.  Choose the drawing color by clicking on the 
+register.
+
+On the right side of the menu are sliders for the red, blue, and 
+green components of the drawing color.  Adjust them by clicking 
+on the upper or lower arrows on the sliders.
+
+By clicking and holding on the MOVE button on the left side, you 
+can push the menu around the screen.
+
+Clicking on the fill pattern box calls up another menu containing 
+80 readymade fill patterns.  The current one is ringed.  Select 
+with the left mouse button.  The new fill pattern will be 
+displayed in the color menu.  
+
+The 80 fill patterns can't be edited.  The possible fill patterns 
+in CRACK ART are far too numerous to be limited to 16x16 pixel 
+units.  Since you can use any block as a fill pattern, you don't 
+need to diddle with the built in patterns.
+
+The font display box always contains the A of the current font.  
+For user-defined fonts, this is a useful check for the right 
+sizes.  Font attributes are set with the SYSTEM, EXTRA, and PROP 
+boxes.  The current settings are displayed in reverse video.  
+Change the size of the system font with the buttons marked with 
+left and right arrows.  These buttons have no effect on user-
+defined fonts.  If you choose the EXTRA option, the parameters 
+you set by double clicking on the TEXT icon in the main menu are 
+taken on here (SETTINGS).  If you then turn on PROP, the user-
+defined fonts are displayed as proportional fonts.
+
+     Options for manipulating the color palette
+-----------------------------------------------
+
+     Predefined Color Palettes:
+----------------------------------
+The function keys are loaded with 20 predefined color palettes.  
+Palette F1 corresponds to the original ST palette and palette F2 
+to the preset CRACK ART palette.  Palettes F11 through F20 are 
+reached via SHIFT + F1 through F10.  [Nothing here about F3 thru 
+F10.  Try it and see.]  Many of these palettes are useful for 
+gray scale pictures or digitalized or scanned graphics.
+
+     Copying a Color to Another Register
+----------------------------------------
+If you hold the left button down on a color register, you can drag 
+it to another one.  When you release the button, the copying is 
+complete.  [Whether you can do one color at a time or the whole 
+register has to come, is not clear here.  Try it.]
+
+     Swapping Two Color Registers
+---------------------------------
+Proceed as above, but before releasing the mouse button, press 
+the ALT key.
+
+     Producing a Color Sequence
+-------------------------------
+If you want a uniform or proportional color sequence between two 
+registers, click on one, then press ALT and click on the other.  
+[Which changes?  Try it.]
+
+     Determining the Color of a Point on the Screen
+----------------------------------------------------
+If you move the mouse pointer outside the menu boundaries, the 
+arrow becomes a cross hair.  Clicking the left button causes the 
+color of the point under the cross hair to become the current 
+drawing color.
+
+     Direct Color Selection
+----------------------------
+If you double click on one of the color registers or outside the 
+color menu, a raster of 16 colors appears.  The raster is 
+arranged in WORK SETS which are reached by COLORS.  NEOCHROME 
+gives you exactly the Neochrome color arrangement.  CUBE gives 
+you a stacked arrangement.  (The faces of an RGB cube with sides 
+of length eight.)  Pick your color with the tiny frame [the 
+cursor shape?].  When you click the left button, the new color 
+will be placed in the current color register [replacing what?].  
+The right mouse button ends the process.
+
+     Special Functions:
+------------------------
+
+SORT:     Sorts the colors according to brightness.  The pixels 
+of the picture and the block will be changed accordingly.
+
+INV:      Inverts the color palette.  If you hold the ALT key 
+down, a photo negative palette is created.
+
+INV+EX:   Analogous to INV, but changes the picture, too.
+
+STATS:    Displays a tabular overview of the picture points on 
+the screen or in the block, depending on whether BRUSH or BLOCK 
+was selected in the main menu.
+
+EXCHANGE: Exchanges the pixel colors according to the exchange 
+rules set by the arrows below the color register.  If. for 
+example, you choose color #1 and its exchange arrow points to 
+color #2, color #2 will replace color #1 everywhere in the 
+picture or block.  You can do several colors simultaneously.  In 
+this way you can correct colors after swapping registers.
+IMPORTANT!  If you selected BLOCK in the color menu, exchanges 
+work only on blocks.  For this reason, EXCHANGE is a very 
+powerful block function.
+
+With the following combinations (a key and the left mouse 
+button), no pixel exchange will occur:
+ALT+EXCHANGE directs all exchanges back onto themselves.
+SHIFT+EXCHANGE rotates all exchange colors one position to the 
+left.
+CONTROL+EXCHANGE rotates all exchange colors one position to the 
+right.
+
+SET PLANES:  Enables inblending or outblending [?] of single 
+bitplanes via the buttons 0 through 3.  The current arrangement 
+of planes can be taken over with a double click on SET PLANES. 
+[?]  Exit by clicking the right mouse button.
+
+BRIGHT+-: Brightens or darkens the entire color palette.
+
+RGB+-:    Brightens or darkens the primary colors of the palette.
+
+Most functions which alter the color palette can be undone to the 
+previous condition with the UNDO key.
+
+Leave the color menu with the SPACE bar or the right mouse 
+button.
+
+     Block Operations
+----------------------
+
+    - X-RAY -
+--------------
+Function:  The object mode will be set to X-RAY.
+Description: The function creates a mask which is transparent to 
+all parts of the picture containing no graphic (Color 0).  The 
+resulting block mode is X-RAY.
+
+    - OBJECT -
+----------------
+Function:  Builds an OBJECT mask for the current block.
+Description: The function creates a mask which is transparent to 
+all picture parts outside the block.  Parts inside the block, on 
+the other hand, don't show through.  Try it with a circle.  Block 
+mode afterward is OBJECT.
+
+    - BLOCKED -
+------------------
+Function:  Sets object mode to BLOCKED.
+Description:  The function builds a rectangular mask in the size 
+of the block.  The entire block region is opaque.  Block mode 
+stays BLOCKED afterward.
+
+    - FREE MOVE -
+--------------------
+Function:  Allows movement of the block till the center of the 
+block reaches a screen boundary.
+
+    - EDGE STOP -
+-------------------
+Function:  No part of the block may pass the screen boundary.
+
+    - SIZE -
+------------
+Function:  Changes the size of the current block.
+Description:  The current block is identified in the upper left 
+corner.  A frame marks the current size.  The X and Y dimensions 
+of the frame are shown in the lower left corner.  Stretch the 
+frame to the desired size with the mouse and left button.  UNDO 
+restores the previous size.  HELP invokes interpolation during 
+the size adjustment.  This filters out some of the unattractive 
+patterns that occur with simple resizing routines.  The quality 
+of the result is especially good in very small sizes.
+
+Holding down the 
+     ALT key allows only the vertical size to change;
+     SHIFT key allows only the horizontal size to change;
+     CONTROL key holds the aspect ratio constant.
+     Right mouse button accepts the new block and takes you back 
+     to the menu.
+Block mode afterward is XRAY.
+
+    - ROTATE -
+-----------------
+Function:  Rotates a block in angular steps.
+Description:  The current block is displayed in the middle of the 
+screen.  A frame marks the rotation position and a line from the 
+center of the frame to the mouse position helps determine the 
+angle, which is displayed in the lower left corner.  Turn the 
+frame to rotate the block.
+
+Pressing the
+
+     UNDO key sets block and frame back to zero rotation;
+     Left mouse button carries out the rotation;
+     HELP key causes nonaliasing rotation, calculating fractional 
+     degrees;
+     BACKSPACE key causes modulo rotation [base 360?] and fills 
+     the entire screen with the rotated block;
+     Right mouse button accepts the new block and takes you back 
+     to the menu, with an XRAY block mode.
+
+    - H-SKEW -
+-----------------
+Function: Horizontal shearing of the block.
+Description:  The current block is displayed in the middle of the 
+screen, surrounded by a parallelogram showing the current skew 
+position.  Change the parallelogram to distort the block.
+
+Pressing the
+     UNDO key sets the block and frame back the way they were;
+     Left mouse key carries out the operation;
+     Right mouse button accepts the new block and takes you back 
+     to the menu with an XRAY block mode.
+
+
+    - V-SKEW -
+-----------------
+Function: Vertical shearing of the block.
+Description:  The current block is displayed in the middle of the 
+screen, surrounded by a parallelogram showing the current skew 
+position.  Change the parallelogram to distort the block.
+
+Pressing the
+     UNDO key sets the block and frame back the way they were;
+     Left mouse key carries out the operation;
+     Right mouse button accepts the new block and takes you back 
+     to the menu with an XRAY block mode.
+
+    - H-SKEW -
+-----------------
+Function: Horizontal shearing of the block.
+Description:  The current block is displayed in the middle of the 
+screen, surrounded by a parallelogram showing the current skew 
+position.  Change the parallelogram to distort the block.
+
+Pressing the
+     UNDO key sets the block and frame back the way they were;
+     Left mouse key carries out the operation;
+     Right mouse button accepts the new block and takes you back 
+     to the menu with an XRAY block mode.
+
+    - H-PERSP -
+-----------------
+Function: Horizontal trapezoidal warping of the block.
+Description:  The current working screen is displayed as 
+background.  A trapezoid marks the current position an form of 
+the block.  Change the trapezoid to determine the future 
+appearance of the block.
+
+Pressing the
+     ALT+Left mouse button carries out the operation;
+     Right mouse button takes you back to the menu with an XRAY 
+     block mode.
+
+    - V-PERSP -
+-----------------
+Function: Vertical trapezoidal warping of the block.
+Description:  The current working screen is displayed as 
+background.  A trapezoid marks the current position and form of 
+the block.  Change the trapezoid to determine the future 
+appearance of the block.
+
+Pressing the
+     ALT+Left mouse button carries out the operation;
+     Right mouse button takes you back to the menu with an XRAY 
+     block mode.
+
+    - CURL -
+-------------
+Function:  Radial skewing of a block.
+Description:  This function strongly resembles the BULGE routine 
+in speed and operation.  With the mouse, you specifiy two radii, 
+a starting angle, and an ending angle.  The block will be 
+projected onto the specified region, whose maximimum size is a 
+circle of diameter 200 pixels.
+
+The right mouse button stops the operation; block mode afterward 
+is OBJECT.
+
+Peculiarities:  No UNDO is possible.  (Angles in the demo are 
+incorrectly oriented.  From 0 to 1 is actually 0 to 359.  Try 
+it.)
+
+    - BULGE -
+--------------
+Function:  Spherical distortion of a block.
+Description:  This block function is one of the most successful 
+routines in the entire program in terms of speed and the results.
+First, a rectangle appears.  In its upper half is shown a mirror 
+symmetric filled curve.  (The size depends on the block.  Try 
+some big blocks first.)  When you press the right mouse button, 
+the block transformation is carried out with this function.  On 
+completion, the block looks as if it had been stretched over a 
+sphere.
+
+If you would like to control the distortion function, you can 
+alter the curve by holding the left mouse button down.  The 
+height of the function is a measure of the stretching of the 
+block at this point (on a circular path).  The function isn't 
+followed exactly, but generally acts like a lens placed very 
+close.  Experiment with middle sized to large blocks. The largest 
+allowable ending block is a circle of diameter 200 pixels.  Try 
+to generate curves in the form of a normal distribution.  (If you 
+have trouble getting started, there is a picture on every 10 Mark 
+note.) [We Yankees will have to remember the bell curve.]  The 
+results will usually fit almost exactly back into the original 
+picture.  If you had a colorful geometrical object there, you 
+will see after the transformation how [the artist?] Vasarely 
+creates his works.
+
+Since the ending block mode is OBJECT it can happen that circular 
+blocks sometimes have a disturbing edge.  Switch the block mode 
+to XRAY or BLOCKED and generate a new mask with OBJECT.
+
+Peculiarities:  No UNDO is possible.
+
+    - TUBE -
+----------------
+Function:  Pull the block around a tube.
+Description:  With the mouse, a line drawing of the tube can be 
+altered in radius and viewing angle.  
+
+The function is activated with the left mouse button.  The tube 
+is built from back to front.  Thereby, the rearward parts of the 
+block, which would be visible from inside the tube, are darkened 
+in order to give the effect of depth.  Block mode at end is XRAY.    
+
+Peculiarities:  No UNDO is possible.
+
+    - FIT-IN -
+-----------------
+Function:  Horizontal fitting of a block into an (almost) freely 
+definable form.
+Description:  The current screen is the background.  Specify a 
+start point with the mouse cursor or abort with the right mouse 
+button.  You can specify up to 9,999 more in defining your form 
+(identical to cutting out with the lasso).  Click the right mouse 
+button to show completion of the border, then click the left 
+button either inside or outside to show which is to be used as 
+the form.  (Normally inside; outside doesn't make much sense.)  
+Before fitting begins, the form is made "horizontally convex."  
+That is, the leftmost and rightmost points on each row of pixels 
+are linked together.  Then the block is squished into the 
+resulting form.  Ending block mode is OBJECT.
+
+Peculiarities:  No UNDO possible.
+
+    - DITHER -
+----------------
+Function:  Five routines for producing a gentle color transition.
+Description:  IMPORTANT:  The appearance of the resulting block 
+depends on the block mode!
+
+V-DITHER:  Vertical dithering.  A color sequence from top to 
+bottom is produced.
+
+H-DITHER:  Horizontal dithering.  A left to right color sequence 
+is produced. 
+
+S-DITHER:  Dithering according to arithmetic average [of what?].  
+The color sequence proceeds linearly from a center outward.
+
+M-DITHER:  Dithering according to root mean square [again, of 
+what?].  The color sequence proceeds quadratically from a center 
+outward.
+
+R-DITHER:  Radial dithering, using the Euclidean norm.  The color 
+sequence proceeds circularly outward from a center.
+
+After selection of the desired method, a partial color menu 
+appears: the 16 color registers, each with an arrow above and 
+below.  The arrows can be moved with the left mouse button.  They 
+can't both point to the same color.  The upper arrow points to 
+the starting color - top side, left side, or center.  The lower 
+arrow points to the ending color - bottom, right side, or outer 
+rim.  Press the right mouse button to get things started.
+
+V- and H-DITHER run in real time and start immediately.  For the 
+others, the block is indicated and its size is shown with a 
+rectangle.  With the left mouse button, bick a dithering center 
+inside the rectangle.  The mouse cursor disappears and the 
+function is carried out in the background.  (That takes a little 
+while.  For R-DITHER, up to 64,000 square roots have to be 
+calculated!)
+
+By the way, the dither matrices are adjusted according to the 
+size of the block.  If the block is too small to process with the 
+specified number of colors, S-, M-, and R-Dither do nothing.  V- 
+and H-Dither will return the pure colors in lines.  Each routine 
+has three dither matrix sizes available.  That gives up to 64 
+steps between two colors!
+
+The actual dithering is carried out differently according to the 
+block mode.  If the mode is BLOCKED, you get a dithered 
+rectangle.  For X-RAY, the color run is visible only where there 
+is a graphic.  That is, an empty block still looks empty and will 
+therefore be shrunk to 1*1 pixels!
+
+Try R-DITHER with a predefined palette on a circular block in X-
+RAY mode. (See DEMO/DEMO3.CA1)
+
+    - CUT -
+----------------
+Function:  Minimize X and Y spread of the block.
+Description:  The block is trimmed by removal of empty edges.
+Limitations:  Doesn't work with block mode OBJECT.  This function 
+is on the HELP key in the working screen.
+
+Other block functions in the working screen:
+--------------------------------------------
+
+Key: BACKSPACE
+--------------
+Function:  Turns block 90 degrees to the right.
+
+Description:  The current block is rotated 90 degrees clockwise.  
+This is quicker than calling up the menu and specifying 270 
+degrees (counterclockwise).  The block doesn't rotate about its 
+center point, but rather so that its left edge ends up on top.  
+Pixels with X coordinate greater than 199 will be clipped by the 
+lower screen edge and lost.  If you want to preserve the right 
+edge, flip the block with the cursor keys, then turn it.
+
+Key: RETURN
+-----------
+Function:  Sets the block to the current color palette.
+
+Description:  Should the block come from a work screen with 
+another color palette, you can try to reset the colors to conform 
+to the current palette.  The function tries to maintain as much 
+as possible of the original colors and brightnesses.
+
+Key:  Cursor Keys
+------------------
+Function:  Block flipping.
+
+Description:  The block and mask are flipped in the direction 
+indicated by the cursor key.
+
+     The Magnifying Glass
+----------------
+
+In the top row of the main menu is a button called WORK SETS.  
+With this button, it is also possible to specify parameters for 
+the magnifying glass.  Clicking on the button brings up a dialog
+box on  which the parameters Preview Zoom and Zoom Grid can be
+turned on or off.  Preview Zoom means that when you choose a
+segment to enlarge, a real-time magnifying glass is displayed. 
+The  portion of the picture under the magnifying glass is
+enlarged fourfold.  The 12x12 magnifying glass (F10) enlarges 16
+fold.  By the way, it is possible to traverse the edges of the
+picture with this magnifying glass, unlike a well known
+monochrome drawing program whose magnifying glass stops at the 
+edges.  The real time magnifying glass works in all 10
+enlargements.  If you turn it off, you get a crosshatched region
+marking the region to enlarge.
+
+With the Zoom Grid option, the individual pixels are marked by a 
+grid in the background color.  They're a little easier to 
+distinguish this way.  If you turn the option off, no grid is 
+drawn.
+
+How Can I Call Up the Magnifying Glass?
+----------------------------
+
+If you are in the working screen, you call up the ten enlargement
+levels with the function keys.  Enlargements run from 3*3 (F1)
+to 12*12 (F10).  Depending on the parameter values specified,
+the real time magnifying glass is on the function keys and the
+frame is on the shifted function keys (Preview Zoom On) or vice
+versa (Preview Zoom Off).  Both options are always available. 
+Once you've chosen which preview mode you're in, you can change
+enlargements without the SHIFT key.  The right mouse button puts
+you back in normal drawing mode.
+
+Choose the picture segment you want to enlarge and press the left 
+mouse button to display the enlargement.  You find yourself in 
+the actual magnifying glass.
+
+     On the Construction of the Magnifying Glass
+---------------------------------------
+
+In the left part of the screen you will see a crosshatched, 
+rectangular section of the working screen, which marks the 
+enlarged area.  The current color palette is above, with the 
+current color marked with an arrow.  Next to the color menu on 
+the right are four arrows.  By left clicking on one of them, you 
+can cause the working area of the magnifying glass to move in
+that direction by 50% of the extent of the magnifying glass in
+that direction.  The cursor keys function the same way.  At the
+top right of the screen is a narrow box with which you can
+toggle the Zoom Grid without leaving the magnifying glass.  The
+actual magnifying glass is at the lower right.
+
+On the Functions in the Magnifying Glass
+------------------------------
+
+The magnification can be changed at any time by pressing a 
+function key.  The center always stays in the magnified area.  
+You can pick a new center by left clicking in the original 
+picture.  The magnifying glass and the little frame will follow. 
+Abandon the magnifying glass by right clicking outside the
+magnified area.
+
+You can change the current color by left clicking in the color 
+palette or by right clicking in the magnified area.  The second 
+method allows the current color of magnified sections to be 
+changed quickly without constantly having to run back to the 
+color palette.  As fast as you left click on a pixel in the 
+magnified view, the original is also changed.  You can change it 
+back with the UNDO key and change it back again with a second 
+press of the UNDO key.
+
+You can also cut out rectangular blocks from inside the
+magnifying glass.   Press the ESCAPE key and a double cross hair
+appears.  Mark a corner of the block with it.  The procedure
+then is the same as the normal cutting of a rectangular block,
+except the fram is doubled.  If you hold down the ALT key when
+you releas the mouse button, the block will be erased from the
+magnifying glass.  The UNDO key restores it.  The block can be
+used only in the working screen.
+
+To save tedious painting in the magnifying glass, you can fill
+the whole  area at once by holding the ALT key down while
+pressing the left mouse button anywhere in the magnified region.
+The area will be filled with the current drawing color.
+
+*******************************************************************
+     Copyright 1992 Miami Valley Atari Computer Enthusiasts
+*******************************************************************
