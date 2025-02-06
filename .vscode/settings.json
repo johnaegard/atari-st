@@ -5,7 +5,9 @@
         "linea.h": "c",
         "osbind.h": "c",
         "types.h": "c",
-        "screen.h": "c"
+        "screen.h": "c",
+        "maze.h": "c",
+        "zeroes.h": "c"
     },
         "workbench.colorCustomizations": {
         "editorCursor.foreground": "#be2a10",

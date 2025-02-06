@@ -1,0 +1,232 @@
+#include <16bittypes.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <screen.h>
+#include <maze.h>
+
+const bool ERASE_MODE = true;
+const bool DRAW_MODE = false;
+const word HWALL_NO_SPRITE = 0;
+const word HWALL_END_SPRITE = 1;
+const word HWALL_START_SPRITE = 2;
+const word HWALL_FULL_SPRITE = 3;
+
+const byte zeroes[32] = {};
+
+word** generate_maze(int rows, int cols) {
+  srand(time(NULL));
+
+  word** map_data = (word**)Malloc(rows * sizeof(word*));
+  if (map_data == NULL) {
+    printf("Memory allocation failed!\n");
+    exit(1);
+  }
+  for (int r = 0; r < rows; r++) {
+    map_data[r] = (word*)Malloc(cols * sizeof(word));
+    if (map_data[r] == NULL) {
+      printf("Memory allocation failed!\n");
+      exit(1);
+    }
+    for (int c = 0; c < cols; c++) {
+      word roll = (rand() & 0XF);
+      if (roll <= 3) {
+        map_data[r][c] = roll;
+      }
+      else {
+        map_data[r][c] = 0;
+      }
+      map_data[0][c] = 2;
+    }
+    map_data[r][0] = 1;
+  }
+
+  for (int r = 0; r < rows; r++) {
+    map_data[r][cols - 1] = 1;
+    map_data[r][0] = 1;
+  }
+  for (int c = 0; c < cols; c++) {
+    map_data[0][c] = 2;
+    map_data[rows - 1][c] = 2;
+  }
+
+  map_data[0][0] = 3;
+  map_data[0][rows - 1] = 3;
+
+  // map_data[3][2] = 2;
+  // map_data[3][5] = 1;
+  // map_data[4][4] = 2;
+  map_data[2][2] = 3;
+  // map_data[5][7] = 2;
+  // map_data[7][3] = 2;
+  // map_data[7][4] = 2;
+  // map_data[7][5] = 2;
+  // map_data[7][7] = 1;
+
+  return map_data;
+}
+void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log) {
+  Vsync();
+
+  if (mode == ERASE_MODE) {
+    cx = screenbase->last_cx;
+    cy = screenbase->last_cy;
+  }
+
+  addr screenbase_addr = (addr)screenbase->base;
+  addr spritebase_addr = (addr)spritebase;
+  addr dest_addr;
+
+  signed short start_row = (cy - VIEWPORT_HEIGHT_PX / 2) / CELL_SIZE_PX;
+  signed short end_row = 2 + (cy + VIEWPORT_HEIGHT_PX / 2) / CELL_SIZE_PX;
+  signed short start_col = -1 + (cx - VIEWPORT_WIDTH_PX / 2) / CELL_SIZE_PX;
+  signed short end_col = (cx + VIEWPORT_WIDTH_PX / 2) / CELL_SIZE_PX;
+  signed short topleft_x = cx - (VIEWPORT_WIDTH_PX / 2);
+  signed short topleft_y = cy - (VIEWPORT_HEIGHT_PX / 2);
+  signed short screen_yoffset = (topleft_y > 0) ? (-1 * (cy % CELL_SIZE_PX)) :
+    -1 * (topleft_y % CELL_SIZE_PX);
+
+  word cx_mod = cx % 32;
+  word vwall_src_y = (16 - (cx_mod % 16)) % 16;
+  addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
+
+  // TODO LOL
+  signed short col_offset_bytes = (topleft_x < -79) ? 16 :
+    (topleft_x < -63) ? 0 :
+    (topleft_x < -47) ? 16 :
+    (topleft_x < -31) ? 0 :
+    (topleft_x < -15) ? 16 :
+    (topleft_x < 0) ? 0 :
+    (cx_mod == 0) ? 0 :
+    (cx_mod >= 16) ? 0 : -16;
+  word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
+
+  // if (log) {
+  //   fprintf(log_file,
+  //     "  start_row=%d, start_col=%d, end_row=%d, end_col=%d, cxmod=%d, topleft_x=%d, topleft_y=%d screen_yoffset=%d\n",
+  //     start_row, start_col, end_row, end_col, cx_mod, topleft_x, topleft_y, screen_yoffset);
+  // }
+
+  word screen_row = 0;
+  for (signed short maze_row = start_row; maze_row < end_row; maze_row++) {
+    signed short screen_col = 0;
+    if (maze_row < 0 || maze_row >= MAZE_WIDTH_CELLS) {
+      screen_row++;
+      continue;
+    }
+    for (signed short maze_col = start_col; maze_col <= end_col; maze_col++) {
+      if (maze_col < 0 || maze_col >= MAZE_WIDTH_CELLS) {
+        screen_col++;
+        continue;
+      }
+      if ((maze[maze_row][maze_col] & 1) == 1) {
+        // 
+        // vert lines
+        //
+        word screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
+        signed short xoff = screen_col_offset_bytes + col_offset_bytes + vwall_chunk_offset_bytes;
+        // fprintf(log_file,"xoff=%d, VIEWPORT_W_B=%d\n",xoff,VIEWPORT_WIDTH_BYTES);
+        if (xoff < 0 || xoff >= VIEWPORT_WIDTH_BYTES) {
+          if (log) {
+            // fprintf(log_file, "    vwall xoff=%d out of bounds, skipping screen_col=%d\n", xoff, screen_col);
+          }
+          screen_col++;
+          continue;
+        }
+        signed short start_yoff = ((screen_row * CELL_SIZE_PX) + screen_yoffset) * LINE_SIZE_BYTES;
+        for (signed long yoffset = start_yoff; yoffset < start_yoff + (CELL_SIZE_PX * LINE_SIZE_BYTES);
+          yoffset = yoffset + LINE_SIZE_BYTES) {
+          dest_addr = screenbase_addr + yoffset + xoff;
+          // CLIP
+          if (dest_addr >= screenbase_addr && dest_addr <= screenbase_addr + VIEWPORT_HEIGHT_PX * LINE_SIZE_BYTES) {
+            memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+          }
+        }
+      }
+
+      //
+      // hwalls
+      //
+      bool prev_cell_has_hwall = (maze_col <= 0) ? false :
+        (screen_col == -1) ? false :
+        ((maze[maze_row][maze_col - 1] & 2) == 2);
+
+      bool this_cell_has_hwall = (maze_col >= MAZE_WIDTH_CELLS - 1) ? false :
+        ((maze[maze_row][maze_col] & 2) == 2);
+
+      word hwall_sprite_type;
+
+      if (this_cell_has_hwall) {
+        if (cx_mod == 0) {
+          hwall_sprite_type = HWALL_FULL_SPRITE;
+        }
+        else if (prev_cell_has_hwall) {
+          hwall_sprite_type = HWALL_FULL_SPRITE;
+        }
+        else {
+          hwall_sprite_type = HWALL_START_SPRITE;
+        }
+      }
+      else {
+        if (prev_cell_has_hwall) {
+          hwall_sprite_type = HWALL_END_SPRITE;
+        }
+        else {
+          hwall_sprite_type = HWALL_NO_SPRITE;
+        }
+      }
+
+      word hwall_src_y;
+
+      if (hwall_sprite_type != HWALL_NO_SPRITE) {
+        if (hwall_sprite_type == HWALL_END_SPRITE) {
+          hwall_src_y = HWALL_END_SPRITES_Y + cx_mod;
+        }
+        else if (hwall_sprite_type == HWALL_START_SPRITE) {
+          hwall_src_y = HWALL_START_SPRITES_Y + cx_mod;
+        }
+        else if (hwall_sprite_type == HWALL_FULL_SPRITE) {
+          hwall_src_y = HWALL_FULL_SPRITE_Y;
+        }
+        else {
+          perror("wtf?");
+          exit(1);
+        }
+
+        addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
+
+        signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
+        signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + col_offset_bytes;
+        signed short hwall_yoffset_bytes = ((screen_row * CELL_SIZE_PX) + screen_yoffset) * LINE_SIZE_BYTES;
+        dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
+
+        // if (log) {
+        //   fprintf(log_file,
+        //     "    hwall draw_mode=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d\n",
+        //     mode, maze_row, maze_col, screen_row, screen_col);
+        //   fprintf(log_file,
+        //     "          prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n",
+        //     prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y);
+        //   fprintf(log_file,
+        //     "          hwall_screen_col_offset_bytes=%d, col_offset_bytes=%d hwall_xoffset_bytes=%d\n",
+        //     hwall_screen_col_offset_bytes, col_offset_bytes, hwall_xoffset_bytes);
+        //   fprintf(log_file,
+        //     "          screen_row=%d, screen_yoffset=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
+        //     screen_row, screen_yoffset, hwall_yoffset_bytes, dest_addr);
+        // }
+        if (hwall_xoffset_bytes >= 0 &&
+          hwall_xoffset_bytes < VIEWPORT_WIDTH_BYTES &&
+          hwall_yoffset_bytes >= 0 &&
+          hwall_yoffset_bytes <= VIEWPORT_HEIGHT_PX * LINE_SIZE_BYTES) {
+          memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+        }
+      }
+      screen_col++;
+    }
+    screen_row++;
+  }
+
+  if (mode == DRAW_MODE) {
+    screenbase->last_cx = cx;
+    screenbase->last_cy = cy;
+  }
+}

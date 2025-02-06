@@ -3,7 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <mint/osbind.h>
-#include <zolo-types.h>
+#include <16bittypes.h>
 
 typedef struct {
   void* aligned_ptr;
@@ -12,7 +12,8 @@ typedef struct {
 
 typedef struct {
   word* palette;
-  word* base;
+  AlignedBuffer aligned_buffer;
+  void* base;
 } Screen;
 
 typedef struct {
@@ -23,8 +24,6 @@ typedef struct {
 
 FILE* log_file;
 Base tmpbase;
-const word zeroes_arry[32] = { 0 };
-void* zeroes = (void*)zeroes_arry;
 
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = (void*)Malloc(size + 255);
@@ -55,6 +54,7 @@ void dump_degas_file(word* palette, void* base) {
     exit(EXIT_FAILURE);
   }
   // low-res word
+  byte zeroes[2]={};
   size_t written = fwrite(zeroes, 2, 1, file);
   if (written != 1) {
     perror("Failed to write header data");
@@ -85,18 +85,19 @@ void dump_degas_file(word* palette, void* base) {
   fclose(file);
 }
 Screen make_screen_from_degas_file(const char* filename) {
-  Screen screen;  // Struct to hold the arrays
-
-  screen.palette = (word*)Malloc(16 * sizeof(word));
-  screen.base = (word*)Malloc(16000 * sizeof(word));
+  AlignedBuffer buffer = new_aligned_buffer(32000);
+  Screen screen = {
+    .palette = (word*)Malloc(16 * sizeof(word)),
+    .aligned_buffer = buffer,
+    .base = buffer.aligned_ptr
+  };
 
   // Open the file in binary mode
   FILE* file = fopen(filename, "rb");
   if (!file) {
-    perror("Error opening file");
+    perror("Error opening file");  screen.palette = (word*)Malloc(16 * sizeof(word));
     exit(EXIT_FAILURE);
   }
-
   // Skip the first word
   if (fseek(file, sizeof(word), SEEK_SET) != 0) {
     perror("Error seeking in file");
@@ -114,15 +115,16 @@ Screen make_screen_from_degas_file(const char* filename) {
     exit(EXIT_FAILURE);
   }
   fclose(file);
-  Setpalette(screen.palette);
   return screen;
 }
-Screen make_screen_from_base(void* base) {
-  Screen screen;
-  screen.palette = (word*)Malloc(16 * sizeof(word));
-  screen.base = (word*)Malloc(16000 * sizeof(word));
-  get_current_palette(screen.palette);
-  memcpy(screen.base, base, 32000);
+Screen new_screen(Screen source){
+  AlignedBuffer buffer = new_aligned_buffer(32000);
+  Screen screen = {
+    .palette = (word*)Malloc(16 * sizeof(word)),
+    .aligned_buffer = buffer,
+    .base = buffer.aligned_ptr
+  };
+  memcpy(screen.base,source.base,32000);
   return screen;
 }
 void copy_screen_to_base(Screen screen, void* base) {
@@ -131,7 +133,7 @@ void copy_screen_to_base(Screen screen, void* base) {
 }
 void free_screen(Screen screen) {
   free(screen.base);
-  free(screen.palette);
+  free_aligned_buffer(screen.aligned_buffer);
 }
 void clear_screen(Screen screen) { memset(screen.base, 0, 32000); }
 void swap_pages(Base* logbase, Base* physbase) {

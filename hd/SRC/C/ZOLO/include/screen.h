@@ -6,7 +6,7 @@
 #include <time.h>
 #include <string.h>
 #include <mint/osbind.h>
-#include <zolo-types.h>
+#include <16bittypes.h>
 
 typedef struct {
     void* aligned_ptr;
@@ -14,8 +14,9 @@ typedef struct {
 } AlignedBuffer;
 
 typedef struct {
-    word* palette;
-    word* base;
+  word* palette;
+  AlignedBuffer aligned_buffer;
+  void* base;   
 } Screen;
 
 typedef struct {
@@ -24,17 +25,12 @@ typedef struct {
     word last_cy;
 } Base;
 
-extern FILE* log_file;
-extern Base tmpbase;
-extern const word zeroes_arry[32];
-extern void* zeroes;
-
 AlignedBuffer new_aligned_buffer(size_t size);
 void free_aligned_buffer(AlignedBuffer buffer);
 void get_current_palette(word* palette);
 void dump_degas_file(word* palette, void* base);
 Screen make_screen_from_degas_file(const char* filename);
-Screen make_screen_from_base(void* addr);
+Screen new_screen(Screen source);
 void copy_screen_to_base(Screen screen, void* buffer);
 void free_screen(Screen screen);
 void clear_screen(Screen screen);

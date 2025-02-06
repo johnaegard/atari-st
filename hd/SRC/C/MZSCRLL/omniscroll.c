@@ -265,7 +265,6 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
 
   fflush(log_file);
 }
-
 void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log) {
   Vsync();
 
