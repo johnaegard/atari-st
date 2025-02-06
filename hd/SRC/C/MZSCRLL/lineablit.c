@@ -20,6 +20,8 @@ typedef struct {
   unsigned short* bitmap;
 } Screen;
 
+FILE* log_file;
+
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = malloc(size + 255);
   if (!original_ptr) {
@@ -98,7 +100,25 @@ void clear_screen(Screen screen) {
   memset(screen.bitmap, 0, 32000);
 }
 
+void lineablit(void* src_base, short src_x, short src_y, short src_w, short src_h,
+  void* dest_base, short dest_x, short dest_y,
+  bool log) {
+
+  if (log) {
+    fprintf(log_file, "src_base=%p, dest_base=%p\n");
+  }
+}
+
+
 int main() {
+
+  log_file = fopen("sprite.log", "w");
+  if (log_file == NULL) {
+    perror("Error opening log file");
+    return EXIT_FAILURE;
+  }
+  Cursconf(0, 1);
+
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   AlignedBuffer sprite_buffer = new_aligned_buffer(32000);
   put_screen(sprite_screen,sprite_buffer.aligned_ptr);
@@ -110,15 +130,8 @@ int main() {
     .fg1bg1 = 0X03
   };
 
-	// short	bl_xmin;		/* Minimum x			*/
-	// short	bl_ymin;		/* Minimum y 			*/
-	// char	*bl_form;		/* short aligned memory form 	*/
-	// short	bl_nxwd;		/* Offset to next word in line  */
-	// short 	bl_nxln;		/* Offset to next line in plane */
-	// short 	bl_nxpl;		/* Offset to next plane 	*/
-
   SDDB source = {
-    .bl_xmin = 0,
+    .bl_xmin = 257,
     .bl_ymin = 193,
     .bl_form = (char *) sprite_buffer.aligned_ptr,
     .bl_nxwd = 8,
@@ -150,22 +163,54 @@ int main() {
    .bb_p_mask=0            /*	 pattern index mask 			     */
   };
 
-  //  short   bb_b_wd;     /*	 width of block in pixels 		     */
-  //  short   bb_b_ht;     /*	 height of block in pixels		     */
-  //  short   bb_plane_ct; /*	 number of planes to blit 		     */
-  //  short   bb_fg_col;   /*	 foreground color 			     */
-  //  short   bb_bg_col;   /*	 back	ground color 			     */
-  //  OP_TAB  bb_op_tab;   /*	 logic for fg x bg combination 		     */
-  //  SDDB	   bb_s;        /*	 source info block			     */
-  //  SDDB	   bb_d;        /*	 destination info block 		     */
-  //  short*  bb_p_addr;  /*	 pattern buffer address 		     */
-  //  short   bb_p_nxln;   /*	 offset to next line in pattern 	     */
-  //  short   bb_p_nxpl;   /*	 offset to next plane in pattern 	     */
-  //  short   bb_p_mask;   /*	 pattern index mask 			     */
-  //  char	   bb_fill[24];	/*	 work space				     */
-
   linea7(&bbpb);
   getchar();
+
+  // source.bl_xmin = source.bl_xmin + 8;
+  // bbpb.bb_b_ht =7;
+  // bbpb.bb_b_wd =7;
+
+  SDDB source2 = {
+    .bl_xmin = 265,
+    .bl_ymin = 193,
+    .bl_form = (char *) sprite_buffer.aligned_ptr,
+    .bl_nxwd = 8,
+    .bl_nxln = 160,
+    .bl_nxpl = 2
+  };
+
+  SDDB dest2 = {
+    .bl_xmin = 132,
+    .bl_ymin = 100,
+    .bl_form = (char *) Physbase(),
+    .bl_nxwd = 8,
+    .bl_nxln = 160,
+    .bl_nxpl = 2
+  };
+
+  BBPB bbpb2 = {
+   .bb_b_wd = 7,           /*	 width of block in pixels 		     */
+   .bb_b_ht = 7,           /*	 height of block in pixels		     */
+   .bb_plane_ct = 4,       /*	 number of planes to blit 		     */
+   .bb_fg_col =1,          /*	 foreground color 			           */
+   .bb_bg_col=0,           /*	 back	ground color 			            */
+   .bb_op_tab=optab,       /*	 logic for fg x bg combination 	    */
+   .bb_s=source2,           /*	 source info block			            */
+   .bb_d=dest2,             /*	 destination info block 		        */
+   .bb_p_addr=0,           /*	 pattern buffer address 		       */
+   .bb_p_nxln=0,           /*	 offset to next line in pattern 	     */
+   .bb_p_nxpl=0,           /*	 offset to next plane in pattern 	     */
+   .bb_p_mask=0            /*	 pattern index mask 			     */
+  };
+
+  linea7(&bbpb2);
+
+  getchar();
+  // memset(bbpb.bb_fill, 0, sizeof(bbpb.bb_fill));  
+
+  // linea7(&bbpb);
+  // getchar();
+
   free_screen(sprite_screen);
   free_aligned_buffer(sprite_buffer);
   return 0;
