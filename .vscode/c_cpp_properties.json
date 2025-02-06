@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/hd/SRC/C/ZOLO/include/**",
                 "/usr/m68k-atari-mint/include/"
             ],
             "defines": [],

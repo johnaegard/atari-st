@@ -85,7 +85,7 @@ Screen read_degas_file(const char* filename) {
   // Return the struct containing the arrays
   return screen;
 }
-Screen copy_screen(void* addr) {
+Screen make_screen_from_base(void* addr) {
   Screen screen;
   screen.palette = (unsigned short*)malloc(16 * sizeof(unsigned short));
   screen.bitmap = (unsigned short*)malloc(16000 * sizeof(unsigned short));
@@ -93,7 +93,7 @@ Screen copy_screen(void* addr) {
   memcpy(screen.bitmap, addr, 32000);
   return screen;
 }
-void put_screen(Screen screen, void* buffer) {
+void copy_screen_to_base(Screen screen, void* buffer) {
   Setpalette(screen.palette);
   memcpy(buffer, screen.bitmap, 32000);
 }
@@ -113,7 +113,7 @@ int main() {
   void* tmpbase;
   Cursconf(0, 1);
 
-  Screen original_screen = copy_screen(physbase);
+  Screen original_screen = make_screen_from_base(physbase);
   memset(physbase, 0, 32000);
 
   Screen sprite_and_palette_screen = read_degas_file(".\\RES\\WALLS.PI3");
@@ -179,7 +179,7 @@ int main() {
 
   getchar();
 
-  put_screen(original_screen, physbase);
+  copy_screen_to_base(original_screen, physbase);
 
   free_screen(sprite_and_palette_screen);
   free_aligned_buffer(altpage_ram);

@@ -3,7 +3,9 @@
         "PAGEFLIP.C": "cpp",
         "string.h": "c",
         "linea.h": "c",
-        "osbind.h": "c"
+        "osbind.h": "c",
+        "types.h": "c",
+        "screen.h": "c"
     },
         "workbench.colorCustomizations": {
         "editorCursor.foreground": "#be2a10",

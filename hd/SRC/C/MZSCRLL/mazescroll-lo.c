@@ -86,7 +86,7 @@ Screen read_degas_file(const char* filename) {
   Setpalette(screen.palette);
   return screen;
 }
-Screen copy_screen(void* addr) {
+Screen make_screen_from_base(void* addr) {
   Screen screen;
   screen.palette = (unsigned short*)malloc(16 * sizeof(unsigned short));
   screen.bitmap = (unsigned short*)malloc(16000 * sizeof(unsigned short));
@@ -94,7 +94,7 @@ Screen copy_screen(void* addr) {
   memcpy(screen.bitmap, addr, 32000);
   return screen;
 }
-void put_screen(Screen screen, void* buffer) {
+void copy_screen_to_base(Screen screen, void* buffer) {
   Setpalette(screen.palette);
   memcpy(buffer, screen.bitmap, 32000);
 }
@@ -122,7 +122,7 @@ void the_end(clock_t start, clock_t end,void *physbase,Screen original_screen, w
   printf("%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
 
   getchar();
-  put_screen(original_screen, physbase);
+  copy_screen_to_base(original_screen, physbase);
 }
 
 int main() {
@@ -133,7 +133,7 @@ int main() {
   Cursconf(0, 1);
   Setscreen(physbase,physbase,-1);
 
-  Screen original_screen = copy_screen(physbase);
+  Screen original_screen = make_screen_from_base(physbase);
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   memcpy(physbase,sprite_screen.bitmap,32000);
   getchar();

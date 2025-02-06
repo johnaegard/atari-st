@@ -80,7 +80,7 @@ Screen read_degas_file(const char* filename) {
   Setpalette(screen.palette);
   return screen;
 }
-Screen copy_screen(void* addr) {
+Screen make_screen_from_base(void* addr) {
   Screen screen;
   screen.palette = (unsigned short*)malloc(16 * sizeof(unsigned short));
   screen.bitmap = (unsigned short*)malloc(16000 * sizeof(unsigned short));
@@ -88,7 +88,7 @@ Screen copy_screen(void* addr) {
   memcpy(screen.bitmap, addr, 32000);
   return screen;
 }
-void put_screen(Screen screen, void* buffer) {
+void copy_screen_to_base(Screen screen, void* buffer) {
   Setpalette(screen.palette);
   memcpy(buffer, screen.bitmap, 32000);
 }
@@ -164,7 +164,7 @@ int main() {
 
   Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   AlignedBuffer sprite_buffer = new_aligned_buffer(32000);
-  put_screen(sprite_screen,sprite_buffer.aligned_ptr);
+  copy_screen_to_base(sprite_screen,sprite_buffer.aligned_ptr);
 
   lineablit(sprite_buffer.aligned_ptr,257,193,7,7,Physbase(),100,100,true);
   getchar();
