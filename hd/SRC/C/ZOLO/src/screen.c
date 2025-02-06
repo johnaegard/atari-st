@@ -117,7 +117,7 @@ Screen make_screen_from_degas_file(const char* filename) {
   fclose(file);
   return screen;
 }
-Screen new_screen(Screen source){
+Screen copy_screen(Screen source){
   AlignedBuffer buffer = new_aligned_buffer(32000);
   Screen screen = {
     .palette = (word*)Malloc(16 * sizeof(word)),

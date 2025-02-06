@@ -30,7 +30,7 @@ void free_aligned_buffer(AlignedBuffer buffer);
 void get_current_palette(word* palette);
 void dump_degas_file(word* palette, void* base);
 Screen make_screen_from_degas_file(const char* filename);
-Screen new_screen(Screen source);
+Screen copy_screen(Screen source);
 void copy_screen_to_base(Screen screen, void* buffer);
 void free_screen(Screen screen);
 void clear_screen(Screen screen);
