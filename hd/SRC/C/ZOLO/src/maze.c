@@ -4,8 +4,6 @@
 #include <screen.h>
 #include <maze.h>
 
-const bool ERASE_MODE = true;
-const bool DRAW_MODE = false;
 const word HWALL_NO_SPRITE = 0;
 const word HWALL_END_SPRITE = 1;
 const word HWALL_START_SPRITE = 2;
@@ -64,15 +62,15 @@ word** generate_maze(int rows, int cols) {
 
   return map_data;
 }
-void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log) {
+void render_maze(bool draw_mode, word** maze, word cx, word cy, Page* page, void* spritebase, bool log, FILE* logfile) {
   Vsync();
 
-  if (mode == ERASE_MODE) {
-    cx = screenbase->last_cx;
-    cy = screenbase->last_cy;
+  if (draw_mode == ERASE_MODE) {
+    cx = page->last_cx;
+    cy = page->last_cy;
   }
 
-  addr screenbase_addr = (addr)screenbase->base;
+  addr screenbase_addr = (addr)page->base;
   addr spritebase_addr = (addr)spritebase;
   addr dest_addr;
 
@@ -87,7 +85,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
 
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
-  addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
+  addr vwall_src_addr = (draw_mode == true) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
   // TODO LOL
   signed short col_offset_bytes = (topleft_x < -79) ? 16 :
@@ -192,7 +190,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
           exit(1);
         }
 
-        addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
+        addr hwall_src_addr = (draw_mode == true) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
         signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + col_offset_bytes;
@@ -225,8 +223,8 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
     screen_row++;
   }
 
-  if (mode == DRAW_MODE) {
-    screenbase->last_cx = cx;
-    screenbase->last_cy = cy;
+  if (draw_mode == true) {
+    page->last_cx = cx;
+    page->last_cy = cy;
   }
 }

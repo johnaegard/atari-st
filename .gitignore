@@ -5,3 +5,4 @@ hatari-2.5.0/
 *.TOS
 *.log
 *.BAK
+*.o

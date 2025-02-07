@@ -15,8 +15,10 @@
 #define HWALL_START_SPRITES_Y 70
 #define HWALL_FULL_SPRITE_Y 110
 
-typedef struct 
-{
+#define ERASE_MODE false
+#define DRAW_MODE true;
+
+typedef struct {
   word viewport_height_px;
   word viewport_width_px;
   word cell_size_px;
@@ -26,12 +28,8 @@ typedef struct
   word bytes_per_line;
 } MazeRenderConf;
 
-typedef struct {
-  word maze_width_cells;
-  word maze_height_cells;
-} Mazeconf;
-
 word** generate_maze(int rows, int cols);
-void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log);
+void render_maze(bool mode, word** maze, word cx, word cy, Page* page, void* spritebase, 
+  bool log, FILE* logfile);
 
 #endif

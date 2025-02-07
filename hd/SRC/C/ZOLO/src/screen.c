@@ -4,26 +4,9 @@
 #include <string.h>
 #include <mint/osbind.h>
 #include <16bittypes.h>
+#include <screen.h>
 
-typedef struct {
-  void* aligned_ptr;
-  void* original_ptr;
-} AlignedBuffer;
-
-typedef struct {
-  word* palette;
-  AlignedBuffer aligned_buffer;
-  void* base;
-} Screen;
-
-typedef struct {
-  void* base;
-  word last_cx;
-  word last_cy;
-} Base;
-
-FILE* log_file;
-Base tmpbase;
+Page tmppage;
 
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = (void*)Malloc(size + 255);
@@ -136,11 +119,18 @@ void free_screen(Screen screen) {
   free_aligned_buffer(screen.aligned_buffer);
 }
 void clear_screen(Screen screen) { memset(screen.base, 0, 32000); }
-void swap_pages(Base* logbase, Base* physbase) {
-  tmpbase = *physbase;
-  *physbase = *logbase;
-  *logbase = tmpbase;
-  Setscreen(logbase->base, physbase->base, -1);
+Page new_page(Screen screen){
+  Page page = {
+    .screen = screen,
+    .base = screen.base
+  };
+  return page;
+}
+void swap_pages(Page* logical, Page* physical) {
+  tmppage = *physical;
+  *physical = *logical;
+  *logical = tmppage;
+  Setscreen(logical->base, physical->base, -1);
 }
 void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
@@ -149,8 +139,8 @@ void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen,
   copy_screen_to_base(original_screen, physbase);
   Setscreen(physbase, physbase, -1);
 
-  fprintf(log_file, "%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
-  if (fclose(log_file) != 0) {
-    perror("Error closing log file");
-  }
+  // fprintf(log_file, "%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
+  // if (fclose(log_file) != 0) {
+  //   perror("Error closing log file");
+  // }
 }

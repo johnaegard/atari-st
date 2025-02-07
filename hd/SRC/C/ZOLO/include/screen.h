@@ -20,10 +20,11 @@ typedef struct {
 } Screen;
 
 typedef struct {
+    Screen screen;
     void* base;
     word last_cx;
     word last_cy;
-} Base;
+} Page;
 
 AlignedBuffer new_aligned_buffer(size_t size);
 void free_aligned_buffer(AlignedBuffer buffer);
@@ -34,7 +35,8 @@ Screen copy_screen(Screen source);
 void copy_screen_to_base(Screen screen, void* buffer);
 void free_screen(Screen screen);
 void clear_screen(Screen screen);
-void swap_pages(Base* logbase, Base* physbase);
+Page new_page(Screen screen);
+void swap_pages(Page* logical, Page* physical);
 void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames);
 
 #endif // SCREEN_H
