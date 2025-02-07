@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <screen.h>
 #include <maze.h>
+#include <mint/osbind.h>
 
 const word HWALL_NO_SPRITE = 0;
 const word HWALL_END_SPRITE = 1;
@@ -11,21 +12,21 @@ const word HWALL_FULL_SPRITE = 3;
 
 const byte zeroes[32] = {};
 
-word** generate_maze(int rows, int cols) {
+Maze generate_maze(word height_cells, word width_cells) {
   srand(time(NULL));
 
-  word** map_data = (word**)Malloc(rows * sizeof(word*));
+  word** map_data = (word**)Malloc(height_cells * sizeof(word*));
   if (map_data == NULL) {
     printf("Memory allocation failed!\n");
     exit(1);
   }
-  for (int r = 0; r < rows; r++) {
-    map_data[r] = (word*)Malloc(cols * sizeof(word));
+  for (int r = 0; r < height_cells; r++) {
+    map_data[r] = (word*)Malloc(width_cells * sizeof(word));
     if (map_data[r] == NULL) {
       printf("Memory allocation failed!\n");
       exit(1);
     }
-    for (int c = 0; c < cols; c++) {
+    for (int c = 0; c < width_cells; c++) {
       word roll = (rand() & 0XF);
       if (roll <= 3) {
         map_data[r][c] = roll;
@@ -38,17 +39,17 @@ word** generate_maze(int rows, int cols) {
     map_data[r][0] = 1;
   }
 
-  for (int r = 0; r < rows; r++) {
-    map_data[r][cols - 1] = 1;
+  for (int r = 0; r < height_cells; r++) {
+    map_data[r][width_cells - 1] = 1;
     map_data[r][0] = 1;
   }
-  for (int c = 0; c < cols; c++) {
+  for (int c = 0; c < width_cells; c++) {
     map_data[0][c] = 2;
-    map_data[rows - 1][c] = 2;
+    map_data[height_cells - 1][c] = 2;
   }
 
   map_data[0][0] = 3;
-  map_data[0][rows - 1] = 3;
+  map_data[0][height_cells - 1] = 3;
 
   // map_data[3][2] = 2;
   // map_data[3][5] = 1;
@@ -60,9 +61,16 @@ word** generate_maze(int rows, int cols) {
   // map_data[7][5] = 2;
   // map_data[7][7] = 1;
 
-  return map_data;
+  Maze maze = {
+    .walls = map_data,
+    .height_cells = height_cells,
+    .width_cells = width_cells
+  };
+
+  return maze;
 }
-void render_maze(bool draw_mode, word** maze, word cx, word cy, Page* page, void* spritebase, bool log, FILE* logfile) {
+void render_maze(bool draw_mode, Maze* maze, word cx, word cy, Page* page, Image* sprites, 
+  bool log, FILE* logfile) {
   Vsync();
 
   if (draw_mode == ERASE_MODE) {
@@ -70,8 +78,8 @@ void render_maze(bool draw_mode, word** maze, word cx, word cy, Page* page, void
     cy = page->last_cy;
   }
 
-  addr screenbase_addr = (addr)page->base;
-  addr spritebase_addr = (addr)spritebase;
+  addr screenbase_addr = (addr) page->base;
+  addr spritebase_addr = (addr) sprites->base;
   addr dest_addr;
 
   signed short start_row = (cy - VIEWPORT_HEIGHT_PX / 2) / CELL_SIZE_PX;
@@ -116,7 +124,7 @@ void render_maze(bool draw_mode, word** maze, word cx, word cy, Page* page, void
         screen_col++;
         continue;
       }
-      if ((maze[maze_row][maze_col] & 1) == 1) {
+      if ((maze->walls[maze_row][maze_col] & 1) == 1) {
         // 
         // vert lines
         //
@@ -140,16 +148,15 @@ void render_maze(bool draw_mode, word** maze, word cx, word cy, Page* page, void
           }
         }
       }
-
       //
       // hwalls
       //
       bool prev_cell_has_hwall = (maze_col <= 0) ? false :
         (screen_col == -1) ? false :
-        ((maze[maze_row][maze_col - 1] & 2) == 2);
+        ((maze->walls[maze_row][maze_col - 1] & 2) == 2);
 
       bool this_cell_has_hwall = (maze_col >= MAZE_WIDTH_CELLS - 1) ? false :
-        ((maze[maze_row][maze_col] & 2) == 2);
+        ((maze->walls[maze_row][maze_col] & 2) == 2);
 
       word hwall_sprite_type;
 

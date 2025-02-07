@@ -17,10 +17,10 @@ typedef struct {
   word* palette;
   AlignedBuffer aligned_buffer;
   void* base;   
-} Screen;
+} Image;
 
 typedef struct {
-    Screen screen;
+    Image image;
     void* base;
     word last_cx;
     word last_cy;
@@ -30,13 +30,13 @@ AlignedBuffer new_aligned_buffer(size_t size);
 void free_aligned_buffer(AlignedBuffer buffer);
 void get_current_palette(word* palette);
 void dump_degas_file(word* palette, void* base);
-Screen make_screen_from_degas_file(const char* filename);
-Screen copy_screen(Screen source);
-void copy_screen_to_base(Screen screen, void* buffer);
-void free_screen(Screen screen);
-void clear_screen(Screen screen);
-Page new_page(Screen screen);
+Image make_image_from_degas_file(const char* filename);
+Image duplicate_image(Image source);
+void copy_image_to_base(Image image, void* buffer);
+void free_image(Image image);
+void clear_image(Image image);
+Page new_page(Image image);
 void swap_pages(Page* logical, Page* physical);
-void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames);
+void the_end(clock_t start, clock_t end, void* physbase, Image original_screen, word frames);
 
 #endif // SCREEN_H

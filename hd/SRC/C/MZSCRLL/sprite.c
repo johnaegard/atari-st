@@ -19,7 +19,7 @@ typedef struct {
 typedef struct {
   unsigned short* palette;
   unsigned short* bitmap;
-} Screen;
+} Image;
 
 FILE* log_file;
 
@@ -47,8 +47,8 @@ void get_current_palette(unsigned short* palette) {
     Setcolor(i, palette[i]);
   }
 }
-Screen read_degas_file(const char* filename) {
-  Screen screen; // Struct to hold the arrays
+Image read_degas_file(const char* filename) {
+  Image screen; // Struct to hold the arrays
 
   screen.palette = (word*)malloc(16 * sizeof(word));
   screen.bitmap = (word*)malloc(16000 * sizeof(word));
@@ -80,23 +80,23 @@ Screen read_degas_file(const char* filename) {
   Setpalette(screen.palette);
   return screen;
 }
-Screen make_screen_from_base(void* addr) {
-  Screen screen;
+Image make_screen_from_base(void* addr) {
+  Image screen;
   screen.palette = (unsigned short*)malloc(16 * sizeof(unsigned short));
   screen.bitmap = (unsigned short*)malloc(16000 * sizeof(unsigned short));
   get_current_palette(screen.palette);
   memcpy(screen.bitmap, addr, 32000);
   return screen;
 }
-void copy_screen_to_base(Screen screen, void* buffer) {
+void copy_image_to_base(Image screen, void* buffer) {
   Setpalette(screen.palette);
   memcpy(buffer, screen.bitmap, 32000);
 }
-void free_screen(Screen screen) {
+void free_image(Image screen) {
   free(screen.bitmap);
   free(screen.palette);
 }
-void clear_screen(Screen screen) {
+void clear_image(Image screen) {
   memset(screen.bitmap, 0, 32000);
 }
 
@@ -162,16 +162,16 @@ int main() {
   }
   Cursconf(0, 1);
 
-  Screen sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
+  Image sprite_screen = read_degas_file(".\\RES\\SPRT.PI1");
   AlignedBuffer sprite_buffer = new_aligned_buffer(32000);
-  copy_screen_to_base(sprite_screen,sprite_buffer.aligned_ptr);
+  copy_image_to_base(sprite_screen,sprite_buffer.aligned_ptr);
 
   lineablit(sprite_buffer.aligned_ptr,257,193,7,7,Physbase(),100,100,true);
   getchar();
   lineablit(sprite_buffer.aligned_ptr,265,193,7,7,Physbase(),100,100,true);
   getchar();
 
-  free_screen(sprite_screen);
+  free_image(sprite_screen);
   free_aligned_buffer(sprite_buffer);
   return 0;
 }

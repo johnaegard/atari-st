@@ -2,10 +2,9 @@
 #define MAZE_H
 
 #include <16bittypes.h>
-
-#define CELL_SIZE_PX 32
-#define MAZE_WIDTH_CELLS 32
 #define MAZE_HEIGHT_CELLS 32
+#define MAZE_WIDTH_CELLS 32
+#define CELL_SIZE_PX 32
 #define VIEWPORT_WIDTH_PX 224
 #define VIEWPORT_WIDTH_BYTES 112
 #define VIEWPORT_HEIGHT_PX 192
@@ -28,8 +27,14 @@ typedef struct {
   word bytes_per_line;
 } MazeRenderConf;
 
-word** generate_maze(int rows, int cols);
-void render_maze(bool mode, word** maze, word cx, word cy, Page* page, void* spritebase, 
+typedef struct {
+  word** walls;
+  word width_cells;
+  word height_cells;
+} Maze;
+
+Maze generate_maze(word height, word width);
+void render_maze(bool mode, Maze *maze, word cx, word cy, Page* page, Image* sprites, 
   bool log, FILE* logfile);
 
 #endif

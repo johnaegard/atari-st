@@ -67,9 +67,9 @@ void dump_degas_file(word* palette, void* base) {
   }
   fclose(file);
 }
-Screen make_screen_from_degas_file(const char* filename) {
+Image make_image_from_degas_file(const char* filename) {
   AlignedBuffer buffer = new_aligned_buffer(32000);
-  Screen screen = {
+  Image screen = {
     .palette = (word*)Malloc(16 * sizeof(word)),
     .aligned_buffer = buffer,
     .base = buffer.aligned_ptr
@@ -100,9 +100,9 @@ Screen make_screen_from_degas_file(const char* filename) {
   fclose(file);
   return screen;
 }
-Screen copy_screen(Screen source){
+Image duplicate_image(Image source){
   AlignedBuffer buffer = new_aligned_buffer(32000);
-  Screen screen = {
+  Image screen = {
     .palette = (word*)Malloc(16 * sizeof(word)),
     .aligned_buffer = buffer,
     .base = buffer.aligned_ptr
@@ -110,19 +110,19 @@ Screen copy_screen(Screen source){
   memcpy(screen.base,source.base,32000);
   return screen;
 }
-void copy_screen_to_base(Screen screen, void* base) {
-  Setpalette(screen.palette);
-  memcpy(base, screen.base, 32000);
+void copy_image_to_base(Image image, void* base) {
+  Setpalette(image.palette);
+  memcpy(base, image.base, 32000);
 }
-void free_screen(Screen screen) {
-  free(screen.base);
-  free_aligned_buffer(screen.aligned_buffer);
+void free_image(Image image) {
+  free(image.base);
+  free_aligned_buffer(image.aligned_buffer);
 }
-void clear_screen(Screen screen) { memset(screen.base, 0, 32000); }
-Page new_page(Screen screen){
+void clear_image(Image image) { memset(image.base, 0, 32000); }
+Page new_page(Image image){
   Page page = {
-    .screen = screen,
-    .base = screen.base
+    .image = image,
+    .base = image.base
   };
   return page;
 }
@@ -132,11 +132,11 @@ void swap_pages(Page* logical, Page* physical) {
   *logical = tmppage;
   Setscreen(logical->base, physical->base, -1);
 }
-void the_end(clock_t start, clock_t end, void* physbase, Screen original_screen, word frames) {
+void the_end(clock_t start, clock_t end, void* physbase, Image original_screen, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
   double fps = frames / total_time;
 
-  copy_screen_to_base(original_screen, physbase);
+  copy_image_to_base(original_screen, physbase);
   Setscreen(physbase, physbase, -1);
 
   // fprintf(log_file, "%d frames\n%f seconds\n%f fps\n", frames, total_time, fps);
