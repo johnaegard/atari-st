@@ -2,7 +2,13 @@
 #include <lineablit.h>
 #include <16bittypes.h>
 #include <screen.h>
+#include <stdbool.h>
 #include <maze.h>
+
+const word VIEWPORT_HEIGHT_PX = 192;
+const word VIEWPORT_WIDTH_PX = 224;
+const word VIEWPORT_WIDTH_BYTES = 112;
+const word CELL_SIZE_PX = 32;
 
 int main() {
   Cursconf(0, 1);
@@ -20,11 +26,14 @@ int main() {
   Setscreen(physical_page.base,physical_page.base,-1);
 
   MazeRenderConf maze_render_conf = {
-    .viewport_width_px = VIEWPORT_WIDTH_PX
+    .viewport_width_px = VIEWPORT_WIDTH_PX,
+    .viewport_height_px = VIEWPORT_HEIGHT_PX,
+    .viewport_width_bytes = VIEWPORT_WIDTH_BYTES,
+    .cell_size_px = CELL_SIZE_PX
   };
 
   Maze maze = generate_maze(32,32);
-  render_maze(true, &maze, 430, 430, &physical_page, &sprites, false,0);
+  render_maze(MAZE_DRAW_MODE, &maze, maze_render_conf, 430, 430, &physical_page, &sprites, false,0);
   lineablit(sprites.base,257,193,7,7,physical_page.base,100,100,true);
   getchar();
   lineablit(sprites.base,265,193,7,7,physical_page.base,100,100,true);

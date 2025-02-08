@@ -268,7 +268,7 @@ void log_maze(word** maze, int rows, int cols, int srow, int scol, int erow, int
 void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, void* spritebase, bool log) {
   Vsync();
 
-  if (mode == ERASE_MODE) {
+  if (mode == MAZE_ERASE_MODE) {
     cx = screenbase->last_cx;
     cy = screenbase->last_cy;
   }
@@ -288,7 +288,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
 
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
-  addr vwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
+  addr vwall_src_addr = (mode == MAZE_DRAW_MODE) ? spritebase_addr + (vwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
   // TODO LOL
   signed short col_offset_bytes = (topleft_x < -79) ? 16 :
@@ -392,7 +392,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
           exit(1);
         }
 
-        addr hwall_src_addr = (mode == DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
+        addr hwall_src_addr = (mode == MAZE_DRAW_MODE) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
 
         signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + col_offset_bytes;
@@ -425,7 +425,7 @@ void render_maze(bool mode, word** maze, word cx, word cy, Base* screenbase, voi
     screen_row++;
   }
 
-  if (mode == DRAW_MODE) {
+  if (mode == MAZE_DRAW_MODE) {
     screenbase->last_cx = cx;
     screenbase->last_cy = cy;
   }
@@ -477,8 +477,8 @@ int main() {
     if (log) {
       fprintf(log_file, "\nFRAME=%d, logbase=%p, physbase=%p, vx=%d, cy=%d\n", frames, logbase.base, physbase.base, cx, cy);
     }
-    render_maze(ERASE_MODE, maze, cx, cy, &logbase, sprite_screen.base, false);
-    render_maze(DRAW_MODE, maze, cx, cy, &logbase, sprite_screen.base, log);
+    render_maze(MAZE_ERASE_MODE, maze, cx, cy, &logbase, sprite_screen.base, false);
+    render_maze(MAZE_DRAW_MODE, maze, cx, cy, &logbase, sprite_screen.base, log);
     if (log) {
       fflush(log_file);
       log = false;

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <mint/osbind.h>
 #include <16bittypes.h>
-#include <screen.h>
+#include <image.h>
 
 Page tmppage;
 
