@@ -1,0 +1,166 @@
+HELP DIRECTORY   Type the number below that matches the subject you want.
+
+ 1  Moving the Cursor
+ 1  Delete Commands
+ 2  Searching
+ 2  File Commands
+ 2  Buffer Commands
+ 2  Multiple Windows
+ 3  Arguments
+ 3  Miscelaneous
+ 3  Whitespace
+ 3  Indentation
+ 3  Mode Selection
+ 4  Case Conversions
+ 4  Modes
+ 4  Copying and Moving
+ 5  Macro Commands
+ 6  Kermit Commands
+ X  Exit Help Session
+       
+       'ESC..' indicates press and release the ESC key
+          'C-' indicates press and hold the Control key
+<ESC>  is 'M-' the Meta Command Prefix [The ALTERNATE Key may be used as META]
+         
+MOVING THE CURSOR
+
+C-F Forward Character     C-B    Backward Character  C-N   Next Line
+C-P Previous Line         M-F    Forward Word        M-B   Backward Word
+C-A Beginning of Line     C-E    End of Line         M-A   Beginning of Sentence
+M-E End of Sentence       M-P    Front of Paragraph  M-N   End of Paragraph
+X-> Goto Next Punctuation Mark                       X-<   Previous Punctation
+M-, Beginning of Document M-.    End of Document     C-Z   Previous Screen
+C-V Next Screen           X-C-P  Scroll Window Up    X-C-N Scroll Window Down
+X-+ Next Page             X--    Previous Page       M-G   Goto Line
+C-_ Goto Matching Fence
+MOUSE-MOVEMENT  and CURSOR  in the directions marked
+DELETE COMMANDS
+
+C-Y Yankback Deletion <DEL> Previous Character      M-<DEL> Previous Word
+C-D Next Character     M-D  Next Word               M-<TAB> To End of Line
+M-C-K Entire Line      M-K Sentence Forward         M-H C-W Paragraph
+M-\ Leading Whitespace M-C-O Surrounding Greyspace  X-\     Trailing Whitespace
+
+TO DELETE REGION  1. At one end enter C-@ to Set Mark
+                  2. Move Cursor to other end of Region and type C-W
+
+
+
+SEARCHING
+C-S   Forward Search      C-R Reverse Search   M-C-S Forward Incremental Search
+M-C-T Reverse Incremental Search               M-R Search & Replace with Query
+        C-G Cancel              . Replace and End
+          ! Replace All         , Replace & Continue
+       <SP> Replace & Continue  N No Replacement & Continue
+
+FILE COMMANDS
+X-C-R Find File Read Only  X-C-F Find File Read Write X-C-V   Find Alternate
+X-C-S Save File            X-C-W Write File           X-I     Insert File
+X-A   Find File Other Window                          ESC-C-F Change Name
+
+BUFFER COMMANDS
+X-C-B List Buffers         X-K Delete Buffer          X-B   Switch Buffers
+X-C-] Toggle Read Only Status
+
+MULTIPLE WINDOW DISPLAY
+X-2 Split Windows          X-1   Only Window          X-0 Delete Current Window
+X-O Other Window           X-N   Next Window          X-P Previous Window
+X-Z Grow Window            X-C-Z Shrink Window
+
+
+
+
+ARGUMENTS
+C-U   Repeat four times.  Each repetition of C-U multiplies count by four
+<ESC> Followed by number of repetions.  You can specify a negative argument.
+      After specifying argument count, give command to be executed
+
+MISCELANEOUS
+C-T   Transpose Characters    M-T   Transpose Words     X-= Show Position
+X-C-C Quit (Queries to Save)  M-Q   Reform Paragraph    C-G Abort or Cancel
+M-C-W Gather Text             X-C-X Swap Point and Mark C-Y Yankback
+M-@   Show memory usage       C-L   Redraw Screen       M-! Reposition Window
+M-C-C Center Line             M-C-R Flushright Line     C-Q Quote Next Character
+X-S   Find Spell Mark         C-C   Spawn CLI           C-Z Save and Exit
+HELP  Call Kermit             UNDO  Yankback            CLR Redraw Screen
+X-#   Show/set page length    X-C-I Print buffer        M-? Call Help
+M-~   Clear Modification Flag X-C-T Show Time           
+RIGHT-MOUSE-BUTTON  Set Mark             LEFT-MOUSE-BUTTON  Swap Point and Mark
+
+WHITESPACE AND INDENTATION (see Modes below)
+X-.  Set Indent Prefix         X-F Set Fill Column   ARG#-<TAB> Set Tab
+<LF> Newline and Indent        M-J Open Next Indented Line Same As Current
+C-O  Open (insert) Line        M-O  Open Leading Line Indented Same As Current
+
+
+
+CASE CONVERSIONS
+M-U   Uppercase Word            M-L Lowercase Word    M-C   Capitalize Word
+M-C-P Toggle Case of Character  X-U Uppercase Region  X-C-L Lowercase Region
+
+MODE SELECTION  
+Fundamental     Words do not wrap.
+Wrap            Turns on word wrap. Automatic carriage return and indent
+                prefix (if active) is appended to each new line.
+Read Only       (Use X-C-])Allows viewing file without insertion and deletion.
+Over            Editing commands overwrite.
+C               Automatic indentation, and goto fence command checks for
+                braces at matching columns.
+COPYING & MOVING
+Copy Region  1. With the cursor at front or end of region to be copied type
+                C-@ to set the mark.
+             2. Move cursor to other end of the region to be copied and type
+                M-W.  The "+" sign will appear in the mode line.
+             3. Position cursor at destination and type: C-Y
+Delete Region:  Complete steps 1 and 2 above and then type C-W
+Write Region:   Complete steps 1 and 2 above and then type
+                X-R.  Name the file to be written.
+Insert File:    Type X-I Requested file will be inserted at the current
+                cursor position.
+
+MACRO COMMANDS
+X-(     Begin Recording Keyboard Macro     X-)   End Recording Keyboard Macro
+X-E     "Replay" Current keyboard Macro    C-G   Abort Recording or Playback
+X-`     Bind Current Keyboard Macro to a Unique Key
+`-<KEY> "Replay" macro bound to Key        `-C-L Load Macro File From Disk
+`-<CR>  Save current macros to File
+
+STEPS FOR DEFINING MACROS
+
+Define Macro 1. Type X-( to begin definition.
+             2. Type commands that will be part of the macro.
+             3. Type X-) to end Macro definition.  You now have a "current"
+                Keyboard Macro which can be "replayed" using the X-E command
+                or which can be stored and bound to a Macro key.
+Bind Macro   1. Steps 1-3 above must have been completed.  Type X-` (accent
+                grave).  "Key to bind to current macro:" appears on the
+                message line.
+             2. Type any key on the keyboard.  Case distinctions are preserved.
+                That key now holds the current keyboard macro.
+Recall Macro 1. Macro must be bound to a key.  Type the trigger character (`)
+                followed by the appropriate Macro key to "replay" Macro bound
+                to that key.
+
+
+KERMIT COMMANDS
+Help - Call Kermit function.  Kermit-ST> appears on message line.
+
+Use one of the following commands
+---------------------------------
+c - <connect> connect to modem.
+r - <receive> receive a file into buffer using Kermit protocol.
+s - <send> send a buffer to the remote using Kermit protocol.
+g - <get> get a file from remote when remote is in server mode.
+p - <put> send a buffer to the remote when remote is in server mode. 
+b - <bye> request remote Kermit in server mode to log off remote computer.
+f - <finish> tell remote Kermit in server mode to end Kermit session.
+t - <transfer> transfer a buffer to remote without Kermit protocol 
+    (End-of-line is <CR>).
+e - <emacs> transfer a buffer to remote without Kermit protocol 
+    (End-of-line is <LF>).
+l - <log> copy remote's screen output to a buffer.
+remote - must be typed in full.  Open a remote buffer and send commands
+    to remote Kermit in server mode.  Commands must be valid for the 
+    remote system to which you are connected and must not require additional
+    terminal input.  The remote's reply is sent to temporary buffer, displayed
+    on uemail screen.

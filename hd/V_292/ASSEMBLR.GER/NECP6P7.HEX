@@ -1,0 +1,172 @@
+****************************************************************
+*
+*    NEC-P6/P7  Printer Driver Configuration Table
+*
+*    This file contains tables defining the code sequences
+*    to be sent to the printer to perform various functions
+*    and to access the characters from codes in the Atari
+*    character set.
+*
+****************************************************************
+
+*
+* Name of printer
+* ===============
+*
+NEC-P6/P7
+*
+* Miscellaneous configurable variables
+* ====================================
+*
+* 1: printer type, 0=dot matrix, 1=daisy wheel
+* Note, if the printer type is 0, the following 4 variables are never used.
+* 2: unit width of one character
+* 3: unit height of one line
+* 4: Approximate middle of carriage after formfeed
+* 5: Carriage shift for bold overstrike
+* 6: 1 if pause between pages
+*
+0, 0, 0, 0, 0, 0
+
+*
+* Printer characteristics
+* =======================
+*
+* This table specifies the printer command sequences.
+*
+* 0       * Character width
+1, D, A   * Linefeed WITH return
+* 2       * Forward print
+* 3       * Reverse print
+* 4       * Vertical tab to line
+* 5       * Absolute horizontal tab 
+6, 1B, 45 * Draft bold on
+7, 1B, 46 * Draft bold off
+8, 1B, 78, 31, 1B, 45    * LQ on and bold on
+9, 1B, 78, 31, 1B, 46    * LQ on and bold off 
+* A, 1B, 70, 01       * (Draft italic) on
+* B, 1B, 70, 00       * (Draft italic) off
+C, 1B, 78, 31, 1B, 70, 01   * LQ on & proportional (italic) on
+D, 1B, 78, 31, 1B, 70, 00   * LQ on & proportional (italic) off
+* E       * Draft light on
+* F       * Draft light off
+* 10      * NLQ light on
+* 11      * NLQ light off
+12, 1B, 53, 00      * Draft superscript on
+13, 1B, 54          * Draft superscript off
+14, 1B, 78, 31, 1B, 53, 00  * LQ on &  superscript on
+15, 1B, 78, 31, 1B, 54      * LQ on &  superscript off
+16, 1B, 53, 01      * Draft subscript on
+17, 1B, 54          * Draft subscript off
+18, 1B, 78, 31, 1B, 53, 01  * LQ on & subscript on
+19, 1B, 78, 31, 1B, 54      * LQ on & subscript off 
+1A, 1B, 2D, 01      * Draft underline on
+1B, 1B, 2D, 00      * Draft underline off
+1C, 1B, 78, 31, 1B, 2D, 01  * LQ on and underline on
+1D, 1B, 78, 31, 1B, 2D, 00  * LQ on and underline off
+* 1E      * Formfeed
+1F, D     * Horizontal initialisation
+* 20      * Vertical initialisation
+21, 1B, 78, 00   * Termination: LQ off
+0         * NULL termination byte
+
+*
+* Translation Table
+* =================
+*
+* This table provides translation from single Atari input bytes into
+* multiple printer codes, and is useful for printing extraneous
+* characters such as accented characters etc. All characters are 
+* subjected to translation, but if there is no entry in the table for
+* a particular code, then the original code is sent to the printer.
+*
+* The entries must be arranged in ascending order of Atari input
+* code. The table is NULL terminated.
+* 
+* If the table entry contains just the character code, it means
+* that the character in not printable.
+*
+* NEC-Pinwriter via DIP-switch on character-set 2 (IBM) !!!
+* Special fonts select manual with font-switch on printer-console !
+
+0              * NULL: print a space
+1, 7C          * nur | 
+2, 7C          * nur | 
+3, 3E          * nur > 
+4, 3C          * nur <
+5              * No close box
+6              * No size box
+7              * No full box
+8              * No tick
+9              * No clock
+A              * No bell
+B              * No musical note
+E              * No LH Atari symbol     
+F              * No RH Atari symbol
+10, 30         * LCD 0
+11, 31         * LCD 1
+12, 32         * LCD 2    
+13, 33         * LCD 3
+14, 34         * LCD 4
+15, 35         * LCD 5
+16, 36         * LCD 6
+17, 37         * LCD 7     
+18, 38         * LCD 8
+19, 39         * LCD 9     
+7F             * No triangle
+9E, E1         * esszet
+B0, 61         * no lower case a tilde: print a
+B1, 6F         * no lower case o tilde: print o
+B2, 4F         * no capital crossed O: print O 
+B3, 6F         * no lower case crossed o: print o 
+B4             * No lower case oe dipthong
+B5             * No capital OE dipthong
+B6, 41         * No capital A grave: print A
+B7, 41         * No capital A tilde: print A
+B8, 4F         * No capital O tilde: print O
+B9, 1B, 52, 6, 5C   * umlaut from italian font
+BA, 1B, 52, 7, 7E   * acute from spanish font
+BB             * No dagger
+BC, 1B, 52, 4, 40   * paragraph symbol from german font
+BD             * No copyright symbol
+BE             * No Registered symbol
+BF             * No Trademark symbol
+C0, 79         * ij ligature: print y
+C1, 59         * Capital IJ ligature: print Y
+C2             * No Hebrew...
+C3
+C4
+C5
+C6
+C7
+C8
+C9
+CA
+CB
+CC
+CD
+CE
+CF
+D0
+D1
+D2
+D3
+D4
+D5
+D6
+D7
+D8
+D9
+DA
+DB
+DC
+DD, 1B, 52, 4, 40   * praragraph sign from german font 
+DE         * No dropped circumflex
+DF, EC     * infinity
+EC         * no ì
+FE         * No superior 3
+FF         * No macron     
+0
+
+
+

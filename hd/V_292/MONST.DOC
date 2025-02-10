@@ -1,0 +1,441 @@
+MonST.doc - Translation of manual for MonST monitor program
+10/02/86 - Ron Sprunger
+
+Corrections 10/05/86 - Ron Sprunger
+
+
+*** Introduction to MonST - Version 1.0 - 3/86 ***
+Program by:
+
+Matthias Meyer
+Rosenwinkel 36
+2380 Schleswig
+West Germany
+
+"Looking under the keys"
+-------------------------
+
+MonSt is a comfortable and powerful monitor program for the Atari ST.
+The program is fully relocatable, and will run anywhere in memory, but
+not on EPROM.  It makes little use of GEMDOS, and has only one XBIOS call,
+so it will work with all versions of TOS.
+
+To use the program, you must have an eighty-character monitor, either
+high or medium resolution only.
+
+When MonST is started, it displays the block of memory which it has
+occupied.  The user should remember or write down these addresses in
+order to avoid accidentally overwriting the monitor.
+
+Use the program with care!  You are working very close to the machine
+itself, which means that careless memory edits can quickly crash the 
+computer.
+
+
+a) Full Screen Editor
+
+TOS unfortunately provides only keyboard-in and picture-out routines,
+and not (as for instance the old Commodores) a picture-in routine.  In
+other words, the screen cannot be read easily to pickup the changes
+which might have been made.  For this reason, a 2000 byte buffer is used
+to hold the screen text, making changes directly on the screen possible.
+This text buffer lies just above the program code, and uses no RAM 
+outside of the program code area (except for the exception vectors - 
+see "V").
+
+- The cursor can be moved all over the screen with the cursor control
+  keys (arrows).  
+  
+- <RETURN> scans the current line, and updates memory accordingly.  At the 
+  start, periods or blank positions will be skipped over.  (If someone
+  can make better sense than I can of the treatment of periods and blanks,
+  please let me know. - RS)
+    
+- <Backspace> erases the character to the left of the cursor, and shifts
+  the rest of the line to the left.
+  
+- <Delete> erases the character under the cursor.
+
+- <Insert> opens an empty position.
+
+- <Home> moves the cursor to the upper left corner of the screen.
+
+- <Undo> moves the cursor to bottom left corner of the screen.
+
+- <Shift-Clr> clears the screen.
+  
+- Other commands:
+    <Ctrl-RETURN>  Jumps to the next line WITHOUT updating memory
+    <Tab>          Moves cursor ten positions right
+    <Ctrl-I>       Inserts a line
+    <Ctrl-D>       Removes a line
+    <Ctrl-A>       Deletes to end of line
+    <Ctrl-C>       Abandons the edit - returns to desktop (!)
+    <Help>         Redisplays screen from the text buffer
+                   (see "O" command)
+
+- The numeric keypad can be used for hex digits, "(" for "A", ")" for 
+  "B", etc.  You can use "." on the keypad for Backspace.
+  
+  
+b) Monitor Commands
+
+   The most important commands are standard, most of the others follow
+   the convention of SMON for the C64.  Lower or upper case may be used
+   (with exceptions).
+   
+   Addresses are given and received as 6-digit hex numbers.  
+   
+   If two addresses are used to describe the same object, the second
+   address will be invalid.
+   
+   Parameters in square brackets "[]" are optional and may be omitted.
+   
+- X
+  (Exit)
+  Leave MonST, if the "are you sure" question is answered with "y".
+  When the program is exited in this manner, the reserved memory
+  (about 12 KB) will not be released.  The previously changed exception
+  vectors remain pointed to MonST (see "V").  For this reason, MonST 
+  should be re-entered via a system error, such as violation of
+  privileged memory.  (Otherwise, each invocation of the program creates
+  a new copy of MonST 12K higher in memory.)  This is easily done in 
+  ST-BASIC with ?peek(-1).  If no register contents have been changed, 
+  "G" returns you to BASIC.  Other program errors can also be started 
+  in this manner, but you should use the disassembler to examine the 
+  position of the error, since the program counter may not be correct 
+  after a buss error ("g" points in this case to exception number 4].
+  
+  
+- R
+  (Register)
+  Gives the contents of the processor register, which can be changed
+  with the editor.  The register contents will be given to the processor
+  with a GO- or Trace-Failure.
+  
+  
+- G [05 0000]
+  (Go)
+  Starts a 68000 machine language program at address $050000.  If no
+  address is given, the actual value of the program counter (PC) will
+  be used.
+  
+  
+- M 05 0000  [05 0100]
+  (Memory)
+  Gives contents of RAM or ROM as a hex dump with ASCII to the right.
+  Stop and proceed slowly with <Space>.  Other keys produce a faster
+  display.  <ESC> stops the display.
+  
+  In RAM, the hex dump can be changed with the editor.  Empty positions
+  are ignored.  The listing can be scrolled up or down when editing.
+  
+  
+- K 01 e000  [01 f000]
+  (Kontrolle)
+  Displays 64 characters of text per line from memory.  Control characters
+  (less than ASCII 32) will be displayed as periods.  When editing, small
+  and capital letters will be differentiated, periods ignored.  Otherwise
+  the same as "M".
+  
+  
+- D fc 0008  [fc 0200]
+  (Disassemble)
+  Disassemble and list from $FC0008 to $FC0200 with machine code decoded
+  to opcodes.  Changes are unfortunately only on the hex words possible,
+  since an assembler is not yet included in the program.  This at least
+  allows easy modification of some operands.  With the help of a 68000
+  opcode table and some patience, small programs can also be entered.
+  
+  Since the structure of 68000 machine code is very complex, this part
+  of MonST is sadly somewhat buggy.  Attention should be payed to the
+  following:  It is not entirely inconceivable that a correct processor
+  command will be incorrectly decoded (although I have not found any
+  errors lately).  If this should happen, please pass the information
+  on to me.  In addition, illegal opcodes will not always be recognized
+  as such and flagged with "???".  For example, code such as:
+  
+      MOVE.W   D0,#1234   or   CLR.B   061234(PC)
+      
+  is nonsensical, or illegal, but might not be flagged as such by the
+  program.  For this reason, the disassembler can get out of sync (for 
+  instance starting to disassemble on an operand instead of on an op-
+  code), and display relatively long stretches of  garbage.  Scrolling 
+  the disassembler (as with "M" and "K") is useless because of this.
+  
+  
+- >O {1,2}
+  Switch printer protocol in/out
+  0: Output to screen only
+  1: Centronics port
+  2: RS 232
+  
+  
+- L filename.xyz,  05 0000     or
+  L"filename.xyz"  05 0000
+  (Load)
+  Loads specified data file.  You must always give a load address!
+  
+  
+- S filename.xyz,  05 0000     or
+  S"filename.xyz"  05 0000
+  (Save)
+  Writes the memory area to disk.  If the file name already exist on the
+  disk, you will be asked "are you sure?".
+  
+  
+- @ [fil??ame.*]
+  Shows a directory of the disk.  If "@" is followed by a space, the
+  characters which follows will be interpreted as a search mask.  "?"
+  wildcards a character, "*" wildcards remainder of filename or extension.
+  If the command is given without a mask, "*.*" will be used (all files
+  will be displayed).  The display includes filename, size in bytes,
+  and filetype as follows:
+  
+                            00 - Normal File
+                            01 - Write-Protected
+                            10 - Subdirectory, not file
+ 
+  At the end of the display, the free allocation units of the diskette
+  will be shown (each 1024 bytes long).
+  
+  
+- @\directory\
+  Specifies sub-directory or path.  All further disk I/O will use this
+  path (Loads, Writes, Directories).  Return to the root directory with
+  "@\".
+  
+  
+- @B
+  Specifies disk B: as the working disk (A .. E).
+  
+  The most important errors produced by disk I/O:
+  
+      -1  General error
+      -6  Track not found
+      -8  Sector not found
+      -13 Disk is write-protected
+      -33 File not found
+      -34 Path not found
+      
+      
+- F 01 0000 05 0000  41 42 43
+  F 01 0000 05 0000  "Digital Research"
+  F 01 0000 05 0000  44"igital "*"ese"61"rch"
+  (Find)
+  Searches byte-wise in specified memory.  Hex digits and text can be
+  intermixed.  An asterisk outside of quoted text specifies a wildcard
+  character.  The addresses of matches will be given - use <ESC> to
+  break off the search.
+  
+  
+- F "-****(a*)" 03 0000 [03 1000]
+  Searches for string in the disassembler listing from $030000 [to
+  $031000] - "*" is a wildcard character.  This example searches for
+  all commands which use the "address register indirect with (negative)
+  16 bit offset" reference mode.  <ESC> stops the search.
+  
+  
+- O 07 8000 08 0000  01 02 03     (512 KB RAM)
+  O 0f 8000 10 0000  aa 55        (1024 KB RAM)
+  (Occupy)
+  Fill memory with specified long word value.  If no value is given,
+  the default is 00.  Check out the above commands for a 512 KB and a
+  1024 KB machine.  The screen will fill with a fine point pattern -
+  pressing the <Help> key will restore the display.
+  
+  
+- W 05 0000  06 0000  07 0000
+  (Write)
+  Moves memory bank $050000 - $05ffff to $070000.
+  
+  
+- = 05 0000  06 0000
+  The memory bank starting at $050000 is compared with that starting
+  at $060000.  The position of the first non-match will be shown.
+  
+  
+- #491520
+  Convert decimal number to Hex.  Max 2^32-1
+  
+  
+- $00078000
+  Convert 8-digit hex number to Decimal.
+  
+  
+- %10101011
+  Convert 8-digit binary number to decimal.
+  
+  
+- ?z xxxxxxxx yyyyyyyy
+  Simple calculator, where z = :
+      + : 32 bit addition (2 8-digit hex numbers follow)
+      - : 32 bit subtraction
+      * : 16 bit multiplication (2 4-digit hex numbers follow)
+      / : Divide 32 bit number by 16 bit number
+      & : 32 bit logical AND
+        : OR
+      ! : EXCLUSIVE OR
+      
+      
+- V
+  (Vectors)
+  Displays the vector table from low RAM ($0000 to $3fff).  Addresses
+  marked with an asterisk point to the BREAK-entry into MonST.  The far
+  left-hand byte gives the exception number.  Stop display with <ESC>.
+  
+  Upon startup of MonST, the exceptions number 2,3,4,5,6,7,8,9, and 32
+  (buss, address error, illegal opcode, divide-by-zero, CHK-error,
+  TRAPV-error, privilege violation, trace-mode, Trap #0) will be diverted
+  to the register pointers.  Should one of the "errors" occur, an attention
+  character and a blinking cursor will appear in the lower left corner of
+  the screen.  The purpose of this is to avoid too-quickly destroying the
+  contents of the screen. 
+  
+  Pressing <ESC> releases the register display.  A keypress produces an
+  announcement of the exception number, and the processor register will
+  be pointed to the location of the break.  If it is a buss or address
+  error, the information placed by the CPU on the stack will not be
+  lost.  It is this status word, holding the flags in the lower 8 bits,
+  which describes the error more exactly, including the target address
+  which produced the error and the last opcode acted on.  A buss error
+  can easily arise, if you try to access memory not implemented in
+  hardware, or to write to ROM.  You must be carefull not to set the
+  stack pointer too low, thereby destroying something.  Be sure to
+  restore it to the appropriate value.
+  
+  
+- TS 05 0000  05 0010
+  (Trace Stop)
+  The program will be started at $050000 and will break when $050010
+  is reached.  This function uses the Trap #0 opcode, which is installed
+  at the stop address before beginning execution.  The machine instruct-
+  ion from that location is saved and restored after execution.
+  
+  
+- TW [05 0000]
+  (Trace Walk)
+  Opcodes starting at $050000 (for example) are executed one at a time,
+  with the help of the trace-bits in the status register.  The screen is
+  split into two windows: in the upper, the applicable processor
+  is shown, and in the lower is the running program.  The next opcode
+  is displayed in the second-to-last line (pointed to by the current
+  program counter).  On the bottom line is a small menu, to remind you
+  of additional possible functions:
+  
+      <Space> Executes the next instruction
+      <ESC>   Aborts
+      <C>     Does the same as <Help> usually does (separates characters
+              or graphics written to the graphics screen from other 
+              programs).
+      <S>     Executes a sub-program in real time from beginning to
+              end (to the RTS opcode).
+      <E>     Does the same for an exception handler (to the RTE opcode).
+              
+  For the last two, the stack pointer must be the same at the end of 
+  the sub-program as it was at the beginning.  An example: By stepwise
+  execution, you come to an error Trap #1, which calls GEMDOS.  In order
+  to run this program all at once, you press <Space> and see in the
+  next-to-last line "BTST #5,(a7).  This is the beginning of GEMDOS.
+  Now you can press <S>, and GEMDOS will do its work undisturbed.  The
+  next command after the TRAP #1 will be shown.  <E> can only used with
+  the supervisor bit set.  If no return address is on the stack, the
+  program may run off into never-never land.
+  
+  This all sounds very complicated, but with practice it goes smoothly.
+  
+  "TW" works in ROM as well as RAM.  Single-step execution lends itself
+  especially to exploration of complicated calculations made by the
+  CPU.
+  
+  With the trace-bit set, a test program will not crash due to conflict
+  in the status word, so that a command such as "MOVE #2300,SR" can
+  be traced at your leisure.
+  
+  
+- TB 05 0010  000a
+  (Trace Break) - parameters are address and word
+  A break point will be set at $050010 for fast step mode.  Upon
+  reaching the address for the 10th time, the program will be interrupted,
+  and single-step mode will begin.
+  
+  
+- TQ [05 0000]
+  (Trace Quick)
+  Fast step mode is only for use in RAM, and is used in conjunction
+  with TB (see above).  These functions lend themselves to convenient
+  exploration of the operation of loops.
+  
+  
+- TA 05 0000  0001 0000
+  (Trace Amount) - takes address, longword parameters
+  Starting at $050000, 2^16 machine instructions will be executed,
+  though with somewhat limited speed.  All sub-programs will be
+  counted, as well as group two exceptions (TRAP's, CHK, Division
+  by zero).  Up to 2^32-1 instructions can be counted (4.3 billion).
+  In addition, the program may encounter instructions which set the
+  trace bit back!  May be used in ROM.
+  
+  
+  
+  
+c) The Disk Editor
+
+   The disk editor is invoked from MonST with "Z".  It needs a 512
+   byte buffer, whose absolute address may be specified ($050000 is
+   recommended, or somewhere in the middle of free RAM).
+   
+   All disk I/O is done on drive A: (!)
+   
+   
+- X
+  (Exit)
+  Exits the disk editor
+  
+  
+- P
+  (Page)
+  Toggles the disk side, 0 or 1, with the result displayed.
+  Use ONLY on double sided drives!
+  
+  
+- B
+  Change the buffer address (restart the disk editor)
+  
+  
+- M
+  Show the contents of the buffer.  The contents may be edited.
+  
+  
+- R 01 03
+  Read sector 03, track 01 (hex)
+  Only "R" and "W" specify the actual track and sector numbers.
+  
+  
+- W 01 03
+  Write the buffer contents to sector 03, track 01 (hex)
+  
+  
+- +
+  Read the next sector
+  
+  
+- -
+  Read the previous sector
+  
+  
+  
+  In the disk monitor, scrolling text up/down is also possible.  The
+  sector buffer may also be accessed from the machine monitor.
+  
+  ----------------------  The End  (Das Ende)  ------------------------
+  
+  Note from translator:
+  
+      The above is a fairly literal translation of the manual for
+      MonST as provided on BIX by Jim Omoura.  The translator believes
+      that the translation is accurate, but does not have the working
+      program to check points of operation.  I take NO responsibility
+      for the accuracy of the above document.
+      
+      Ron Sprunger   (BIX "sprung")

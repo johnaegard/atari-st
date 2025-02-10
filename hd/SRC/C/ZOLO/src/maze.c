@@ -69,10 +69,22 @@ Maze generate_maze(word height_cells, word width_cells) {
 
   return maze;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 void render_maze(bool draw_mode, Maze* maze, MazeRenderConf mrc, 
   word cx, word cy, Page* page, Image* sprites, 
   bool log, FILE* logfile) {
-  Vsync();
 
   if (draw_mode == MAZE_ERASE_MODE) {
     cx = page->last_cx;

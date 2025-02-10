@@ -1,0 +1,27 @@
+res medium			; Use meduim res when booting in color
+if ($res == high) then
+  graphics 18 c:\auto\title1.pi3	; Display the Opening Screen
+else				; if color screen, set up colors
+  color 0 007			; set background to blue including border
+  color 3 777			; set foreground to white
+endif
+cursor on
+display on
+d:\rtx\rtxboot.prg		; Micro RTX kernal
+d:\utility\hdaccel.prg		; Hard Disk Accellorator
+d:\utility\autotime.prg		; Logikhron Clock Card time retriever
+display off
+if ($res != $desktop) then
+  echo copying desktop.inf for $res resolution
+  if ($res == high) then
+    cp c:\desktop.hi c:\desktop.inf
+  else
+    cp c:\desktop.med c:\desktop.inf
+  endif
+endif
+echo The date is $date and the time is $time
+cat c:\lastdate			; show last time on system
+echo Last time on was $date2 at $time1 > c:\lastdate
+				; update last time on system
+accask				; which accessories?
+resetcolors

@@ -1,0 +1,12 @@
+UEMAIL
+
+This is an Emacs-like editor.  Print off the UEMAIL.HLP file for reference.
+
+While in the editor, hitting the HELP key puts you in the KERMIT program.
+The UNDO key returns you to the editor.
+
+Hitting <Control-C> in the editor puts you in the command line interpreter.
+You can run any programs (PRG) in the current folder or in the bin folder by 
+typing their names (don't type .PRG at the end).  Typing EXIT qets you out
+of the command line interpreter and back into the editor.
+

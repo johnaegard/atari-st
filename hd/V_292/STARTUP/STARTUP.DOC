@@ -1,0 +1,459 @@
+ .......................................................
+/		 :					\
+:   STARTUP.PRG  :  Batch Startup Program Version 1.3	:
+:		 :	by Murray Levine		:
+:		 :	CIS # 74435,1015		:
+:		 :					:
+\................:....................................../
+
+	STARTUP.PRG is a Batch Startup program that executes commands
+from the file startup.inf upon booting your ST.  STARTUP.PRG must be placed
+in the \AUTO\ folder the on boot drive (usually A).  STARTUP.PRG now loads
+and runs STARTUP.TOS in order keep the memory less fragmented when loading
+memory-resident programs like hard drive drivers and ram disks.  You'll notice
+about a 15K difference if using the FREARAM accessory.  It is also possible
+to run just the STARTUP.TOS program by changing it's name to STARTUP.PRG and
+renaming the original STARTUP.PRG program.  STARTUP first looks for the 
+file STARTUP.INF in the same directory and if it can't find it, it tries to
+locate it in the main directory (ex. A:STARTUP.INF).  From now on, these
+two files can be the only files you need in the AUTO directory because all
+other files to be executed can be located in their original drive and folder
+and can even have parameters past to them.  You no longer have to make sure
+of the order that you copied your files to the AUTO directory because
+STARTUP executes programs as they are listed in STARTUP.INF.
+
+	The format for programs to be executes is to list the complete program
+name followed by any parameters to be passed.  any command or program name
+can be followed by a comment.  Any text on a line that follows a ';' will
+be treated as a comment.  For example,
+
+a:\supboot.prg			; Supra Hard Drive driver program
+c:\bin\touch.prg a:startup.inf	; Update time stamp for info file
+
+would first load the hard drive driver program supboot,prg from drive A: and
+then update the time stamp for the file a:startup.inf.
+
+	There are a few unix-like commands that are used in the STARTUP.INF
+file as well as some other special commands.  All commands must be in lower
+case, however, the file names may be in lower or upper case.  The allowable
+commands are as follows:
+
+Copy Files:
+    cp file1 file2	- copy file1 to file2
+    cp file1 ... dir	- copy file1 and other files to the directory dir
+
+    The cp command is useful for copying files to a ram disk.  Wildcards
+    are also accepted.
+
+    cp b:\src\*.c c:\		; Copy source files to ram disk c:
+
+
+Remove files:
+    rm file ...
+
+    The rm command removes the listed files.  As with cp, wild cards are
+    also accepted.  Be careful, though, about doing an   rm *.*
+    so you don't wipe out a disk by accident.
+
+
+Create directory
+    mkdir dir ...
+
+    The mkdir command creates the subdirectory dir.
+
+
+Remove directories
+    rmdir dir ...
+
+    The rmdir command removes the specifies subdirectories.  An error will
+    occur if the specified subdirectory is not empty or does not exist.
+
+
+Display files:
+    cat file ...
+
+    The cat command displays the listed files on the console.  Useful for
+    displaying any title screen information.  Once again, wild cards are
+    accepted.  Pressing ctrl-C during the display of a file aborts displaying
+    that file and goes  on to the next file if there is one.
+
+
+Change directory:
+    cd dir
+
+    The cd command changes the default directory to either a disk drive or
+    a subdirectory.
+
+    cd b:	; changes default drive to b:
+    cd b:\auto  ; change to drive b:, subdirectory auto
+
+    The cd command is useful if when running programs you don't want to list
+    the complete file name (drive and directory) and if the program being
+    executed expects to find certain files (data files) in the default 
+    directory.
+
+
+Display text:
+    echo [-in] [-x xpos] [-y ypos] string
+
+    The echo command displays the following string (list of words) on the
+    screen followed by a carriage return.  If the -n option is used, the
+    carriage return is not printed.  If the -i option is used, the string
+    is printed in inverse video.  The -x option will position the cursor at
+    column xpos and the -y option will position the cursor at line ypos. 
+    The echo command is useful for displaying what is happening at 
+    different points of the boot process.
+
+    As an example, I use the following:
+
+    echo -n The time is
+    c:\bin\date.prg		; display the current time
+
+    This will display:  The time is Sat Jan 24 1987 12:24pm
+
+
+Setting variables
+    set var = string	- set variable var to string
+    set var = $<	- set variable var to a string entered from keyboard
+    set var = $<<	- set variable var to one character from keyboard
+    set			- display all variables
+
+    The set command allows the user to set up to 20 variables whose variable
+    names can be up to 8 characters in length.  If string is to be more than
+    than one word then it should be in quotes, e.g. "This is a string".  If
+    the string is $<, then the variable waits for a string to be entered from
+    the keyboard.  If the string is $<<, then the variable waits for a single
+    key to be hit on the keyboard.  This string can then be tested later using
+    the if command.  Using set without any arguments will display all of the
+    variables and the string values associated with them.
+
+
+Accessing variables
+    To get the value of a string, a $ is placed in front of the name, for
+    example:
+	set test = "This is a test"
+	echo $test
+    This will display the value of variable test.
+
+    Variables representing file names can also have suffixes.  The suffixes
+    supported by STARTUP are:
+		:h	- head - returns path name of file
+		:t	- tail - returns file name without path name
+		:r	- root - returns file name without extension
+		:e	- extension - returns file name extension
+
+    For example:
+	set file=c:\startup\startup.prg
+	echo $file:h		=> c:\startup
+	echo $file:t		=> startup.prg
+	echo $file:r		=> c:\startup\startup
+	echo $file:e		=> prg
+
+
+Conditional statements
+    if (expression) then
+	commands
+    endif
+    if (expression) then
+	commands
+    else
+	commands
+    endif
+
+    The if command is used to test the validity of the specified
+    expression.  If the expression is true, the commands following the
+    then statement will be executed.  An optional else statement can be
+    used if the expression is false.  The if command must end with the
+    endif statement.  There can be as many as 9 nested if statements,
+    however be sure that there are enough endif statements to match them.
+    The expression has two forms.  They are:
+
+	(string1 condition string2)
+	(option file name)
+
+    In the first form, string1 and string2 can be either strings or variables.
+    The possible conditions are as follows:
+
+	==	is equal to
+	!=	is not equal to
+	<	is less than
+	>	is greater than
+	<=	is less than or equal to
+	>=	is greater than or equal to
+
+    An example of this form of the  if command would be:
+	echo -n Enter your name
+	set name = $<
+	if ($name == Murray) then
+	    echo Sysop Murray is on-line
+ 	endif
+
+    In the second form of the expression, option has the following values:
+
+	-e	- existence - does the file exist?
+	-d	- directory - is the file a subdirectory?
+	-f	- normal    - is the file not a directory?
+	-w	- writeable - is the file writeable (not write protected)?
+	-z	- zerosize  - is the file size zero bytes (empty file)?
+
+    An example of this form of expression is the following:
+
+	if (-e startup.inf) then
+	   echo startup data file exists
+	endif
+
+
+Exiting the command file
+    exit
+
+    The exit command breaks out of the command file (startup.inf) and 
+    the Startup program itself.  This command is most likely used in
+    an if statement.
+
+
+Labels and branching						(new)
+    goto label
+
+    The goto command branches control to the defined label.  A label is
+    represented by the first word and only word on a line and the last
+    character must be a colon (:).  A maximum of 10 labels can be defined.
+    Here's an example:
+
+	echo Let's jump to a label
+	goto label1
+	echo This line should never get executed
+	label1:
+	echo control continues with this statement
+
+ 
+I/O redirection
+
+    I/O can be redirected to or from any file or to the RS232 port or printer
+    port.  By placing a > at the end of the command line followed by a 
+    file name, output will be redirected to that file name erasing that file
+    if it previously existed.  By placing a >> at the end of the command line
+    followed by a file name, output will be appended to that file name if
+    the file exists or a new file will be created if it does not exist.
+    Input can also be redirected by placing a < at the end of the command
+    line followed by the name of the file to be used for input.  This can
+    be useful if you have Michtron't MDISK ram disk and want to set up a
+    specific size ram disk automatically without user interaction.  Just 
+    create a two line file with the ram disk size on the first line and an
+    empty line for the second line.  Both input and output redirection can
+    be used on the same line, for example:
+
+	a:\mdisk.tos < mdisk.inp > mdiskout
+
+    This will create a ram disk with the size specified in the file mdisk.inp
+    and send all output to the file mdisk.out so you don't have to see
+    everything that is happening.
+    Output can also be redirected to the RS232 port by using aux: as the
+    output file name or use prt: to redirect output to the printer port.
+    For example:
+
+	echo ATL1 > aux:
+
+    This will send the ATL! to a Hayse modem, for example, to initially set
+    the volume to low.
+ 
+    
+The special commands used by Startup are as follows:
+
+Use medium or low resolution:
+    res medium
+    res low
+
+    The res command will set a color system to medium resolution or low
+    resolution during the boot process.  On monochrome systems this command
+    has no effect.
+
+
+Turn the cursor on or off:
+    cursor on
+    cursor off
+
+    The cursor command turns the cursor on or off again.  Since during the
+    boot process TOS doesn't turn on the cursor, you can now see where the
+    cursor is for entering text.  You can even turn it back off again after
+    running a certain program if you wish.
+
+
+Turn the keyclick on or off:
+    keyclick on
+    keyclick off
+
+    The keyclick command turns off the keyclick if you get annoyed by it
+    while entering input and let's you turn it back on if you want after
+    running a certain program.
+
+
+Turn disk write verify on or off				(new)
+    verify on
+    verify off
+
+    The verify command turns on or off the disk write verify switch.  When
+    the switch is on, a verify the data being written to disk will be
+    verified to determine if it is valid.  When the verify switch is off,
+    the data being written to disk is not verified and speeds up disk
+    write time.
+
+
+Clear the screen:
+    clear [-a]
+
+    The clear command clears the screen and places the cursor in the upper
+    left hand corner.  If graphics are on the screen, the screen is cleared
+    starting at the first text line and the cursor is also placed at the
+    the first text line.  This can be followed by the cat command to display
+    a title page.  If the -a option is used, all of the screen is cleared
+    including the graphics.
+
+
+Display of each line
+    display on
+    display off
+
+    The display command turns on or of the display flag.  When the display
+    is on, the each line will be displayed in full including comments until
+    the display is turned off.  The default is display off.
+
+
+Ask if program should be run
+    ask file name [arg ...]
+
+    The ask command asks the user if he wishes to run the program denoted
+    by file name.  The output is as follows:
+	Execute autotime.prg (Y/N)? 
+    Typing a Y will execute the program, any other key will skip the
+    execution of the program.  This can be useful for example if a user
+    does not wish to load GDOS when he boots up, but wishes to load GDOS
+    the next time he boots the system.
+
+
+Ask which desk accessories should be loaded			(new)
+    accask
+
+    The accask command will go through all of the desk accessory programs
+    in the default directory and ask if each should be loaded.  For example:
+	Load accessory FREERAM (Y/N)? 
+    You are prompted for a single-key response being either Y or N.  If you
+    press Y, then the accessory will be loaded when the desktop is run.  If
+    you press N or any other key, the accessory will not be loaded.  
+    Remember that GEM has a maximum number of accessories that can be loaded
+    so it will only load as many as it can even if you specify to load more.
+
+
+Case sensitivity
+    upper varname	- force variable varname to upper case
+    lower varname	- force variable varname to lower case
+
+    The upper and lower commands force the value of variable varname to
+    upper or lower case.  Varname must be an existing variable and must
+    not be preceded by a $ since we just want the name of the variable.
+
+
+Display graphics title screen
+    graphics lines file
+
+    The graphics command will load an uncompressed Degas picture (file)
+    on the screen up to text line lines.  Lines represents the first line
+    on the screen to be used as text (0 - 23).  All text will scroll below
+    the picture so it will not be disturbed.  You won't be able to display a
+    full-screen picture because we have to have room for some text on the
+    screen (at least 2 lines).
+
+
+Setting the time and date
+    date
+    time
+
+    The date and time commands are used to set the system time.  the date
+    command will display "Enter current date 00/00/00" with the cursor
+    positioned on the first 0.  The date is to be entered in mm/dd/yy format
+    and as soon as the last digit of the year has been entered, the date
+    is automatically set (no RETURN key is needed) so be sure your date is
+    in this exact format.  Teh time command will be the same except that
+    you enter the time in hh:mm format where the hours are in 24-hour format.
+    The seconds will be set 00.
+
+ 
+Changing colors
+    color n value
+
+    The color command allows you to change the colors in the color registers
+    where n is the color to change (0-15) and value represents a 3-digit
+    value with each digit ranging from 0 to 7 representing in order the
+    amount of red, green, and blue to be used.  For example:
+	color 1 007	- sets color register 1 to all blue
+	color 0 777	- sets color register 0 to white
+	color 2 000	- sets color register 2 to black
+
+
+Selecting foreground and background color for text
+    foreground color
+    background color
+
+    The foreground command sets the foreground color for all text to be
+    color register n while the background command sets the background
+    color for all text to be color register n.  Do not set both the
+    foreground and background colors to the same color or you will not
+    be able to see any text.
+
+
+Resetting colors						(new)
+    resetcolors
+
+    The resetcolors command resets all the colors to their original values
+    and also resets the foreground and background colors.
+
+
+System variables
+    $res	- contains the screen resolution ("low","medium","high")
+    $desktop	- contains the screen resolution in the desktop.inf
+		  file ("low","medium","high").  If the desktop.inf
+		  file does not exist, the variable is set to "none". 
+    $cwd	- current working directory or path name
+    $date	- displays system date in format 01/01/87
+    $date1	- displays system date in format 01-Jan-87
+    $date2	- displays system date in format Jan 01 1987
+    $time	- displays system date in format 12:00:00
+    $time1	- displays system date in format 12:00 pm
+
+The following sample startup.inf file is the one I currently use during my
+boot process.
+
+res medium			; Use medium res when booting in color
+if ($res == high) then
+  graphics 12 c:\auto\title.pi3	; Display the Opening Screen
+else				; if color screen, set up colors
+  color 1 007			; set background to blue
+  foreground 0			; use white characters
+  background 1			; on a blue background
+endif
+cursor on
+display on
+d:\rtx\rtxboot.prg		; Micro RTX kernal
+d:\utility\hdaccel.prg		; Hard Disk Accellorator
+d:\utility\autotime.prg		; Logikhron Clock Card time retriever
+display off
+if ($res != $desktop) then
+  echo copying desktop.inf for $res resolution
+  if ($res == high) then
+    cp c:\desktop.hi c:\desktop.inf
+  else
+    cp c:\desktop.med c:\desktop.inf
+  endif
+endif
+echo The date is $date and the time is $time
+cat c:\lastdate			; show last time on system
+echo Last time on was $date2 at $time1 > c:\lastdate
+				; update last time on system
+ask e:\degelite\auto\gdos.prg	; GDOS 1.1 for Degas Elite
+c:\mdisk.tos < mdisk.inp > mdisk.out	; set up predetermined size ram disk
+					; and don't let me see it
+echo ATL1 > aux:		; send initialize string to modem for volume
+accask				; which accessories to load?
+
+Any comments or suggestions for a future version are welcome.
+
+		Murray Levine   CIS # 74435,1015

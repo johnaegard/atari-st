@@ -1,0 +1,258 @@
+ 
+                       Beschreibung des Assemblers
+1. Allgemeines
+1.1  Dieser Assembler erlaubt das Erstellen von  Maschinensprachprogrammen 
+unter Verwendung der allgemein gebr„uchlichen 68000er Befehle. Er arbeitet 
+zeilenorientiert,  kann  aber  auch Dateien,  die mit einem anderen Editor 
+erstellt  wurden,  verarbeiten.  Bei der Programmierung wurde auf einfache 
+Handhabung Wert gelegt.  Das Quelllisting bleibt stets im Speicher, ebenso 
+wird  auch  das  beim Assemblieren entstandene Programm  in  den  Speicher 
+geschrieben. Von dort l„t es sich sofort aufrufen und testen.
+1.2  Der Assembler wurde fr die mittlere und hohe Aufl”sung  geschrieben. 
+Beim  Gebrauch  der  niedrigen k”nnten (  insbesondere  beim  Editieren  ) 
+unerwnschte Effekte auftreten.
+1.3  Das  im  Speicher  befindliche Listing darf  aus  max.  30000  Zeilen 
+bestehen.  Hinzu kommt, da Sie genug Speicher fr das Listing, die Labels 
+und  das  assemblierte Programm reserviert haben mssen.  Um dies zu  tun, 
+wird  gleich nach dem Laden der freie Speicher angezeigt.  Sie  haben  nun 
+die  M”glichkeit  den Speicher nach Ihren Wnschen auf die  drei  Bereiche 
+aufzuteilen.  In  der  Regel brauchen Sie sich darber keine  Gedanken  zu 
+machen  und k”nnen durch Druck auf "Return" die Standartwerte  einstellen. 
+Bedenken Sie jedoch,  da, falls der reservierte Speicher nicht ausreichen 
+sollte, keine Meldung erfolgt und da es zu Datenverlusten kommen kann.
+1.4  Der Assembler unterscheidet zwischen Gross- und  Kleinbuchstaben  nur 
+dann,  wenn diese in Anfhrungszeichen auftauchen. Dies ist einerseits der 
+Fall,  wenn Sie mit DC Strings definieren,  oder wenn Sie mit LIST "LABEL" 
+ab einem Label listen wollen.
+
+2. Direktbefehle
+Nach  dem  Laden  des Assemblers und der  Eingabe  des  zu  reservierenden 
+Speichers befinden Sie sich im Direktmodus.  Es steht Ihnen nun eine Reihe 
+von  Befehlen zur Verfgung,  die hier - nach ihren Funktionen sortiert  - 
+aufgefhrt sind:
+2.1 Befehle zum Bearbeiten des Programmlistings
+ADD     
+Hiermit k”nnen Sie Zeilen an das Ende des Programmes anfgen,  bzw., falls 
+kein Programm im Speicher steht, ein neues eingeben.
+E oder EDIT ( Ln#, Ln# )
+Dieser  Befehl  dient  zum ndern von Zeilen.  Sie k”nnen die  Start-  und 
+Endzeile  angeben  (  durch  ein Komma getrennt ),  auf  eine  oder  beide 
+Zeilenangabe(n)  verzichten,  usw.  Statt  einer Zeile k”nnen Sie auch  in 
+Anfhrungszeichen  eine  Zeichenfolge  ( z.B.  ein Label  )  angeben.  Das 
+Editieren   beginnt  dann  in der Zeile,  an deren  Anfang  diese  Zeichen 
+stehen.
+INS ( Ln# )
+Diese  Funktion  erlaubt  es  Ihnen,  Zeilen  vor  der  angegebenen  Zeile 
+einzufgen.
+DEL ( Ln#, Ln# )
+Hiermit  k”nnen  Sie Bereiche des Programmes  l”schen.  Die  Zeilenangaben 
+funktionieren wie bei EDIT.
+COPY Ln#, Ln# TO Ln#
+Dieser  Befehl kopiert den angegebenen Bereich unmittelbar vor die  Zeile, 
+die hinter TO steht.
+L oder LIST ( Ln#, Ln# )
+Programm listen.
+FIND "String" ( Ln#, Ln# )
+Diese Funktion sucht einen String im Listing.
+NEW
+Programm l”schen.
+2.2 Assemblieren und Starten des Programmes  
+ASM ( F )
+Dieser  Befehl assembliert das Listing so,  da ein ablauff„higes Programm 
+im  Speicher erzeugt wird.  Wenn Sie hinter ASM ein F schreiben,  wird das 
+Listing beim Assemblieren nicht angezeigt.
+PRGASM ( F )
+Hiermit wird das Listing so assembliert,  da man das entstandene Programm 
+anschlieend mit PRGSAVE als Programmdatei speichern kann.
+LABEL ( Adr./Label )
+Dieser Befehl zeigt alle Labels nach ihren Adressen geordnet an.  Wenn Sie 
+ein Label bzw.  eine Adresse angeben,  so werden die vorausgehenden Labels 
+nicht gezeigt.
+GO Adr./Label
+Hiermit   k”nnen  Sie  Ihr  Programm  aufrufen.   Dabei  mssen  Sie   die 
+Startadresse ( als Zahl oder Label ) angeben.
+TRACE Adr./Label
+Aufgerufen  wird  dieser  Befehl wie GO.  Er zeigt allerdings  nach  jedem 
+Maschinensprachbefehl die Registerinhalte und Flags an.
+2.3 Befehle zum Speichern und Laden
+DIR ( Filespec. )
+Directory  zeigen.  Sie  k”nnen  dabei beliebig mit Wild  Cards  arbeiten. 
+Sollten Sie keine Angabe machen, wird *.* angenommen.
+PATH ( Drive: )Pathname
+Hiermit  k”nnen Sie das Laufwerk und den Pfadnamen festlegen.  ( Beispiel: 
+PATH A:path.nam )
+SAVE Filename
+Speichert das Programm.
+LOAD Filename
+L„dt ein Programm.
+MERGE Filename
+H„ngt ein Programm an das Ende des im Speicher stehenden an.
+BSAVE Adr., Length, Filename
+Sichert einen Bereich des Speichers.
+BLOAD Adr., Filename
+L„dt eine Datei ab einer bestimmten Adresse in den Speicher.
+PRGSAVE Filename
+Dieser Funktion mu ein PRGASM vorausgehen. Sie speichert das assemblierte 
+Programm als ablauff„hige, vom Desktop aus ladbare Datei.
+2.4 Druckeransteuerung
+PON
+Schaltet  die Druckerausgabe ein:  Alle Ausgaben auf den Bildschirm werden 
+gleichzeitig an den Drucker gesandt.
+POFF
+Schaltet die Druckerausgabe ab.
+2.5 Sonstige Befehle
+DUMP Adr./Label
+Hiermit lassen sich Speicherinhalte ausgeben.
+DIS Adr./Label
+Disassembliert den Speicher ab der angegebenen Adresse.
+= / DEZHEX Expression
+Zeigt den Ausdruck ( Berechnungen, Labels... ) hexadezimal und dezimal an.
+!Opcode
+Hiermit  k”nnen Sie einzelne Maschinensprachbefehle ausprobieren.  (  z.B. 
+!CLR.B (A0)+ ) Die Wirkung k”nnen Sie mit dem Befehl REG berprfen.
+REG
+Nach   jedem   Aufruf  von  GO,   TRACE  umd  !Opcode   werden   s„mtliche 
+Registerinhalte abgespeichert. Mit diesem Befehl werden sie angezeigt.
+PMREG
+Immer  wenn sich der Rechner wieder einmal 'aufgeh„ngt' hat,  werden seine 
+letzten  Registerinhalte  so abgespeichert,  da diese Informationen  nach 
+einem Reset erhalten bleiben. Eben diese Werte zeigt der Befehl an.
+QUIT
+Hiermit verlassen Sie den Assembler und gelangen zurck zum Desktop.
+
+3. Die Assemblerbefehle
+Wie  schon  gesagt  entsprechen  die Befehle  im  groen  und  ganzen  den 
+allgemeinen  Regeln.   Einige  Besondernheiten:   
+3.1  Der Assembler verlangt 'klar' formulierte Befehle.  Einige Beispiele: 
+Schreiben  Sie ADDA A0,A1 statt ADD A0,A1;  CMPI #5,(A1) statt CMP #5,(A1) 
+usw.  MOVEQ verwendet er auch nur dann, wenn es im Listing gewnscht wird. 
+3.2 Die Wortbreite wird,  wie blich,  durch Anh„ngen von ".B",  ".W" oder 
+".L" an den Befehl gekennzeichnet.  Wenn nur eine Breite erlaubt ist, oder 
+".W" gewnscht ist, k”nnen Sie darauf auch verzichten. 
+
+Bei  der  Adressierung  'Adressregister indirekt mit  Index  und  Distanz'  
+mssen Sie jedoch die Verarbeitungsbreite angeben. ( z.B. .. 0(A0,D0.W) )
+3.3  Kurze  Branch-Befehle mit einer Sprungweite zwischen  -128  und  +126 
+sollten Sie mit einem ".S" kennzeichnen, denn nur dann werden Sie auch als 
+kurze Befehle bersetzt.
+3.4  Das  Krzel "SP" ( Stack pointer ) akzeptiert  der  Assembler  nicht. 
+Schreiben Sie statt dessen "A7".
+3.5  Zus„tzlich  gibt es noch die Befehle SAVEALL und  LOADALL.  Sie  sind 
+Abkrzungen fr MOVEM.L D0-A6,-(A7) bzw. MOVEM.L (A7)+,D0-A6. Fr die LINE 
+A-Befehle  stehen  ebenfalls  Mnemonics zur Verfgung:  
+A_INIT  = $A000, A_PUPIX = $A001, A_GEPIX = $A002, A_LINE  = $A003,
+A_HOLIN = $A004, A_RECT  = $A005, A_POLY  = $A006, A_BTBLT = $A007,
+A_TXBLT = $A008, A_SHMOU = $A009, A_HICUR = $A00A, A_TRMOU = $A00B,
+A_UNSPR = $A00C, A_DRSPR = $A00D, A_COPRF = $A00E
+
+4. Pseudobefehle
+Neben  den  eigentlichen  Assemblerbefehlen  k”nnen  Sie  im  Listing  von 
+weiteren Anweisungen Gebrauch machen:
+4.1 Bemerkungen mssen mit einem Semikolon oder einem Sternchen  beginnen. 
+Bei  einem Abstand von mehreren Zeichen zu dem Assemblerbefehl der  selben 
+Zeile, k”nnen Sie auch darauf verzichten.
+4.2 Der Befehl DC ( .DC ist auch erlaubt ) definert eine Reihe von  Bytes, 
+Worten oder Langworten ( abh„ngig von .B, .W, .L ). Texte mssen dabei mit 
+einfachen  oder doppelten Anfhrungszeichen eingeschlossen werden.  Bei .W 
+und  .L werden diese ggf.  mit einem Nullbyte erg„nzt,  so da die n„chste 
+Adresse eine geradzahlige ist. Durch Voranstellen eines Ausrufungszeichens 
+k”nnen Sie in einer Kette von Bytes oder Worten ein Langwort festlegen.  ( 
+Beispiel: DC.B 1,2,!LABEL,..)
+4.3  Mit  DS ( oder auch .DS ) l„t sich Speicher reservieren.  Auch  hier 
+k”nnen Sie wieder mit .B, .W und .L arbeiten.
+4.4 Der Befehl .EVEN bewirkt, da die n„chste zu bearbeitende Adresse eine 
+geradzahlige ist.
+4.5 Wenn Sie eine ausfhrbare Programmdatei erstellen wollen ( mit  PRGASM 
+und PRGSAVE ), mssen Sie zwischen drei Sektionen unterschieden: Einer, in 
+der  das  Programm  steht,  eine  fr initialisierte Daten  und  eine  fr 
+uninitialisierte Daten.  Dieser Assembler verlangt, da diese Bl”cke schon 
+im   Listing   in  der  genannten  Reihenfolge  auftauchen.   Um  sie   zu 
+kennzeichnen, schreiben Sie .DATA am Beginn der definierten Daten und .BSS 
+am Beginn der undefinierten.
+
+5. Labels
+Selbstverst„ndlich   k”nnen   Sie  auch  Labels  verwenden.   Sie   mssen 
+unmittelbar  am  Zeilenanfang  stehen.  Im  Gegensatz  dazu  mu  vor  den 
+Assemblerbefehlen  mindestens  ein Leerzeichen stehen.  Die Labels  drfen 
+beliebig   lang  sein,   allerdings  werden  nur  die  ersten  10  Zeichen 
+unterschieden. Die Labels drfen nicht mit einem Doppelpunkt abgeschlossen 
+werden. Ein Label mu mit einem Buchstaben beginnen und darf weiterhin nur 
+Buchstaben, Zahlen oder das "_"-Zeichen enthalten.
+
+6. Editieren
+Beim  Eingeben eines Direktbefehls oder beim Editieren von Zeilen  sollten 
+Sie folgendes beachten:
+Die  Editierzeile ist stets 72 Zeichen lang.  Sollten Sie versuchen,  ber 
+die Zeile hinauszuschreiben,  so wird der Cursor wieder auf den Anfang der 
+Zeile gesetzt.
+Mit den Cursortasten k”nnen Sie den Cursor nach rechts und links bewegen.
+Mit der Taste "Clr Home" l„t sich die Zeile l”schen.
+Um  Zeichen  einzuschieben  oder  zu l”schen,  k”nnen  Sie  von  "Insert", 
+"Delete" und "Backspace" Gebrauch machen.
+Um  die  Eingabe  zu beenden,  drcken Sie "Return".  Wollen Sie,  da die 
+ge„nderte Zeile ignoriert wird, so drcken Sie "Undo". ( Bei EDIT, INS und 
+ADD kehren Sie dadurch automatisch in den Direktmodus zurck. )
+Hier  sei auch erw„hnt,  da Sie Listvorg„nge mit Druck auf die  Leertaste 
+anhalten und wieder fortsetzen  und mit "Return" abbrechen k”nnen.
+
+
+7. Zahlensysteme
+šberall,  wo sie Werte angeben mssen - sei es im Assemblerlisting oder im 
+Direktmodus  - haben Sie verschiedene M”glichkeiten der  Darstellung   zur 
+Auswahl:
+Dezimal                     : (+/-)xxxx
+Hexadezimal                 : (+/-)$xxxx
+Bin„r                       : (+/-)%xxxx
+Label                       : LABEL
+Character                   : 'c
+String ( bis zu 4 Zeichen ) : "cccc"
+Auerdem  k”nnen  Sie  mehrere  solcher  Werte  (  auer  Character-   und 
+Stringwerten ) mit den Rechenoperationen +,  -, *, / verknpfen. Es gelten 
+dabei  nicht die blichen Rechenregeln,  sondern die Ergebnisse werden von 
+rechts  nach links berechnet!  ( Beispiel:  Schreiben Sie anstatt (b-c)*a:   
+a*b-c )
+(   Dies  ist  sicherlich  eine  sehr  ungewohnte   und   unbersichtliche 
+Schreibweise.  Da ich jedoch davon ausging, da man in der Regel h”chstens 
+von einer einfachen Addition oder Subtraktion Gebrauch macht, habe ich mir 
+die Mhe gespart, eine bessere Berechnung zu programmieren. )
+
+8. Fehlermeldungen
+W„hrend  des Assemblierens oder auch w„hrend der Direkteingabe kann es  zu 
+verschiedenen  Fehlern  kommen.  Es  ert”nt dann ein Glockenton  und  eine 
+Fehlermeldung erscheint. Das Assemblieren wird dabei abgebrochen.
+Es  kann  nicht garantiert werden,  da der Assembler absolut alle  Fehler 
+erkennt,  aber  in  weit den meisten F„llen drften solche Probleme  nicht 
+auftauchen.  (  Wenn  Sie sich im Unklaren sind,  k”nnen Sie die fragliche 
+Stelle ja einmal disassemblieren. )
+Hier nun die Fehlermeldungen mit ihren Bedeutungen:
+Illegal opcode      : Beim  Assemblieren  tauchte  ein  unbekannter Befehl 
+auf.
+Undefined error     : Nicht n„her identifizierbarer Fehler.
+Wrong adressing mode: Der  gewnschte  Adressierungsmodus  darf an  dieser 
+Stelle nicht angewandt werden.
+Unknown adr. mode   : Der Adressierungsmodus existiert nicht.
+Undefined label     : Es wird auf ein nicht definiertes Label verwiesen.
+Syntax              : Fehlerhafte Eingabe im Direktmodus.
+File not found      : Datei existiert nicht.
+Double def. label   : Label wurde zum zweiten Mal definiert.
+Illegal reg #       : Sie  haben  in Verbindung  mit  einem  Adress-  oder 
+Datenregister eine falsche Nummer angegeben. ( 0-7 sind zul„ssig. )
+Adr. out of range   : Ein Branch-Befehl  verzweigt zu  einer  Adresse, die 
+nicht  in seinem Bereich liegt.  Dieser Fehler kann auch auftauchen,  wenn 
+Sie  mit einem Branch.S Befehl unmittelbar zur n„chsten  Adresse  springen 
+wollen.
+Value out of range  : Der Wert  kann  mit der  gew„hlten  Wortbreite nicht 
+dargestellt werden.
+Abort               : Sie  haben den  Assembliervorgang mit  einem Tasten-
+druck abgebrochen.
+Illegal word size   : Die gewnschte  Wortbreite ist  bei dem Befehl nicht 
+erlaubt.
+Printer not on line : Der Drucker ist nicht eingeschaltet oder aus anderen 
+Grnden nicht empfangsbereit.
+Unknown word size   : Sie haben eine andere Verarbeitungsbreite als .B, .W 
+oder .L angegeben.
+No data register    : Sie  mssen  bei dem  Befehl ein  Datenregister ver-
+wenden.
+Disk:  -xx          : Es tauchte  der mit der Nummer angegebene Disketten-
+fehler auf.
+
