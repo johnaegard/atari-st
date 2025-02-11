@@ -2,6 +2,7 @@
 #define MAZE_H
 
 #include <16bittypes.h>
+#include <stdbool.h>
 
 #define LINE_SIZE_BYTES 160
 #define CELL_WIDTH_BYTES 16
@@ -30,8 +31,7 @@ typedef struct {
 } Maze;
 
 Maze generate_maze(word height, word width);
-void render_maze(bool mode, Maze *maze, MazeRenderConf maze_render_conf,
-  word cx, word cy, Page* page, Image* sprites, 
-  bool log, FILE* logfile);
+void render_maze(bool mode, Maze* maze, MazeRenderConf* maze_render_conf, word cx, word cy, Page* page, Image* sprites, bool log,
+                 FILE* logfile);
 
 #endif
