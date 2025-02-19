@@ -6,3 +6,5 @@ hatari-2.5.0/
 *.log
 *.BAK
 *.o
+*.sym
+*.profile

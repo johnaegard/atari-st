@@ -73,19 +73,15 @@ void render_vwall(Maze* maze, signed short maze_row, signed short maze_col, Maze
     if (! (vwall_xoff < 0 || vwall_xoff >= mrc->viewport_width_bytes) ) {
       // fprintf(log_file,"xoff=%d, VIEWPORT_W_B=%d\n",xoff,VIEWPORT_WIDTH_BYTES);
 
-      signed long start_yoff = ((screen_row * mrc->cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
-      signed long end_yoff = start_yoff + (mrc->cell_size_px * LINE_SIZE_BYTES);
-      addr start_dest_addr = (start_yoff < 0) ? screenbase_addr + vwall_xoff : screenbase_addr + start_yoff + vwall_xoff;
-      addr end_dest_addr = screenbase_addr + 32000; 
+      signed long start_yoff_bytes = ((screen_row * mrc->cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
+      signed long end_yoff_bytes = start_yoff_bytes + (mrc->cell_size_px * LINE_SIZE_BYTES);
+      addr start_dest_addr = (start_yoff_bytes < 0) ? screenbase_addr + vwall_xoff : screenbase_addr + start_yoff_bytes + vwall_xoff;
+      addr end_dest_addr = (end_yoff_bytes <= (LINE_SIZE_BYTES * mrc->viewport_height_px)) ? 
+        screenbase_addr + end_yoff_bytes :      
+        screenbase_addr + (LINE_SIZE_BYTES * mrc->viewport_height_px) ;
       
-      for (signed long yoffset = start_yoff; 
-          yoffset < end_yoff;
-          yoffset = yoffset + LINE_SIZE_BYTES) {
-        addr dest_addr = screenbase_addr + yoffset + vwall_xoff;
-        // CLIP
-        if (dest_addr >= screenbase_addr && dest_addr <= screenbase_addr + mrc->viewport_height_px * LINE_SIZE_BYTES) {
-          memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
-        }
+      for (addr dest_addr = start_dest_addr; dest_addr < end_dest_addr; dest_addr = dest_addr + LINE_SIZE_BYTES) {
+        memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
       }
     }
   } 
