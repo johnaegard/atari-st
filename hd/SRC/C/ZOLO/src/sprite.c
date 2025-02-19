@@ -12,7 +12,7 @@ void render_sprite(Sprite* sprite, word sprite_frame, word screen_x, word screen
     frame_src_x,
     frame_src_y,
     sprite->src_h,
-    sprite->src_y,
+    sprite->src_w,
     target->base,
     screen_x,
     screen_y,
