@@ -21,7 +21,6 @@ void log_frames(FILE* log_file, clock_t start, clock_t end, word frames) {
   }
 }
 
-
 int main() {
 
   FILE *log_file;
@@ -70,13 +69,18 @@ int main() {
     .src_y = 193
   };
 
-  while(cy > 160) {
+  while(cy > 300) {
     Vsync();
-    render_maze(MAZE_ERASE_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
-    render_maze(MAZE_DRAW_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
+    render_vwalls(MAZE_ERASE_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
+    render_hwalls(MAZE_ERASE_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
+
+    render_vwalls(MAZE_DRAW_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
+    render_hwalls(MAZE_DRAW_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
+
     render_sprite(&arrow, ((frames) / 60 % 8 ), 100, 100, &logical_page);
     swap_pages(&logical_page, &physical_page);
     cy--;
+    cx--;
     frames++;
   }
 
