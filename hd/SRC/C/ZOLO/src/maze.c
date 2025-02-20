@@ -196,7 +196,7 @@ void render_hwalls(bool draw_mode, Maze* maze, MazeRenderConf mrc,
     (topleft_x < 0) ? 0 :
     (cx_mod == 0) ? 0 :
     (cx_mod >= 16) ? 0 : -16;
-  word vwall_chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
+  word chunk_offset_bytes = (cx_mod > 0 && cx_mod <= 16) ? 8 : 0;
 
   // if (log) {
   //   fprintf(log_file,
@@ -221,7 +221,7 @@ void render_hwalls(bool draw_mode, Maze* maze, MazeRenderConf mrc,
         // vert lines
         //
         word screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
-        signed short xoff = screen_col_offset_bytes + col_offset_bytes + vwall_chunk_offset_bytes;
+        signed short xoff = screen_col_offset_bytes + col_offset_bytes + chunk_offset_bytes;
         // fprintf(log_file,"xoff=%d, VIEWPORT_W_B=%d\n",xoff,VIEWPORT_WIDTH_BYTES);
         if (xoff < 0 || xoff >= mrc.viewport_width_bytes) {
           if (log) {
@@ -231,9 +231,7 @@ void render_hwalls(bool draw_mode, Maze* maze, MazeRenderConf mrc,
           continue;
         }
       }
-      //
-      // hwalls
-      //
+
       bool prev_cell_has_hwall = (maze_col <= 0) ? false :
         (screen_col == -1) ? false :
         ((maze->walls[maze_row][maze_col - 1] & 2) == 2);
