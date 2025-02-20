@@ -34,11 +34,11 @@ Maze generate_maze(word height_cells, word width_cells) {
       else {
         map_data[r][c] = 0;
       }
-      map_data[0][c] = 2;
+      map_data[r][c] = 3;
     }
-    map_data[r][0] = 1;
   }
 
+  // make edges
   for (int r = 0; r < height_cells; r++) {
     map_data[r][width_cells - 1] = 1;
     map_data[r][0] = 1;
