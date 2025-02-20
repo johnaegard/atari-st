@@ -13,4 +13,4 @@ maze.o:
 sprite.o:
 	m68k-atari-mint-gcc -c ./src/sprite.c -o ./build/sprite.o ${CFLAGS}
 clean:
-	rm -f ./build/*.o ZOLO.TOS
+	rm -f ./build/lib/*.o ./build/*.o *.TOS
