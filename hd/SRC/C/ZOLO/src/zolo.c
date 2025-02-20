@@ -69,7 +69,7 @@ int main() {
     .src_y = 193
   };
 
-  while(cy > 300) {
+  while(cy > 400) {
     Vsync();
     render_vwalls(MAZE_ERASE_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);
     render_hwalls(MAZE_ERASE_MODE, &maze, maze_render_conf, cx, cy, &logical_page, &sprites, false,0);

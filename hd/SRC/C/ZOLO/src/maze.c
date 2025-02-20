@@ -150,83 +150,6 @@ void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf mrc,
           }
         }
       }
-      //
-      // hwalls
-      //
-      bool prev_cell_has_hwall = (maze_col <= 0) ? false :
-        (screen_col == -1) ? false :
-        ((maze->walls[maze_row][maze_col - 1] & 2) == 2);
-
-      bool this_cell_has_hwall = (maze_col >= maze->width_cells - 1) ? false :
-        ((maze->walls[maze_row][maze_col] & 2) == 2);
-
-      word hwall_sprite_type;
-
-      if (this_cell_has_hwall) {
-        if (cx_mod == 0) {
-          hwall_sprite_type = HWALL_FULL_SPRITE;
-        }
-        else if (prev_cell_has_hwall) {
-          hwall_sprite_type = HWALL_FULL_SPRITE;
-        }
-        else {
-          hwall_sprite_type = HWALL_START_SPRITE;
-        }
-      }
-      else {
-        if (prev_cell_has_hwall) {
-          hwall_sprite_type = HWALL_END_SPRITE;
-        }
-        else {
-          hwall_sprite_type = HWALL_NO_SPRITE;
-        }
-      }
-
-      word hwall_src_y;
-
-      if (hwall_sprite_type != HWALL_NO_SPRITE) {
-        if (hwall_sprite_type == HWALL_END_SPRITE) {
-          hwall_src_y = HWALL_END_SPRITES_Y + cx_mod;
-        }
-        else if (hwall_sprite_type == HWALL_START_SPRITE) {
-          hwall_src_y = HWALL_START_SPRITES_Y + cx_mod;
-        }
-        else if (hwall_sprite_type == HWALL_FULL_SPRITE) {
-          hwall_src_y = HWALL_FULL_SPRITE_Y;
-        }
-        else {
-          perror("wtf?");
-          exit(1);
-        }
-
-        addr hwall_src_addr = (draw_mode == true) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
-
-        signed short hwall_screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
-        signed short hwall_xoffset_bytes = hwall_screen_col_offset_bytes + col_offset_bytes;
-        signed short hwall_yoffset_bytes = ((screen_row * mrc.cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
-        dest_addr = screenbase_addr + hwall_yoffset_bytes + hwall_xoffset_bytes;
-
-        // if (log) {
-        //   fprintf(log_file,
-        //     "    hwall draw_mode=%d, maze_row=%d, maze_col=%d, screen_row=%d, screen_col=%d\n",
-        //     mode, maze_row, maze_col, screen_row, screen_col);
-        //   fprintf(log_file,
-        //     "          prev_cell_has_hwall=%d,this_cell_has_hwall=%d, hwall_sprite_type=%d, cx_mod=%d, hwall_src_y=%d\n",
-        //     prev_cell_has_hwall, this_cell_has_hwall, hwall_sprite_type, cx_mod, hwall_src_y);
-        //   fprintf(log_file,
-        //     "          hwall_screen_col_offset_bytes=%d, col_offset_bytes=%d hwall_xoffset_bytes=%d\n",
-        //     hwall_screen_col_offset_bytes, col_offset_bytes, hwall_xoffset_bytes);
-        //   fprintf(log_file,
-        //     "          screen_row=%d, screen_yoffset=%d, hwall_yoffset_bytes=%d, dest_addr=%d\n",
-        //     screen_row, screen_yoffset, hwall_yoffset_bytes, dest_addr);
-        // }
-        if (hwall_xoffset_bytes >= 0 &&
-          hwall_xoffset_bytes < mrc.viewport_width_bytes &&
-          hwall_yoffset_bytes >= 0 &&
-          hwall_yoffset_bytes <= mrc.viewport_height_px * LINE_SIZE_BYTES) {
-          // memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
-        }
-      }
       screen_col++;
     }
     screen_row++;
@@ -306,16 +229,6 @@ void render_hwalls(bool draw_mode, Maze* maze, MazeRenderConf mrc,
           }
           screen_col++;
           continue;
-        }
-        signed short start_yoff = ((screen_row * mrc.cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
-        for (signed long yoffset = start_yoff; yoffset < start_yoff + (mrc.cell_size_px * LINE_SIZE_BYTES);
-          yoffset = yoffset + LINE_SIZE_BYTES) {
-          dest_addr = screenbase_addr + yoffset + xoff;
-          // CLIP
-          if (dest_addr >= screenbase_addr && 
-            dest_addr <= screenbase_addr + mrc.viewport_height_px * LINE_SIZE_BYTES) {
-            // memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
-          }
         }
       }
       //
