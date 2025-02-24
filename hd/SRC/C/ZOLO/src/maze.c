@@ -134,7 +134,7 @@ void render_vwallz(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
     end_dest_addr    = (end_yoff_bytes <= (LINE_SIZE_BYTES * mrc->viewport_height_px)) ? 
                        screenbase_addr + end_yoff_bytes :      
                        screenbase_addr + (LINE_SIZE_BYTES * mrc->viewport_height_px) ;
-
+    addr foo         = (start_yoff_bytes < 0) ? screenbase_addr : screenbase_addr + start_yoff_bytes;
 
     for (signed short maze_col = start_col; maze_col <= end_col; maze_col++) {
       if (maze_col < 0 || maze_col >= maze->width_cells) {
@@ -149,8 +149,7 @@ void render_vwallz(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
           screen_col++;
           continue;
         }
-
-        start_dest_addr  = (start_yoff_bytes < 0) ? screenbase_addr + vwall_xoff : screenbase_addr + start_yoff_bytes + vwall_xoff;
+        start_dest_addr = foo + vwall_xoff;
         vline(start_dest_addr, end_dest_addr, vwall_src_addr);
 
       }
