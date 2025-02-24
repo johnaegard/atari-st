@@ -71,11 +71,6 @@ Maze generate_maze(word height_cells, word width_cells) {
 }
 
 
-void vline(addr start_dest_addr, addr end_dest_addr, addr vwall_src_addr) {
-  for (addr dest_addr = start_dest_addr; dest_addr < end_dest_addr; dest_addr = dest_addr + LINE_SIZE_BYTES) {
-    memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
-  }
-}
 
 void render_vwallz(bool draw_mode, Maze* maze, MazeRenderConf* mrc, 
   word cx, word cy, Page* page, Image* sprites, 
@@ -150,7 +145,9 @@ void render_vwallz(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
           continue;
         }
         start_dest_addr = foo + vwall_xoff;
-        vline(start_dest_addr, end_dest_addr, vwall_src_addr);
+        for (addr dest_addr = start_dest_addr; dest_addr < end_dest_addr; dest_addr = dest_addr + LINE_SIZE_BYTES) {
+          memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+        }
 
       }
       screen_col++;
