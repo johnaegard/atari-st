@@ -70,7 +70,14 @@ Maze generate_maze(word height_cells, word width_cells) {
   return maze;
 }
 
-void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, 
+
+void vline(addr start_dest_addr, addr end_dest_addr, addr vwall_src_addr) {
+  for (addr dest_addr = start_dest_addr; dest_addr < end_dest_addr; dest_addr = dest_addr + LINE_SIZE_BYTES) {
+    memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+  }
+}
+
+void render_vwallz(bool draw_mode, Maze* maze, MazeRenderConf* mrc, 
   word cx, word cy, Page* page, Image* sprites, 
   bool log, FILE* logfile) {
 
@@ -89,8 +96,9 @@ void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
   signed short end_col = (cx + mrc->viewport_width_px / 2) / mrc->cell_size_px;
   signed short topleft_x = cx - (mrc->viewport_width_px / 2);
   signed short topleft_y = cy - (mrc->viewport_height_px / 2);
-  signed short screen_yoffset = (topleft_y > 0) ? (-1 * (cy % mrc->cell_size_px)) :
-    -1 * (topleft_y % mrc->cell_size_px);
+  signed short screen_yoffset = (topleft_y > 0) ? 
+                                (-1 * (cy % mrc->cell_size_px)) :
+                                -1 * (topleft_y % mrc->cell_size_px);
 
   word cx_mod = cx % 32;
   word vwall_src_y = (16 - (cx_mod % 16)) % 16;
@@ -114,12 +122,22 @@ void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
   // }
 
   word screen_row = 0;
+  signed short start_yoff_px ;
+  signed long start_yoff_bytes;
+  signed long end_yoff_bytes;
+  addr start_dest_addr;
+  addr end_dest_addr;
+
   for (signed short maze_row = start_row; maze_row < end_row; maze_row++) {
     signed short screen_col = 0;
     if (maze_row < 0 || maze_row >= maze->height_cells) {
       screen_row++;
       continue;
     }
+
+    start_yoff_bytes = ((screen_row * mrc->cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
+    end_yoff_bytes   = start_yoff_bytes + (mrc->cell_size_px * LINE_SIZE_BYTES);
+
     for (signed short maze_col = start_col; maze_col <= end_col; maze_col++) {
       if (maze_col < 0 || maze_col >= maze->width_cells) {
         screen_col++;
@@ -128,27 +146,18 @@ void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
       if ((maze->walls[maze_row][maze_col] & 1) == 1) {
         word screen_col_offset_bytes = screen_col * CELL_WIDTH_BYTES;
         signed short vwall_xoff = screen_col_offset_bytes + col_offset_bytes + vwall_chunk_offset_bytes;
-        // fprintf(log_file,"xoff=%d, VIEWPORT_W_B=%d\n",xoff,VIEWPORT_WIDTH_BYTES);
+
         if (vwall_xoff < 0 || vwall_xoff >= mrc->viewport_width_bytes) {
-          if (log) {
-            // fprintf(log_file, "    vwall xoff=%d out of bounds, skipping screen_col=%d\n", xoff, screen_col);
-          }
           screen_col++;
           continue;
         }
-        signed short start_yoff_px = ((screen_row * mrc->cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
-        signed long start_yoff_bytes = ((screen_row * mrc->cell_size_px) + screen_yoffset) * LINE_SIZE_BYTES;
-        signed long end_yoff_bytes = start_yoff_bytes + (mrc->cell_size_px * LINE_SIZE_BYTES);
-        addr start_dest_addr = (start_yoff_bytes < 0) ? screenbase_addr + vwall_xoff : screenbase_addr + start_yoff_bytes + vwall_xoff;
-        addr end_dest_addr = (end_yoff_bytes <= (LINE_SIZE_BYTES * mrc->viewport_height_px)) ? 
-        screenbase_addr + end_yoff_bytes :      
-        screenbase_addr + (LINE_SIZE_BYTES * mrc->viewport_height_px) ;
+
+        start_dest_addr  = (start_yoff_bytes < 0) ? screenbase_addr + vwall_xoff : screenbase_addr + start_yoff_bytes + vwall_xoff;
+        end_dest_addr    = (end_yoff_bytes <= (LINE_SIZE_BYTES * mrc->viewport_height_px)) ? 
+                           screenbase_addr + end_yoff_bytes :      
+                           screenbase_addr + (LINE_SIZE_BYTES * mrc->viewport_height_px) ;
       
-        for (addr dest_addr = start_dest_addr; dest_addr < end_dest_addr; dest_addr = dest_addr + LINE_SIZE_BYTES) {
-          memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
-        }
-
-
+        vline(start_dest_addr, end_dest_addr, vwall_src_addr);
 
       }
       screen_col++;

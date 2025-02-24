@@ -69,13 +69,13 @@ int main() {
     .src_y = 193
   };
 
-  while(cy > 400) {
+  while(cy > 300) {
     // fprintf(log_file,"\n\nFRAME %d\n", frames);
     Vsync();
-    render_vwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
+    render_vwallz(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
     render_hwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
 
-    render_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false, log_file);
+    render_vwallz(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false, log_file);
     render_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
 
     render_sprite(&arrow, ((frames) / 60 % 8 ), 100, 100, &logical_page);
