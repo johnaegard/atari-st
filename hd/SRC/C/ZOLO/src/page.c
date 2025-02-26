@@ -7,12 +7,12 @@ Page new_page(Image image) {
   return page;
 }
 
-Page2* new_page2(Image image, word max_memcopies) {
-  Page2* page = (Page2*)Malloc(sizeof(Page2) + max_memcopies * sizeof(MemcpyDef));
+Page2* new_page2(Image image) {
+  Page2* page = (Page2*)Malloc(sizeof(Page2));
   page->image = image;
   page->base = image.base;
-  page->max_memcopies = max_memcopies;
-  page->num_memcopies = 0;
+  page->num_hwalls = 0;
+  page->num_vwalls = 0;
   return page;
 }
 
@@ -28,5 +28,3 @@ void swap_pages2(Page2** logical, Page2** physical) {
   *physical = *logical;
   *logical = tmp;
 }
-
-void reset_page2(Page2* page) { page->num_memcopies = 0; }

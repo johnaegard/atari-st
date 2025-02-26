@@ -11,7 +11,6 @@ const word VIEWPORT_HEIGHT_PX = 192;
 const word VIEWPORT_WIDTH_PX = 224;
 const word VIEWPORT_WIDTH_BYTES = 112;
 const word CELL_SIZE_PX = 32;
-const word MAX_MEMCOPIES = 1600;
 
 void log_frames(FILE* log_file, clock_t start, clock_t end, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
@@ -38,8 +37,8 @@ int main() {
   Image background = make_image_from_degas_file(".\\RES\\BKGD.PI1");
   Image physical = duplicate_image(background);
   Image logical = duplicate_image(background);
-  Page2* logical_page_val = new_page2(logical, MAX_MEMCOPIES);
-  Page2* physical_page_val = new_page2(physical, MAX_MEMCOPIES);
+  Page2* logical_page_val = new_page2(logical);
+  Page2* physical_page_val = new_page2(physical);
   Page2** logical_page = &logical_page_val;
   Page2** physical_page = &physical_page_val;
   free_image(background);
@@ -79,11 +78,11 @@ int main() {
 
   while (cx > 300) {
     Vsync();
-    erase_maze(*logical_page);
-    reset_page2(*logical_page);
+    erase_hwalls(*logical_page);
+    erase_vwalls(*logical_page);
     draw_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
     draw_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
-    //fprintf(log_file, "(*logical_page)->num_memcopies=%d\n", (*logical_page)->num_memcopies);
+    // fprintf(log_file, "(*logical_page)->num_memcopies=%d\n", (*logical_page)->num_memcopies);
 
     swap_pages2(logical_page, physical_page);
     Setscreen((*logical_page)->base, (*physical_page)->base, -1);
