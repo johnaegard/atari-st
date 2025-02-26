@@ -18,5 +18,5 @@ page.o:
 	m68k-atari-mint-gcc -c ./src/page.c -o ./build/page.o ${CFLAGS}
 clean:
 	rm -f ./build/lib/*.o ./build/*.o *.TOS
-profile: sym
-	hatari_profile.py -st -r zolo.sym zolo.profile | tail -n 6
+profile:
+	~/emu/atari-st/bin/hatari_profile.py -st -r zolo.sym zolo.profile
