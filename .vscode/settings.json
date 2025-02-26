@@ -12,5 +12,6 @@
         "workbench.colorCustomizations": {
         "editorCursor.foreground": "#be2a10",
         "terminalCursor.foreground": "#be2a10"
-    }
+    },
+    "C_Cpp.default.cStandard": "c99"
 }
