@@ -34,9 +34,8 @@ typedef struct {
 
 Maze generate_maze(word height, word width);
 void log_maze(FILE* logfile, Maze* maze);
-void plan_hwalls(bool mode, Maze* maze, MazeRenderConf* mrcptr, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile);
-void plan_vwalls(bool mode, Maze* maze, MazeRenderConf* maze_render_conf, word cx, word cy, Page2* page, Image* sprites, bool log,
-                 FILE* logfile);
+void plan_hwalls(Maze* maze, MazeRenderConf* mrcptr, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile);
+void plan_vwalls(Maze* maze, MazeRenderConf* maze_render_conf, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile);
 void erase_hwalls2(Page2* page);
 void draw_hwalls(Page2* page);
 void erase_vwalls2(Page2* page);
