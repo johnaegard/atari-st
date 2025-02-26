@@ -1,9 +1,4 @@
-#include <16bittypes.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <image.h>
 #include <maze.h>
-#include <mint/osbind.h>
 
 const word HWALL_NO_SPRITE = 0;
 const word HWALL_END_SPRITE = 1;

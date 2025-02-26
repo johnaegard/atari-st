@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <mint/osbind.h>
-#include <16bittypes.h>
 #include <image.h>
-
-Page tmppage;
 
 AlignedBuffer new_aligned_buffer(size_t size) {
   void* original_ptr = (void*)Malloc(size + 255);
@@ -119,19 +111,6 @@ void free_image(Image image) {
   free_aligned_buffer(image.aligned_buffer);
 }
 void clear_image(Image image) { memset(image.base, 0, 32000); }
-Page new_page(Image image){
-  Page page = {
-    .image = image,
-    .base = image.base
-  };
-  return page;
-}
-void swap_pages(Page* logical, Page* physical) {
-  tmppage = *physical;
-  *physical = *logical;
-  *logical = tmppage;
-  Setscreen(logical->base, physical->base, -1);
-}
 void the_end(clock_t start, clock_t end, void* physbase, Image original_screen, word frames) {
   double total_time = (double)(end - start) / CLOCKS_PER_SEC;
   double fps = frames / total_time;

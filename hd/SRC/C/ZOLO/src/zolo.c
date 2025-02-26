@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <maze.h>
 #include <sprite.h>
+#include <page.h>
 
 const word VIEWPORT_HEIGHT_PX = 192;
 const word VIEWPORT_WIDTH_PX = 224;

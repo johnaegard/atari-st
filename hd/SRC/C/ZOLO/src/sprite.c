@@ -1,6 +1,5 @@
 #include <sprite.h>
-#include <lineablit.h>
-#include <image.h>
+
 
 void render_sprite(Sprite* sprite, word sprite_frame, word screen_x, word screen_y, Page* target) {
 

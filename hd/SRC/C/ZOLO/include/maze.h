@@ -2,6 +2,9 @@
 #define MAZE_H
 
 #include <16bittypes.h>
+#include <page.h>
+#include <lineablit.h>
+#include <image.h>
 
 #define LINE_SIZE_BYTES 160
 #define CELL_WIDTH_BYTES 16

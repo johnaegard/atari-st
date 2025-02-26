@@ -1,5 +1,7 @@
 #include <16bittypes.h>
 #include <image.h>
+#include <page.h>
+#include <lineablit.h>
 
 typedef struct {
   Image src_image;
