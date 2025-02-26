@@ -39,22 +39,22 @@ int main() {
   Image background = make_image_from_degas_file(".\\RES\\BKGD.PI1");
   Image physical = duplicate_image(background);
   Image logical = duplicate_image(background);
-  Page2* logical_page = new_page2(logical,MAX_MEMCOPIES);
-  Page2* physical_page = new_page2(physical,MAX_MEMCOPIES);
-  Page2** logical_page_ptr = &logical_page;
-  Page2** physical_page_ptr = &physical_page;
+  Page2* logical_page_val = new_page2(logical,MAX_MEMCOPIES);
+  Page2* physical_page_val = new_page2(physical,MAX_MEMCOPIES);
+  Page2** logical_page = &logical_page_val;
+  Page2** physical_page = &physical_page_val;
   free_image(background);
   Image sprites = make_image_from_degas_file(".\\RES\\SPRT.PI1");
   Setpalette(sprites.palette);
   // Setscreen(logical_page->base,physical_page->base,-1);
-  Setscreen((*logical_page_ptr)->base,(*physical_page_ptr)->base,-1);
+  Setscreen((*logical_page)->base,(*physical_page)->base,-1);
 
   fprintf(log_file,"logical base=%p\n",logical.base);
   fprintf(log_file,"physical base=%p\n",physical.base);
-  fprintf(log_file,"logical page base=%p\n",logical_page->base);
-  fprintf(log_file,"physical page base=%p\n",physical_page->base);
-  fprintf(log_file,"logical page ptr base=%p\n",(*logical_page_ptr)->base);
-  fprintf(log_file,"physical page ptr base=%p\n",(*physical_page_ptr)->base);
+  fprintf(log_file,"logical page base=%p\n",logical_page_val->base);
+  fprintf(log_file,"physical page base=%p\n",physical_page_val->base);
+  fprintf(log_file,"logical page ptr base=%p\n",(*logical_page)->base);
+  fprintf(log_file,"physical page ptr base=%p\n",(*physical_page)->base);
 
   MazeRenderConf maze_render_conf = {
     .viewport_width_px = VIEWPORT_WIDTH_PX,
@@ -64,14 +64,7 @@ int main() {
     .line_size_bytes = LINE_SIZE_BYTES
   };
 
-  Maze maze = generate_maze(32,32);
-  bool running = true;
-  word cx = 500;
-  word cy = 500;
-  long frames = 0;  
-  clock_t start = clock();
-
-  Sprite arrow = {
+    Sprite arrow = {
     .frame_src_x_offset = 8,
     .frame_src_y_offset = 0,
     .num_frames=8,
@@ -82,15 +75,25 @@ int main() {
     .src_y = 193
   };
 
+  Maze maze = generate_maze(32,32);
+  bool running = true;
+  word cx = 500;
+  word cy = 500;
+  long frames = 0;  
+  clock_t start = clock();
+
   while(cx > 300) {
     Vsync();
-    render_vwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, *logical_page_ptr, &sprites, false,log_file);
-    render_hwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, *logical_page_ptr, &sprites, false,log_file);
 
-    render_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page_ptr, &sprites, false, log_file);
-    render_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page_ptr, &sprites, false,log_file);
+    render_vwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false,log_file);
+    render_hwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false,log_file);
 
-    swap_pages2(logical_page_ptr, physical_page_ptr);
+    render_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
+    render_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
+
+    swap_pages2(logical_page, physical_page);
+    Setscreen((*logical_page)->base,(*physical_page)->base,-1);
+
     cx--;
     cy--;
     frames++;
@@ -98,7 +101,7 @@ int main() {
 
   log_frames(log_file,start,clock(),frames);
   Setpalette(original_palette);
-  Setscreen((*logical_page_ptr)->base,(*physical_page_ptr)->base,-1);
+  Setscreen((*physical_page)->base,(*physical_page)->base,-1);
 
   exit(0);
 }

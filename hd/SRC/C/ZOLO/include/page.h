@@ -2,7 +2,6 @@
 #define PAGE_H
 
 #include <image.h>
-#include <osbind.h>
 
 typedef struct {
   Image image;

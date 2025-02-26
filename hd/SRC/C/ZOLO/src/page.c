@@ -30,5 +30,4 @@ void swap_pages2(Page2** logical, Page2** physical) {
   Page2* tmp = *physical;
   *physical = *logical;
   *logical = tmp;
-  Setscreen((*logical)->base, (*physical)->base, -1);
 }
