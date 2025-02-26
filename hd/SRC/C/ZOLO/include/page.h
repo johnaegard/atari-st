@@ -20,6 +20,7 @@ typedef struct {
 typedef struct {
   addr start_addr;
   addr end_addr;
+  addr src;
 } VwallSegmentDef;
 
 typedef struct {

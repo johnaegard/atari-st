@@ -66,7 +66,7 @@ void log_maze(FILE* logfile, Maze* maze) {
   fflush(logfile);
 }
 
-void draw_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
+void plan_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
   word vwall_segment_count = 0;
   addr screenbase_addr = (addr)page->base;
   addr spritebase_addr = (addr)sprites->base;
@@ -134,11 +134,11 @@ void draw_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
         start_dest_addr = start_dest_line_addr + vwall_xoff_bytes;
         addr dest_addr = start_dest_addr;
 
-        VwallSegmentDef vsd = {.start_addr = start_dest_addr, .end_addr = end_dest_addr};
+        VwallSegmentDef vsd = {.start_addr = start_dest_addr, .end_addr = end_dest_addr, .src = vwall_src_addr};
         page->vwall_segments[vwall_segment_count++] = vsd;
 
         while (dest_addr < end_dest_addr) {
-          memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+          // memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
           dest_addr += LINE_SIZE_BYTES;
         }
       }
@@ -149,7 +149,7 @@ void draw_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
   page->num_vwalls = vwall_segment_count;
 }
 
-void draw_hwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
+void plan_hwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
   addr screenbase_addr = (addr)page->base;
   addr spritebase_addr = (addr)sprites->base;
   addr dest_addr;
@@ -232,7 +232,7 @@ void draw_hwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
         if (hwall_xoffset_bytes >= 0 && hwall_xoffset_bytes < (mrc->viewport_width_bytes) && hwall_yoffset_bytes >= 0 &&
             hwall_yoffset_bytes <= (mrc->viewport_height_px) * LINE_SIZE_BYTES) {
           addr hwall_src_addr = (draw_mode == true) ? spritebase_addr + (hwall_src_y * LINE_SIZE_BYTES) : (addr)zeroes;
-          memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
+          // memcpy((void*)dest_addr, (void*)hwall_src_addr, 16);
           HwallSegmentDef hsd = {.dest = dest_addr, .src = hwall_src_addr};
           page->hwall_segments[hwall_segment_count++] = hsd;
         }
@@ -256,6 +256,22 @@ void erase_vwalls(Page2* page) {
     VwallSegmentDef hsd = page->vwall_segments[s];
     for (addr dest_addr = hsd.start_addr; dest_addr < hsd.end_addr; dest_addr += LINE_SIZE_BYTES) {
       memcpy((void*)dest_addr, (void*)zeroes, 2);
+    }
+  }
+}
+
+void draw_hwalls(Page2* page) {
+  for (word s = 0; s < page->num_hwalls; s++) {
+    HwallSegmentDef hsd = page->hwall_segments[s];
+    memcpy((void*)hsd.dest, (void*)hsd.src, 16);
+  }
+}
+
+void draw_vwalls(Page2* page) {
+  for (word s = 0; s < page->num_vwalls; s++) {
+    VwallSegmentDef vsd = page->vwall_segments[s];
+    for (addr dest_addr = vsd.start_addr; dest_addr < vsd.end_addr; dest_addr += LINE_SIZE_BYTES) {
+      memcpy((void*)dest_addr, (void*)vsd.src, 2);
     }
   }
 }

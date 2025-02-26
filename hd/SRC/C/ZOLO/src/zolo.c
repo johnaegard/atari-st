@@ -80,9 +80,11 @@ int main() {
     Vsync();
     erase_hwalls(*logical_page);
     erase_vwalls(*logical_page);
-    draw_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
-    draw_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
+    plan_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
+    plan_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
     // fprintf(log_file, "(*logical_page)->num_memcopies=%d\n", (*logical_page)->num_memcopies);
+    draw_vwalls(*logical_page);
+    draw_hwalls(*logical_page);
 
     swap_pages2(logical_page, physical_page);
     Setscreen((*logical_page)->base, (*physical_page)->base, -1);
