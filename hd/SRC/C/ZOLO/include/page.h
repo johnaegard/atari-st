@@ -31,5 +31,6 @@ void swap_pages(Page* logical, Page* physical);
 
 Page2* new_page2(Image image, word max_memcopies);
 void swap_pages2(Page2** logical, Page2** physical);
+void reset_page2(Page2* page);
 
 #endif

@@ -2,9 +2,9 @@
 #define MAZE_H
 
 #include <16bittypes.h>
-#include <page.h>
-#include <lineablit.h>
 #include <image.h>
+#include <lineablit.h>
+#include <page.h>
 
 #define LINE_SIZE_BYTES 160
 #define CELL_WIDTH_BYTES 16
@@ -33,12 +33,10 @@ typedef struct {
 } Maze;
 
 Maze generate_maze(word height, word width);
-void render_hwalls(bool mode, Maze *maze, MazeRenderConf *mrcptr, 
-  word cx, word cy, Page2* page, Image* sprites, 
-  bool log, FILE* logfile);
-void render_vwalls(bool mode, Maze *maze, MazeRenderConf *maze_render_conf,
-  word cx, word cy, Page2* page, Image* sprites, 
-  bool log, FILE* logfile);
-void log_maze(FILE *logfile, Maze *maze);
+void draw_hwalls(bool mode, Maze* maze, MazeRenderConf* mrcptr, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile);
+void draw_vwalls(bool mode, Maze* maze, MazeRenderConf* maze_render_conf, word cx, word cy, Page2* page, Image* sprites, bool log,
+                 FILE* logfile);
+void log_maze(FILE* logfile, Maze* maze);
+void erase_maze(Page2* page);
 
 #endif
