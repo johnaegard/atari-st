@@ -23,18 +23,40 @@ Maze generate_maze(word height_cells, word width_cells) {
     }
   }
 
+  for (int r = 0; r < height_cells; r++) {
+    for (int c = 0; c < width_cells; c++) {
+      map_data[r][c] = 0;
+    }
+  }
+
+  // double wide
   // for (int r = 0; r < height_cells; r = r + 2) {
   //   for (int c = 0; c < width_cells; c = c + 2) {
   //     word roll = (rand() % 10);
   //     map_data[r][c] = 3;
-  //     map_data[r+1][c] =1;
-  //     map_data[r][c+1] = 2;
-  //     map_data[r+1][c+1] = 0;
+  //     map_data[r + 1][c] = 1;
+  //     map_data[r][c + 1] = 2;
+  //     map_data[r + 1][c + 1] = 0;
   //   }
   // }
+
+  // single wide
+  // for (int r = 0; r < height_cells; r++) {
+  //   for (int c = 0; c < width_cells; c++) {
+  //     map_data[r][c] = 3;
+  //   }
+  // }
+
   for (int r = 0; r < height_cells; r++) {
     for (int c = 0; c < width_cells; c++) {
-      map_data[r][c] = 3;
+      word roll = rand() % 100;
+      if (roll < 7) {
+        map_data[r][c] = 1;
+      } else if (roll < 14) {
+        map_data[r][c] = 2;
+      } else if (roll < 21) {
+        map_data[r][c] = 3;
+      }
     }
   }
 
