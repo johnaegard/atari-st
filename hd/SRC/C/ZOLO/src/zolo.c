@@ -81,9 +81,9 @@ int main() {
     Vsync();
     erase_maze(*logical_page);
     reset_page2(*logical_page);
-    // draw_vwalls(&maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
+    draw_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
     draw_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, *logical_page, &sprites, false, log_file);
-    fprintf(log_file, "(*logical_page)->num_memcopies=%d\n", (*logical_page)->num_memcopies);
+    //fprintf(log_file, "(*logical_page)->num_memcopies=%d\n", (*logical_page)->num_memcopies);
 
     swap_pages2(logical_page, physical_page);
     Setscreen((*logical_page)->base, (*physical_page)->base, -1);
@@ -91,7 +91,7 @@ int main() {
     cx--;
     cy--;
     frames++;
-    getchar();
+    // getchar();
   }
 
   log_frames(log_file, start, clock(), frames);

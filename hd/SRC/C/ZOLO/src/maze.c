@@ -73,6 +73,7 @@ void draw_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
     cy = page->last_cy;
   }
 
+  word memcpy_counter = page->num_memcopies;
   addr screenbase_addr = (addr)page->base;
   addr spritebase_addr = (addr)sprites->base;
   addr dest_addr;
@@ -140,6 +141,8 @@ void draw_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
         addr dest_addr = start_dest_addr;
         while (dest_addr < end_dest_addr) {
           memcpy((void*)dest_addr, (void*)vwall_src_addr, 2);
+          MemcpyDef mcd = {.dest = dest_addr, .src = vwall_src_addr, .num_bytes = 2};
+          page->memcopies[memcpy_counter++] = mcd;
           dest_addr += LINE_SIZE_BYTES;
         }
       }
@@ -147,11 +150,7 @@ void draw_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
     }
     screen_row++;
   }
-
-  if (draw_mode == true) {
-    page->last_cx = cx;
-    page->last_cy = cy;
-  }
+  page->num_memcopies = memcpy_counter;
 }
 
 void draw_hwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
@@ -252,6 +251,6 @@ void draw_hwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, word cx, word 
 void erase_maze(Page2* page) {
   for (word i = 0; i < page->num_memcopies; i++) {
     MemcpyDef mcd = page->memcopies[i];
-    memcpy(mcd.dest, (void*)zeroes, mcd.num_bytes);
+    memcpy((void*)mcd.dest, (void*)zeroes, mcd.num_bytes);
   }
 }
