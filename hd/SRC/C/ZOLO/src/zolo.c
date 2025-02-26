@@ -48,7 +48,8 @@ int main() {
     .viewport_width_px = VIEWPORT_WIDTH_PX,
     .viewport_height_px = VIEWPORT_HEIGHT_PX,
     .viewport_width_bytes = VIEWPORT_WIDTH_BYTES,
-    .cell_size_px = CELL_SIZE_PX
+    .cell_size_px = CELL_SIZE_PX,
+    .line_size_bytes = LINE_SIZE_BYTES
   };
 
   Maze maze = generate_maze(32,32);
@@ -69,19 +70,18 @@ int main() {
     .src_y = 193
   };
 
-  while(cy > 300) {
-    // fprintf(log_file,"\n\nFRAME %d\n", frames);
+  while(cx > 300) {
     Vsync();
-    render_vwallz(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
+    render_vwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
     render_hwalls(MAZE_ERASE_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
 
-    render_vwallz(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false, log_file);
+    render_vwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false, log_file);
     render_hwalls(MAZE_DRAW_MODE, &maze, &maze_render_conf, cx, cy, &logical_page, &sprites, false,log_file);
 
-    render_sprite(&arrow, ((frames) / 60 % 8 ), 100, 100, &logical_page);
+    // render_sprite(&arrow, ((frames) / 60 % 8 ), 100, 100, &logical_page);
     swap_pages(&logical_page, &physical_page);
-    cy--;
     cx--;
+    cy--;
     frames++;
   }
 
