@@ -72,7 +72,7 @@ void log_maze(FILE *logfile, Maze *maze) {
 }
 
 void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc, 
-  word cx, word cy, Page* page, Image* sprites, 
+  word cx, word cy, Page2* page, Image* sprites, 
   bool log, FILE* logfile) {
 
   if (draw_mode == MAZE_ERASE_MODE) {
@@ -166,7 +166,7 @@ void render_vwalls(bool draw_mode, Maze* maze, MazeRenderConf* mrc,
 }
 
 void render_hwalls(bool draw_mode, Maze* maze, MazeRenderConf *mrc, 
-  word cx, word cy, Page* page, Image* sprites, 
+  word cx, word cy, Page2* page, Image* sprites, 
   bool log, FILE* logfile) {
 
   if (draw_mode == MAZE_ERASE_MODE) {

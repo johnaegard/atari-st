@@ -34,10 +34,10 @@ typedef struct {
 
 Maze generate_maze(word height, word width);
 void render_hwalls(bool mode, Maze *maze, MazeRenderConf *mrcptr, 
-  word cx, word cy, Page* page, Image* sprites, 
+  word cx, word cy, Page2* page, Image* sprites, 
   bool log, FILE* logfile);
 void render_vwalls(bool mode, Maze *maze, MazeRenderConf *maze_render_conf,
-  word cx, word cy, Page* page, Image* sprites, 
+  word cx, word cy, Page2* page, Image* sprites, 
   bool log, FILE* logfile);
 void log_maze(FILE *logfile, Maze *maze);
 
