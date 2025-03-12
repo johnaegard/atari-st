@@ -1,10 +1,13 @@
 nohup.out
-hatari-2.5.0.tar.gz
+hatari-2.5.0.tar*
 hatari-2.5.0/
 *.swp
+*.swo
 *.TOS
 *.log
 *.BAK
 *.o
 *.sym
 *.profile
+bin/*
+

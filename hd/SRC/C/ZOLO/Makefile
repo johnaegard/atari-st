@@ -1,7 +1,7 @@
 CFLAGS = -std=c99 -O3 -g -I./include
 
 sym: zolo
-	gst2ascii ZOLO.TOS | m68k-atari-mint-c++filt > zolo.sym
+	../../../../bin/gst2ascii ZOLO.TOS | m68k-atari-mint-c++filt > zolo.sym
 zolo: lineablit.o zolo.o image.o maze.o sprite.o page.o
 	m68k-atari-mint-gcc ./build/*.o -o ZOLO.TOS
 zolo.o:
@@ -19,4 +19,4 @@ page.o:
 clean:
 	rm -f ./build/lib/*.o ./build/*.o *.TOS
 profile:
-	~/emu/atari-st/bin/hatari_profile.py -st -r zolo.sym zolo.profile
+	../../../../bin/hatari_profile.py -st -r zolo.sym zolo.profile
