@@ -71,12 +71,12 @@ int main() {
 
   Maze maze = generate_maze(32, 32);
   bool running = true;
-  word cx = 500;
-  word cy = 500;
+  word cx = 800;
+  word cy = 800;
   long frames = 0;
   clock_t start = clock();
 
-  while (cx > 300) {
+  while (cx > 150) {
     Vsync();
     erase_hwalls(*logical_page);
     erase_vwalls(*logical_page);

@@ -48,10 +48,14 @@ int main() {
     /* Value to write */
     unsigned short value = 0xFFFF;
     
-    /* Call our assembly function */
-    inlined_line_draw(start, end, 160, value);
+    printf("Drawing vertical line pattern on screen...\n");
+    printf("Press Enter to start drawing\n");
+    getchar();
     
-    /* Wait for user to see the result */
+    /* Call our assembly function to draw a pattern */
+    inlined_line_draw((void*)start, (void*)end, 160, value);
+    
+    printf("Drawing complete. Press Enter to exit...\n");
     getchar();
     
     return 0;

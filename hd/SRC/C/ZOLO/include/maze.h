@@ -36,9 +36,11 @@ Maze generate_maze(word height, word width);
 void log_maze(FILE* logfile, Maze* maze);
 void plan_hwalls(Maze* maze, MazeRenderConf* mrcptr, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile);
 void plan_vwalls(Maze* maze, MazeRenderConf* maze_render_conf, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile);
-void erase_hwalls2(Page2* page);
+void erase_hwalls(Page2* page);
 void draw_hwalls(Page2* page);
-void erase_vwalls2(Page2* page);
+void erase_vwalls(Page2* page);
+void c_draw_vwalls(Page2* page);
+void inline_draw_vwalls(Page2* page);
 void draw_vwalls(Page2* page);
-
+void inlined_line_draw(void *start_addr, void *end_addr, long increment, unsigned short value);
 #endif
