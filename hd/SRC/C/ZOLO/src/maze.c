@@ -45,9 +45,15 @@ Maze generate_maze(word height_cells, word width_cells) {
   // 50% vline
   for (int r = 0; r < height_cells; r++) {
     for (int c = 0; c < width_cells; c++) {
-      word roll = (rand() % 10);
-      if (roll < 3) {
+      word roll = (rand() % 100);
+      if (roll < 25) {
         map_data[r][c] = 1;
+      }
+      else if (roll < 50) {
+        map_data[r][c] = 2;
+      }
+      else {
+        map_data[r][c] = 0;
       }
     }
   }
