@@ -87,6 +87,7 @@ void log_maze(FILE* logfile, Maze* maze) {
   }
   fflush(logfile);
 }
+
 void plan_vwalls(Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
   word vwall_segment_count = 0;
   addr screenbase_addr = (addr)page->base;
@@ -164,6 +165,47 @@ void plan_vwalls(Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page,
   }
   page->num_vwalls = vwall_segment_count;
 }
+void inlined_vline_draw(void *start_addr, void *end_addr, long increment, unsigned short value) {
+  if (start_addr > end_addr) return;
+  __asm__ __volatile__ (
+      "move.l %0,a0\n\t"    /* Load start address into a0 */
+      "move.l %1,a1\n\t"    /* Load end address into a1 */
+      "move.w %2,d0\n\t"    /* Load value into d0 */
+      "move.l %3,d1\n\t"    /* Load increment into d1 (as long) */
+      
+      "1:\n\t"              /* Local label for loop start */
+      "move.w d0,(a0)\n\t"  /* Store d0 at current address */
+      "add.l  d1,a0\n\t"    /* Increment address by d1 (long operation) */
+      "cmp.l  a1,a0\n\t"    /* Compare current address with end address */
+      "ble.s  1b\n\t"       /* Loop if current <= end address */
+      : /* no outputs */
+      : "g" (start_addr), "g" (end_addr), "g" (value), "g" (increment)
+      : "a0", "a1", "d0", "d1", "memory" /* clobbered registers and memory */
+  );
+}
+void erase_vwalls(Page2* page) {
+for (word s = 0; s < page->num_vwalls; s++) {
+  VwallSegmentDef vsd = page->vwall_segments[s];    
+  // Use the optimized assembly function to erase the vertical line
+  inlined_vline_draw((void*)vsd.start_addr, (void*)vsd.end_addr, LINE_SIZE_BYTES, 0);
+}
+}
+void c_draw_vwalls(Page2* page) {
+for (word s = 0; s < page->num_vwalls; s++) {
+  VwallSegmentDef vsd = page->vwall_segments[s];
+  for (addr dest_addr = vsd.start_addr; dest_addr < vsd.end_addr; dest_addr += LINE_SIZE_BYTES) {
+    memcpy((void*)dest_addr, (void*)vsd.src, 2);
+  }
+}
+}
+void draw_vwalls(Page2* page) {
+for (word s = 0; s < page->num_vwalls; s++) {
+  VwallSegmentDef vsd = page->vwall_segments[s];
+  unsigned short value = *(unsigned short*)vsd.src;
+  inlined_vline_draw((void*)vsd.start_addr, (void*)vsd.end_addr, LINE_SIZE_BYTES, value);
+}
+}
+
 void plan_hwalls(Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page, Image* sprites, bool log, FILE* logfile) {
   addr screenbase_addr = (addr)page->base;
   addr spritebase_addr = (addr)sprites->base;
@@ -258,14 +300,12 @@ void plan_hwalls(Maze* maze, MazeRenderConf* mrc, word cx, word cy, Page2* page,
   }
   page->num_hwalls = hwall_segment_count;
 }
-
 void erase_hwalls(Page2* page) {
   for (word s = 0; s < page->num_hwalls; s++) {
     HwallSegmentDef hsd = page->hwall_segments[s];
     memcpy((void*)hsd.dest, (void*)zeroes, 16);
   }
 }
-
 void draw_hwalls(Page2* page) {
   for (word s = 0; s < page->num_hwalls; s++) {
     HwallSegmentDef hsd = page->hwall_segments[s];
@@ -284,50 +324,6 @@ void draw_hwalls(Page2* page) {
  * at regular intervals. It writes the value at start_addr, then at
  * start_addr+increment, and so on until it reaches or exceeds end_addr.
  */
-void inlined_line_draw(void *start_addr, void *end_addr, long increment, unsigned short value) {
-    if (start_addr > end_addr) return;
-    __asm__ __volatile__ (
-        "move.l %0,a0\n\t"    /* Load start address into a0 */
-        "move.l %1,a1\n\t"    /* Load end address into a1 */
-        "move.w %2,d0\n\t"    /* Load value into d0 */
-        "move.l %3,d1\n\t"    /* Load increment into d1 (as long) */
-        
-        "1:\n\t"              /* Local label for loop start */
-        "move.w d0,(a0)\n\t"  /* Store d0 at current address */
-        "add.l  d1,a0\n\t"    /* Increment address by d1 (long operation) */
-        "cmp.l  a1,a0\n\t"    /* Compare current address with end address */
-        "ble.s  1b\n\t"       /* Loop if current <= end address */
-        : /* no outputs */
-        : "g" (start_addr), "g" (end_addr), "g" (value), "g" (increment)
-        : "a0", "a1", "d0", "d1", "memory" /* clobbered registers and memory */
-    );
-}
-
-void erase_vwalls(Page2* page) {
-  for (word s = 0; s < page->num_vwalls; s++) {
-    VwallSegmentDef vsd = page->vwall_segments[s];    
-    // Use the optimized assembly function to erase the vertical line
-    inlined_line_draw((void*)vsd.start_addr, (void*)vsd.end_addr, LINE_SIZE_BYTES, 0);
-  }
-}
-
-void c_draw_vwalls(Page2* page) {
-  for (word s = 0; s < page->num_vwalls; s++) {
-    VwallSegmentDef vsd = page->vwall_segments[s];
-    for (addr dest_addr = vsd.start_addr; dest_addr < vsd.end_addr; dest_addr += LINE_SIZE_BYTES) {
-      memcpy((void*)dest_addr, (void*)vsd.src, 2);
-    }
-  }
-}
-
-void draw_vwalls(Page2* page) {
-  for (word s = 0; s < page->num_vwalls; s++) {
-    VwallSegmentDef vsd = page->vwall_segments[s];
-    unsigned short value = *(unsigned short*)vsd.src;
-    inlined_line_draw((void*)vsd.start_addr, (void*)vsd.end_addr, LINE_SIZE_BYTES, value);
-  }
-}
-
 // void abtest_draw_vwalls(Page2* page) {
 //   /* Randomly choose between C implementation and inline assembly implementation */
 //   if (rand() % 2 == 0) {

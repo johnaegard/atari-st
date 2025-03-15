@@ -42,5 +42,5 @@ void erase_vwalls(Page2* page);
 void c_draw_vwalls(Page2* page);
 void inline_draw_vwalls(Page2* page);
 void draw_vwalls(Page2* page);
-void inlined_line_draw(void *start_addr, void *end_addr, long increment, unsigned short value);
+void inlined_vline_draw(void *start_addr, void *end_addr, long increment, unsigned short value);
 #endif
