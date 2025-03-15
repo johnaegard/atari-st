@@ -43,21 +43,20 @@ Maze generate_maze(word height_cells, word width_cells) {
   // }
 
   // 50% vline
-  for (int r = 0; r < height_cells; r++) {
-    for (int c = 0; c < width_cells; c++) {
-      word roll = (rand() % 100);
-      if (roll < 25) {
-        map_data[r][c] = 1;
-      }
-      else if (roll < 50) {
-        map_data[r][c] = 2;
-      }
-      else {
-        map_data[r][c] = 0;
-      }
-    }
-  }
-
+  // for (int r = 0; r < height_cells; r++) {
+  //   for (int c = 0; c < width_cells; c++) {
+  //     word roll = (rand() % 100);
+  //     if (roll < 25) {
+  //       map_data[r][c] = 1;
+  //     }
+  //     else if (roll < 50) {
+  //       map_data[r][c] = 2;
+  //     }
+  //     else {
+  //       map_data[r][c] = 0;
+  //     }
+  //   }
+  // }
 
   // single wide
   // for (int r = 0; r < height_cells; r++) {
@@ -66,18 +65,11 @@ Maze generate_maze(word height_cells, word width_cells) {
   //   }
   // }
 
-  // for (int r = 0; r < height_cells; r++) {
-  //   for (int c = 0; c < width_cells; c++) {
-  //     word roll = rand() % 100;
-  //     if (roll < 8) {
-  //       map_data[r][c] = 1;
-  //     } else if (roll < 16) {
-  //       map_data[r][c] = 2;
-  //     } else if (roll < 24) {
-  //       map_data[r][c] = 3;
-  //     }
-  //   }
-  // }
+  for (int r = 0; r < height_cells; r++) {
+    for (int c = 0; c < width_cells; c++) {
+      map_data[r][c] = 3;
+    }
+  }
 
   // make edges
   for (int r = 0; r < height_cells; r++) {
