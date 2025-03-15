@@ -9,12 +9,13 @@ const byte zeroes[160] = {0};
 
 Maze generate_maze(word height_cells, word width_cells) {
   srand(time(NULL));
-
   word** map_data = (word**)Malloc(height_cells * sizeof(word*));
   if (map_data == NULL) {
     printf("Memory allocation failed!\n");
     exit(1);
   }
+  
+  // make the 2D array
   for (int r = 0; r < height_cells; r++) {
     map_data[r] = (word*)Malloc(width_cells * sizeof(word));
     if (map_data[r] == NULL) {
@@ -23,6 +24,7 @@ Maze generate_maze(word height_cells, word width_cells) {
     }
   }
 
+  // clear
   for (int r = 0; r < height_cells; r++) {
     for (int c = 0; c < width_cells; c++) {
       map_data[r][c] = 0;
@@ -40,6 +42,17 @@ Maze generate_maze(word height_cells, word width_cells) {
   //   }
   // }
 
+  // 50% vline
+  for (int r = 0; r < height_cells; r++) {
+    for (int c = 0; c < width_cells; c++) {
+      word roll = (rand() % 10);
+      if (roll < 3) {
+        map_data[r][c] = 1;
+      }
+    }
+  }
+
+
   // single wide
   // for (int r = 0; r < height_cells; r++) {
   //   for (int c = 0; c < width_cells; c++) {
@@ -47,18 +60,18 @@ Maze generate_maze(word height_cells, word width_cells) {
   //   }
   // }
 
-  for (int r = 0; r < height_cells; r++) {
-    for (int c = 0; c < width_cells; c++) {
-      word roll = rand() % 100;
-      if (roll < 8) {
-        map_data[r][c] = 1;
-      } else if (roll < 16) {
-        map_data[r][c] = 2;
-      } else if (roll < 24) {
-        map_data[r][c] = 3;
-      }
-    }
-  }
+  // for (int r = 0; r < height_cells; r++) {
+  //   for (int c = 0; c < width_cells; c++) {
+  //     word roll = rand() % 100;
+  //     if (roll < 8) {
+  //       map_data[r][c] = 1;
+  //     } else if (roll < 16) {
+  //       map_data[r][c] = 2;
+  //     } else if (roll < 24) {
+  //       map_data[r][c] = 3;
+  //     }
+  //   }
+  // }
 
   // make edges
   for (int r = 0; r < height_cells; r++) {
