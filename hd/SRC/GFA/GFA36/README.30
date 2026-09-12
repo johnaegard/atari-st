@@ -1,0 +1,81 @@
+READ.ME zum GFA-BASIC Version 3.07             DÅsseldorf, 27.6.1989
+
+1.)
+Im Editor fÅhrt das gleichzeitige DrÅcken von linker SHIFT + TAB Taste
+zu einem EinfÅgen von Leerzeichen bis zur Tab-Position. Das gleichzeitige
+DrÅcken von rechter SHIFT + TAB Taste bewirkt, daû alle Leerzeichen
+links vom Cursor gelîscht werden. Befindet sich der Cursor auf einem 
+Leerzeichen, so wird auûerdem dieses und alle folgenden Leerzeichen
+gelîscht.
+
+
+2.)
+CURVE x0,y0,x1,y1,x2,y2,x3,y3
+
+Mit diesem Befehl kann eine Bezier-Kruve gezeichnet werden.
+Die BEZIER-Kurve beginnt in x0,y0 und endet in x3,y3. Die Kurve ist
+in x0,y0 Tangente zur Linie von x0,y0 nach x1,y1 und in x3,y3 Tangente
+zur Linie zwischen x3,x3 und x2,y2. Betrachtet man die Punkte x0,y0 ...
+x3,y3 als Endpunkte eines Vierecks, so liegt die Kurve vollstÑndig in
+dem von diesen Punkten aufgespannten Viereck. (Man kann sich die Kurve
+so vorstellen, daû eine Linie zwischen x0,y0 und x3,y3 besteht, die von
+den Punkten x1,y1 und x2,y2 angezogen wird).
+
+
+3.)
+Neue 'PUNKT'-Befehle fÅr die Formatierung eines Programmausdrucks:
+
+.PA        fÅhrt einen Seitenvorschub durch
+
+.P-        Punktbefehle werden nicht gelistet !
+
+.P+        Punktbefehle werden, wie sonst auch, gelistet
+
+.P+ und .P- gelten immer fÅr das gesamte Listing (wie .Nx), es gilt die
+letzte Einstellung.
+
+
+4.)
+FILESELECT #"Titel","Pfad","Default",File$
+      
+unterstÅtzt die Titelzeile der Fileselect-Box der neuen TOS-Version 1.4.
+Dies gilt auch fÅr die vom Editor (GFA-BASIC) verwendeten Fileselect-Boxen.
+Bei Ñlteren TOS-Versionen wird der Titel ignoriert.
+
+
+5.)
+INP&(#),INP%(#),OUT&,OUT%
+
+Die INP-Funktion und den OUT-Befehl gibt es jetzt auch fÅr 16 Bit und
+32 Bit.
+
+Beispiel: Statt (bisher)
+
+                     A%=CVL(INPUT$(4,#1))
+kann jetzt
+                     A%=INP%(#1)
+
+verwendet werden.
+
+
+6.)
+FÅr jede offene Datei wird ein Bufferbereich von 4 KByte benîtigt. 
+Der Grund dafÅr ist, daû beim Lesen und Schreiben von Diskette eine 
+GFA-BASIC interne Bufferung eingefÅhrt wurde. Dies fÅhrt zu einer 
+Beschleunigung, insbesondere beim zeilenweisen Einlesen von Diskette 
+(LINE INPUT, INPUT).
+
+
+7.)
+Es gibt eine neue Dateibezeichnung 'STD:'. Dies entspricht 'Stdin' bzw. 
+'Stdout' in C-Programmen. Hiermit ist die Mîglichkeit gegeben die 
+Ausgabe eines GFA-BASIC-Programms Åber ein Shell umzuleiten.
+
+          GFABASIC TEST >DUMMY
+
+Mit dieser Zeile wird das GFA-BASIC gestartet und das Programm 
+TEST.PRG geladen. Alle Ausgaben Åber 'STD:' werden nun in die Datei 
+DUMMY umgeleitet. WICHTIG, CONTROL-C fÅhrt beim Zugriff auf die Datei 
+in der Regel zum Absturz. DefaultmÑûig erfolgt die Ein- und Ausgabe 
+Åber Tastatur bzw. Bildschirm.
+

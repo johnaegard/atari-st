@@ -1,0 +1,4 @@
+OPEN "i",#1,"c:\gfa\dsduel\dsduel.pi3"
+null$=INPUT$(34,#1)
+pic$=INPUT$(32000,#1)
+SPUT pic$

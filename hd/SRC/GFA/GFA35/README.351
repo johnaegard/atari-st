@@ -1,0 +1,38 @@
+README zum GFA-BASIC Interpreter 3.51
+
+
+CURVE:
+Zur Erzeugung von BEZIER-Kurven wurde ein neuer Befehl implementiert.
+Die Syntax lautet :
+
+CURVE x0,y0,x1,y1,x2,y2,x3,y3
+
+Die BEZIER-Kurve beginnt in x0,y0 und endet in x3,y3. 
+Die Kurve ist in x0,y0 Tangente zur Linie von x0,y0 nach x1,y1  
+und  in  x3,y3  Tangente  zur Linie  zwischen  x3,x3  und  x2,y2. 
+Betrachtet  man  die  Punkte x0,y0...x3,y3  als  Endpunkte  eines 
+Vierecks,  so  liegt  die  Kurve vollstÑndig in  dem  von  diesen 
+Punkten  aufgespannten  Viereck.  (Man  kann sich  die  Kurve  so 
+vorstellen,  daû eine Linie zwischen x0,y0 und x3,y3 besteht, die 
+von den Punkten x1,y1 und x2,y2 angezogen wird).
+
+
+MAT NEG a()
+Dieser  Befehl  negiert alle Elemete  eines  Vektors  bzw.  einer 
+Matrix.
+
+MERGE:
+Der  MERGE-Vorgang (Einlesen von ASCII Dateien in  den  GFA-BASIC 
+Editor) wird beim ASCII Zeichen CHR$(4) (Pfeil nach  links,  Unix 
+EOF) abgebrochen. 
+
+SPRöNGE:
+Das  GOTO  oder RESUME Åber zusammengeklappte  FUNCTIONEN  hinweg 
+funktioniert jetzt.
+
+MAT MUL
+Das dylisch zweier Vektoren,  das eine nicht qudratischen  Matrix 
+ergibt, klappt jetzt.
+Bei  dem  Produkt  eines Vektors mit  einer  nicht  quadratischen 
+Matrix wurde das letzte Scalarprodukt nicht berechnet.
+

@@ -1,0 +1,21 @@
+key$=INKEY$
+IF LEN(key$)
+  key=ASC(RIGHT$(key$,1))
+  SELECT key
+  CASE 59 TO 62
+    c_2_b=key-58
+    show_character(c_2_b)
+  CASE 32
+    pass
+  CASE 50
+    south
+  CASE 52
+    west
+  CASE 54
+    east
+  CASE 56
+    north
+  CASE 84,116,76,108
+    talk_or_look
+  ENDSELECT
+ENDIF

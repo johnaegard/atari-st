@@ -1,0 +1,31 @@
+DEFWRD "a-z"
+OPTION BASE 0
+DEFLIST 2
+CLS
+COLOR 1
+DEFLINE -1*&X1010101010101010,1,0,0
+x&=0
+y&=0
+rows&=12
+cols&=20
+FOR c&=0 TO cols&
+  x&=c&*16
+  LINE x&,0,x&,rows&*16
+NEXT c&
+FOR r&=0 TO rows&
+  y&=r&*16
+  LINE 0,y&,cols&*16,y&
+NEXT r&
+SGET screen$
+OPEN "O",#1,"\SRC\GFA\TILES.026\TILES.PI1"
+res&=1
+OUT #1,0
+OUT #1,0  ! low res
+OUT #1,0
+OUT #1,0   ! black
+FOR c&=1 TO 15
+  OUT #1,7
+  OUT #1,119
+NEXT c&
+PRINT #1,screen$
+CLOSE #1

@@ -1,0 +1,1664 @@
+' Talon Keep Phase II
+' Re-Started September 22/90
+' By John Aegard
+'
+' inkey_demo
+OPTION BASE 1
+ON BREAK GOSUB endit
+cursor_flag!=TRUE
+cursor_setup
+gdos_setup
+mouse_setup
+@data_setup
+@load_roster
+screen_setup
+' coord
+icon_setup
+variable_setup
+check_parties
+party_load
+world_load(world)
+main_loop
+'
+' ***** Setup procedures *****
+'
+> PROCEDURE cursor_setup
+  DIM cursor$(8)
+  FOR i=0 TO 6
+    CLS
+    '   LINE 3,i,3,14-i
+    '    LINE TRUNC(i/2),7,6-TRUNC(i/2),7
+    BOX i,0,7-i,11
+    GET 0,0,7,12,cursor$(i+1)
+  NEXT i
+  CLS
+RETURN
+> PROCEDURE gdos_setup
+  face=1
+  IF GDOS?
+    ~VST_LOAD_FONTS(0)
+    face=VQT_NAME(2,null$)
+    DEFTEXT ,,,12,face
+  ELSE
+    DEFTEXT ,,,13,1
+  ENDIF
+RETURN
+> PROCEDURE mouse_setup
+  RESTORE mouse_data
+  DIM mouse$(5)
+  FOR l=1 TO 5
+    IF l=1
+      mouse$(l)=MKI$(0)+MKI$(0)+MKI$(1)
+    ELSE
+      mouse$(l)=MKI$(8)+MKI$(8)+MKI$(1)
+    ENDIF
+    mouse$(l)=mouse$(l)+MKI$(0)+MKI$(1)
+    FOR i%=1 TO 16
+      READ backgrnd
+      mouse$(l)=mouse$(l)+MKI$(backgrnd)
+    NEXT i%
+    FOR i%=1 TO 16
+      READ foregrnd
+      LET mouse$(l)=mouse$(l)+MKI$(foregrnd)
+    NEXT i%
+  NEXT l
+  DEFMOUSE mouse$(1)
+RETURN
+> PROCEDURE screen_setup
+  CHDRIVE "a:\"
+  SETCOLOR 0,0
+  file$="d:\talon2.pi3"
+  OPEN "i",#1,file$
+  null$=INPUT$(34,#1)
+  pic$=INPUT$(32000,#1)
+  CLOSE #1
+  SPUT pic$
+  FOR i=0 TO 3
+    LINE 312,30+(i*48),635,30+(i*48)
+  NEXT i
+  CLR pic$
+RETURN
+> PROCEDURE icon_setup
+  RESTORE icon_data
+  READ num_icons
+  DIM icon$(num_icons)
+  DIM passable!(num_icons)
+  DIM terrain$(num_icons)
+  FOR i=1 TO num_icons
+    READ file$
+    READ passable!(i)
+    file$="d:\"+file$+".icn"
+    IF NOT EXIST(file$)
+      file$="A:\icons\"+file$+".icn"
+    ENDIF
+    OPEN "i",#1,file$
+    length=LOF(#1)
+    icon$(i)=INPUT$(length,#1)
+    CLOSE #1
+  NEXT i
+  FOR i=1 TO num_icons
+    READ terrain$(i)
+  NEXT i
+RETURN
+> PROCEDURE data_setup
+  DIM race$(4)
+  RESTORE race_data
+  FOR i=1 TO 4
+    READ race$(i)
+  NEXT i
+  DIM racial_attributes(4,9)
+  ARRAYFILL racial_attributes(),10
+  FOR race1=1 TO 4
+    FOR attribute=1 TO 4
+      READ racial_attributes(race1,attribute)
+    NEXT attribute
+  NEXT race1
+  DIM racial_ads$(4,3)
+  FOR race1=1 TO 4
+    FOR ad=1 TO 3
+      READ racial_ads$(race1,ad)
+    NEXT ad
+  NEXT race1
+  DIM skill_level$(6)
+  FOR i=1 TO 6
+    READ skill_level$(i)
+  NEXT i
+  READ num_skills
+  READ num_combat_skills
+  num_other_skills=num_skills-num_combat_skills
+  DIM skill_name$(num_skills)
+  DIM skill_title$(num_skills)
+  DIM skill_points(num_skills)
+  DIM skill_difficulty(num_skills)
+  DIM skill_type!(num_skills)
+  DIM skill_def_penalty(num_skills)
+  ARRAYFILL skill_level(),1
+  FOR i=1 TO num_skills
+    READ skill_name$(i)
+    READ skill_difficulty(i)
+    READ skill_type!(i)
+    READ skill_def_penalty(i)
+    '    LPRINT skill_name$(i),skill_difficulty(i),skill_type!(i),skill_def_penalty(i)
+  NEXT i
+  '
+  FOR i=1 TO num_skills
+    READ skill_title$(i)
+  NEXT i
+  '
+  READ num_spell_levels
+  DIM num_spells(num_spell_levels)
+  FOR level=1 TO num_spell_levels
+    READ num_spells(level)
+    IF num_spells(level)>max_num_spells
+      max_num_spells=num_spells(level)
+    ENDIF
+  NEXT level
+  DIM spell_name$(num_spell_levels,max_num_spells)
+  '
+  FOR level=1 TO num_spell_levels
+    FOR spell=1 TO num_spells(level)
+      READ spell_name$(level,spell)
+    NEXT spell
+  NEXT level
+  '
+  DIM num_items(4)
+  FOR i=1 TO 4
+    READ num_items(i)
+  NEXT i
+  max=MAX(num_items(1),num_items(2),num_items(3),num_items(4))
+  DIM item$(4,max)
+  DIM two_handed!(num_items(1))
+  FOR i=1 TO 4
+    FOR i1=1 TO num_items(i)
+      READ item$(i,i1)
+      IF i=1
+        READ two_handed!(i1)
+      ENDIF
+    NEXT i1
+  NEXT i
+RETURN
+> PROCEDURE variable_setup
+  prompt$=">"
+  DIM char_name$(4)
+  DIM race|(4)
+  DIM potential|(4)
+  DIM status|(4)
+  DIM hit_points|(4)
+  DIM mana_points|(4)
+  DIM fatigue|(4)
+  DIM armour_points|(4)
+  DIM silver|(4)
+  DIM gold|(4)
+  DIM traits|(4,7)
+  DIM poison|(4)
+  DIM disease|(4)
+  DIM skill_level|(4,num_skills)
+  DIM skill_value|(4,num_skills)
+  DIM num_spells_learned|(4,num_spell_levels)
+  DIM spell_learned!(4,20,6)
+  DIM inventory|(4,22,13)             ! Player 4 Spot 22 Item 13  (2=item #)  (1=type#)
+  DIM inventory$(4,22)                ! String descriptions of the items
+  DIM title$(4)
+  DIM weapon$(4)
+  DIM injuries!(4,6)
+RETURN
+> PROCEDURE world_variable_setup
+  DIM terrain|(x_width,y_width)
+  DIM special!(x_width,y_width)
+  DIM special$(40,30)
+  DIM special_num|(200)
+  DIM special_loc|(200,2)
+  DIM num_lines|(200)
+RETURN
+> PROCEDURE world_load(w)
+  file$="a:\maps\m"+STR$(w)
+  OPEN "i",#1,file$
+  INPUT #1,x_width
+  INPUT #1,y_width
+  INPUT #1,world_name$
+  world_variable_setup
+  FOR i=1 TO y_width
+    FOR i1=1 TO x_width
+      terrain|(i1,i)=ASC(INPUT$(1,#1))
+      IF terrain|(i1,i)>100
+        SUB terrain|(i1,i),100
+        special!(i1,i)=TRUE
+      ENDIF
+    NEXT i1
+  NEXT i
+  CLOSE
+  special_load
+  draw_page
+RETURN
+> PROCEDURE special_load
+  file$="A:\maps\e"+STR$(world)
+  OPEN "i",#1,file$
+  INPUT #1,num_encounter$
+  num_encounters=ASC(num_encounter$)
+  FOR i=1 TO num_encounters
+    INPUT #1,special$(i,1)
+    special_num|(i)=VAL(RIGHT$(special$(i,1),1))
+    INPUT #1,s$
+    special_loc|(i,1)=ASC(LEFT$(s$,1))
+    special_loc|(i,2)=ASC(MID$(s$,2,1))
+    num_lines|(i)=ASC(RIGHT$(s$,1))
+    FOR i1=1 TO num_lines|(i)-1
+      INPUT #1,special$(i,i1+1)
+    NEXT i1
+  NEXT i
+RETURN
+'
+' ***** Party Loading Procedures *****
+'
+> PROCEDURE load_roster
+  DIM roster$(20)
+  DIM party_member(20)
+  OPEN "i",#1,"a:\chars\roster"
+  FOR i=1 TO 20
+    INPUT #1,roster$(i)
+    INPUT #1,party_member$
+    IF ASC(party_member$)
+      party_member(i)=ASC(party_member$)
+      IF ASC(party_member$)>highest_party_so_far
+        highest_party_so_far=ASC(party_member$)
+      ENDIF
+    ENDIF
+  NEXT i
+  CLOSE #1
+RETURN
+> PROCEDURE party_load
+  message$="Select party to load ( "
+  FOR i=1 TO 5
+    IF party_occupied!(i)=TRUE
+      message$=message$+STR$(i)+" "
+    ENDIF
+  NEXT i
+  message$=message$+")"
+  GRAPHMODE 1
+  ~VQT_EXTENT(message$,n,n,width,n,n,n,n,n)
+  boxlen=width+8
+  x1=320-boxlen/2
+  GET x1-4,178,x1+boxlen+4,222,alert_buffer$
+  DEFFILL 0
+  PBOX x1-4,178,x1+boxlen+4,222
+  BOX x1,182,x1+boxlen,218
+  DEFLINE 1,2
+  BOX x1-4,178,x1+boxlen+4,222
+  tabulate=320-width/2
+  norm
+  TEXT tabulate,204,message$
+  PAUSE 5
+  DO
+    REPEAT
+      key=ASC(INKEY$)
+    UNTIL (49<=key AND key<=53)
+    IF (49<=key AND key<=53)
+      EXIT IF party_occupied!(key-48)=TRUE
+    ENDIF
+  LOOP
+  @button_flash(x1,182,x1+boxlen,218)
+  @button_flash(x1,182,x1+boxlen,218)
+  PUT x1-4,178,alert_buffer$
+  party_to_be_loaded=key-48
+  find_characters
+  @load_party_file(party_to_be_loaded)
+RETURN
+> PROCEDURE check_parties
+  ERASE party_occupied!()
+  DIM party_occupied!(5)
+  ARRAYFILL party_occupied!(),FALSE
+  FOR i=1 TO 20
+    IF party_member(i)
+      party_occupied!(party_member(i))=TRUE
+    ENDIF
+  NEXT i
+RETURN
+> PROCEDURE load_party_file(u)
+  file$="a:\chars\p"+STR$(u)
+  OPEN "i",#1,file$
+  world=@get_a_char
+  world=1
+  xpos=@get_a_char
+  ypos=@get_a_char
+  food=@get_a_char
+  day=@get_a_char
+  year=@get_a_char
+  CLOSE #1
+RETURN
+> PROCEDURE find_characters
+  DIM party_members(4)
+  FOR i=1 TO 20
+    IF party_member(i)=party_to_be_loaded
+      INC a
+      party_members(a)=i
+    ENDIF
+  NEXT i
+  FOR q=1 TO 4
+    @load_character(q,party_members(q))
+    figure_top_score(q)
+  NEXT q
+  set_inventory
+  FOR q=1 TO 4
+    compile_items(q)
+    @display_character(q)
+  NEXT q
+RETURN
+> PROCEDURE load_character(a,which_character)
+  file$="a:\chars\"+"ch"+STR$(which_character)
+  OPEN "i",#1,file$
+  length_of_name=@get_a_char
+  char_name$(a)=INPUT$(length_of_name,#1)
+  race|(a)=@get_a_char
+  potential|(a)=@get_a_char
+  status|(a)=@get_a_char
+  hit_points|(a)=@get_a_char
+  hit_points|(1)=0
+  mana_points|(a)=@get_a_char
+  fatigue|(a)=@get_a_char
+  silver|(a)=@get_a_char
+  gold|(a)=@get_a_char
+  FOR i=1 TO 7
+    traits|(a,i)=@get_a_char
+  NEXT i
+  poison|(a)=@get_a_char
+  disease|(a)=@get_a_char
+  FOR i=1 TO num_skills
+    skill_level|(a,i)=@get_a_char
+  NEXT i
+  FOR i=1 TO num_skills
+    skill_value|(a,i)=@get_a_char
+  NEXT i
+  FOR i1=1 TO num_spell_levels
+    num_spells_learned|(a,i1)=@get_a_char
+    FOR i=1 TO num_spells_learned|(a,i1)
+      spell_number=@get_a_char
+      spell_learned!(a,spell_number,i1)=TRUE
+    NEXT i
+  NEXT i1
+  FOR i=1 TO 22
+    FOR i1=1 TO 13
+      inventory|(a,i,i1)=@get_a_char
+    NEXT i1
+  NEXT i
+  CLOSE #1
+RETURN
+> PROCEDURE display_character(a)
+  IF hit_points|(a)=0
+    light
+  ELSE
+    bold
+  ENDIF
+  TEXT 315,24+(a-1)*48,char_name$(a)
+  norm
+  TEXT 315,46+(a-1)*48,title$(a)
+  bold
+  TEXT 445,24+(a-1)*48,"H:"
+  width=@width("H:")
+  norm
+  TEXT 445+width,24+(a-1)*48,STR$(hit_points|(a))
+  bold
+  TEXT 493,24+(a-1)*48,"M:"
+  width=@width("M:")
+  norm
+  TEXT 493+width,24+(a-1)*48,STR$(mana_points|(a))
+  bold
+  TEXT 542,24+(a-1)*48,"F:"
+  width=@width("F:")
+  norm
+  TEXT 542+width,24+(a-1)*48,STR$(fatigue|(a))
+  IF inventory$(a,1)=""
+    inventory$(a,1)="Weaponless"
+  ENDIF
+  width=@width(inventory$(a,1))
+  norm
+  TEXT 630-width,46+(a-1)*48,inventory$(a,1)
+  IF inventory$(a,1)="Weaponless"
+    inventory$(a,1)=""
+  ENDIF
+  bold
+  TEXT 590,24+(a-1)*48,"A:"
+  width=@width("A:")
+  norm
+  TEXT 590+width,24+(a-1)*48,armour_points|(a)
+RETURN
+> PROCEDURE figure_top_score(a)
+  top_skill=1
+  FOR i=1 TO num_skills
+    xss=skill_level|(a,i)*100+skill_value|(a,i)
+    IF xss>skill_level|(a,top_skill)*100+skill_value|(a,top_skill)
+      IF skill_title$(top_skill)<>"null"
+        top_skill=i
+      ENDIF
+    ENDIF
+  NEXT i
+  title$(a)=skill_level$(skill_level|(a,top_skill))+" "+race$(race|(a))+" "+skill_title$(top_skill)
+RETURN
+> PROCEDURE set_inventory
+  RESTORE inventory_data
+  FOR i=1 TO 22
+    FOR i1=1 TO 4
+      READ inventory|(1,i,i1)
+    NEXT i1
+  NEXT i
+RETURN
+'
+' ***** Main Loop *****
+'
+> PROCEDURE main_loop
+  prompt
+  DO
+    '
+    ' *** Key handling
+    '
+    key$=INKEY$
+    IF LEN(key$)
+      key=ASC(RIGHT$(key$,1))
+      SELECT key
+      CASE 59 TO 62
+        c_2_b=key-58
+        show_character(c_2_b)
+      CASE 32
+        pass
+      CASE 50
+        south
+      CASE 52
+        west
+      CASE 54
+        east
+      CASE 56
+        north
+      CASE 84,116,76,108
+        talk_or_look
+      ENDSELECT
+    ENDIF
+    '
+    ' *** Mouse inspection
+    '
+    MOUSE x,y,k
+    find_mouse(x,y,row,col)
+    check_mouse(row,col)
+    IF k=1
+      IF x=>314 AND x<=635 AND y=>9 AND y<=195
+        c_2_b=INT((y-4)/48)+1
+        show_character(c_2_b)
+      ELSE IF old_cursor<>1
+        ON (old_cursor-1) GOSUB north,east,south,west
+      ENDIF
+    ELSE IF k=2
+    ENDIF
+  LOOP
+RETURN
+'
+' ***** Subordinate (to the mainline) procedures *****
+'
+> PROCEDURE pass
+  EVERY STOP
+  write("Pass",FALSE,FALSE,FALSE)
+  prompt
+RETURN
+> PROCEDURE north
+  EVERY STOP
+  write("North",FALSE,FALSE,FALSE)
+  move_up
+  '     check_text_counter
+  check_for_special(xpos,ypos,"A")
+  prompt
+RETURN
+> PROCEDURE south
+  EVERY STOP
+  write("South",FALSE,FALSE,FALSE)
+  move_down
+  '        check_text_counter
+  check_for_special(xpos,ypos,"A")
+  prompt
+RETURN
+> PROCEDURE west
+  EVERY STOP
+  write("West",FALSE,FALSE,FALSE)
+  move_left
+  '       check_text_counter
+  check_for_special(xpos,ypos,"A")
+  prompt
+RETURN
+> PROCEDURE east
+  EVERY STOP
+  write("East",FALSE,FALSE,FALSE)
+  move_right
+  '      check_text_counter
+  check_for_special(xpos,ypos,"A")
+  prompt
+RETURN
+> PROCEDURE show_character(a)
+  EVERY STOP
+  reverse(314,(a-1)*48+8,634,((a)*48+3))
+  write("Examine character "+STR$(a),FALSE,FALSE,FALSE)
+  write("Press a key or click to go on.",FALSE,FALSE,FALSE)
+  reverse(314,(a-1)*48+8,634,((a)*48+3))
+  clear_output_window
+  first_page(a)
+  skill_pages(a)
+  spell_page(a)
+  equipment_page(a)
+  clear_output_window
+  draw_page
+  prompt
+RETURN
+> PROCEDURE talk_or_look
+  EVERY STOP
+  SELECT key
+  CASE 84,116
+    write("Talk",FALSE,FALSE,FALSE)
+    stim$="T"
+  CASE 76,108
+    write("Look",FALSE,FALSE,FALSE)
+    stim$="L"
+  ENDSELECT
+  get_a_direction(dir)
+  EVERY STOP
+  SELECT dir
+  CASE 50
+    write("South",FALSE,FALSE,FALSE)
+    check_for_special(xpos,ypos+1,stim$)
+    prompt
+  CASE 52
+    write("West",FALSE,FALSE,FALSE)
+    check_for_special(xpos-1,ypos,stim$)
+    prompt
+  CASE 54
+    write("East",FALSE,FALSE,FALSE)
+    check_for_special(xpos+1,ypos,stim$)
+    prompt
+  CASE 56
+    write("North",FALSE,FALSE,FALSE)
+    check_for_special(xpos,ypos-1,stim$)
+    prompt
+  ENDSELECT
+RETURN
+'
+' ***** Motion (apparent) procedures *****
+'
+> PROCEDURE move_right
+  INC xpos
+  IF passable!(terrain|(xpos,ypos))=TRUE
+    move1$=@get_piece$(8,1,11,13)
+    move2$=@get_piece$(2,1,5,13)
+    move3$=@get_piece$(7,1,7,6)
+    move4$=@get_piece$(7,8,7,13)
+    move5$=@get_piece$(6,1,6,6)
+    move6$=@get_piece$(6,8,6,13)
+    put_piece(7,1,move1$)
+    put_piece(1,1,move2$)
+    put_piece(6,1,move3$)
+    put_piece(6,8,move4$)
+    put_piece(5,1,move5$)
+    put_piece(5,8,move6$)
+    put_piece(5,7,icon$(terrain|(xpos-1,ypos)))
+    FOR i=1 TO 13
+      put_piece(11,i,icon$(terrain|(xpos+5,i+ypos-7)))
+    NEXT i
+  ELSE
+    DEC xpos
+    write("BLOCKED",FALSE,FALSE,FALSE)
+  ENDIF
+  CLR move1$,move2$,move3$,move4$,move5$,move6$
+RETURN
+> PROCEDURE move_left
+  DEC xpos
+  IF passable!(terrain|(xpos,ypos))=TRUE
+    move1$=@get_piece$(1,1,4,13)
+    move2$=@get_piece$(5,1,5,6)
+    move3$=@get_piece$(5,8,5,13)
+    move4$=@get_piece$(6,1,6,6)
+    move5$=@get_piece$(6,8,6,13)
+    move6$=@get_piece$(7,1,10,13)
+    put_piece(2,1,move1$)
+    put_piece(6,1,move2$)
+    put_piece(6,8,move3$)
+    put_piece(7,1,move4$)
+    put_piece(7,8,move5$)
+    put_piece(8,1,move6$)
+    put_piece(7,7,icon$(terrain|(xpos+1,ypos)))
+    FOR i=1 TO 13
+      put_piece(1,i,icon$(terrain|(xpos-5,ypos-7+i)))
+    NEXT i
+  ELSE
+    INC xpos
+    write("BLOCKED",FALSE,FALSE,FALSE)
+  ENDIF
+  CLR move1$,move2$,move3$,move4$,move5$,move6$
+RETURN
+> PROCEDURE move_down
+  INC ypos
+  IF passable!(terrain|(xpos,ypos))=TRUE
+    move1$=@get_piece$(1,2,11,6)
+    move2$=@get_piece$(1,7,5,7)
+    move3$=@get_piece$(7,7,11,7)
+    move4$=@get_piece$(1,8,5,8)
+    move5$=@get_piece$(7,8,11,8)
+    move6$=@get_piece$(1,9,11,13)
+    put_piece(1,1,move1$)
+    put_piece(1,6,move2$)
+    put_piece(7,6,move3$)
+    put_piece(1,7,move4$)
+    put_piece(7,7,move5$)
+    put_piece(1,8,move6$)
+    put_piece(6,6,icon$(terrain|(xpos,ypos-1)))
+    FOR i=1 TO 11
+      put_piece(i,13,icon$(terrain|(xpos-6+i,ypos+6)))
+    NEXT i
+  ELSE
+    DEC ypos
+    write("BLOCKED",FALSE,FALSE,FALSE)
+  ENDIF
+  CLR move1$,move2$,move3$,move4$,move5$,move6$
+RETURN
+> PROCEDURE move_up
+  DEC ypos
+  IF passable!(terrain|(xpos,ypos))=TRUE
+    move1$=@get_piece$(1,1,11,5)
+    move2$=@get_piece$(1,6,5,6)
+    move3$=@get_piece$(7,6,11,6)
+    move4$=@get_piece$(1,7,5,7)
+    move5$=@get_piece$(7,7,11,7)
+    move6$=@get_piece$(1,8,11,12)
+    put_piece(1,2,move1$)
+    put_piece(1,7,move2$)
+    put_piece(7,7,move3$)
+    put_piece(1,8,move4$)
+    put_piece(7,8,move5$)
+    put_piece(1,9,move6$)
+    put_piece(6,8,icon$(terrain|(xpos,ypos+1)))
+    FOR i=1 TO 11
+      put_piece(i,1,icon$(terrain|(xpos-6+i,ypos-6)))
+    NEXT i
+  ELSE
+    INC ypos
+    write("BLOCKED",FALSE,FALSE,FALSE)
+  ENDIF
+  CLR move1$,move2$,move3$,move4$,move5$,move6$
+RETURN
+> PROCEDURE draw_page
+  DEFFILL 1,0
+  PBOX 4,8,308,384
+  FOR xi=xpos-5 TO xpos+5
+    FOR yi=ypos-6 TO ypos+6
+      PUT 8+(xi-xpos+5)*27,15+(yi-ypos+6)*28,icon$(terrain|(xi,yi))
+    NEXT yi
+  NEXT xi
+  put_piece(6,7,icon$(8))
+RETURN
+> PROCEDURE put_piece(x,y,graphic$)
+  PUT 8+(x-1)*27,15+(y-1)*28,graphic$
+  CLR graphic$
+RETURN
+'
+' ***** Character Inspection Routines *****
+'
+> PROCEDURE first_page(a)
+  hit_points|(1)=0
+  disease|(2)=2
+  poison|(3)=5
+  clear_output_window
+  uline
+  TEXT 14,26,char_name$(a)
+  norm
+  IF hit_points|(a)<=0
+    TEXT 308-@width("Deceased")-20,26,"Deceased"
+  ELSE IF disease|(a)<>0
+    TEXT 308-@width("Diseased")-20,26,"Diseased"
+  ELSE IF poison|(a)<>0
+    TEXT 308-@width("Poisoned")-20,26,"Poisoned"
+  ENDIF
+  TEXT 14,45,title$(a)
+  TEXT 14,76,"Strength"
+  TEXT 14,94,"Dexterity"
+  TEXT 14,112,"Intellect"
+  TEXT 14,130,"Endurance"
+  FOR i=1 TO 3
+    TEXT 14,130+i*18,racial_ads$(race|(a),i)
+  NEXT i
+  BOUNDARY 1
+  FOR i=1 TO 7
+    TEXT 94,76+(i-1)*18,traits|(a,i)
+    DEFFILL 1,2,4
+    GRAPHMODE 0
+    PBOX 128,66+(i-1)*18,128+traits|(a,i),76+(i-1)*18
+  NEXT i
+  TEXT 14,210,"Potential "
+  TEXT 104,210,potential|(a)
+  IF potential|(a)
+    PBOX 128,200,128+potential|(a),208
+  ENDIF
+  TEXT 14,228,"Hit Points"
+  IF hit_points|(a)
+    PBOX 128,218,128+hit_points|(a),226
+  ENDIF
+  TEXT 104,228,hit_points|(a)
+  TEXT 14,246,"Mana Points"
+  TEXT 104,246,mana_points|(a)
+  IF mana_points|(a)
+    PBOX 128,236,128+mana_points|(a),244
+  ENDIF
+  TEXT 14,264,"Fatigue"
+  TEXT 104,264,fatigue|(a)
+  IF fatigue|(a)
+    PBOX 128,254,128+fatigue|(a),262
+  ENDIF
+  wait
+RETURN
+> PROCEDURE skill_pages(a)
+  clear_output_window
+  uline
+  TEXT 14,26,char_name$(a)+"  Combat Skills"
+  norm
+  FOR i=1 TO num_combat_skills
+    TEXT 14,50+i*18,skill_name$(i)
+    TEXT 128,50+i*18,LEFT$(skill_level$(skill_level|(a,i)))
+    TEXT 140,50+i*18,skill_value|(a,i)
+  NEXT i
+  wait
+  clear_output_window
+  uline
+  TEXT 14,26,char_name$(a)+"  Other Skills"
+  q=0
+  norm
+  FOR i=num_combat_skills+1 TO num_skills
+    INC q
+    TEXT 14,50+q*18,skill_name$(i)
+    TEXT 128,50+q*18,LEFT$(skill_level$(skill_level|(a,i)))
+    TEXT 140,50+q*18,skill_value|(a,i)
+  NEXT i
+  wait
+RETURN
+> PROCEDURE spell_page(a)
+  FOR i1=1 TO num_spell_levels
+    spell_text_counter=0
+    IF num_spells_learned|(a,i1)
+      clear_output_window
+      uline
+      TEXT 14,26,char_name$(a)+"   "+skill_level$(i1)+" Spells"
+      norm
+      FOR i=1 TO num_spells(i)
+        IF spell_learned!(a,i,i1)
+          INC spell_text_counter
+          TEXT 14,40+spell_text_counter*16,spell_name$(i1,i)
+        ENDIF
+      NEXT i
+      wait
+    ENDIF
+  NEXT i1
+RETURN
+> PROCEDURE equipment_page(a)
+  clear_output_window
+  uline
+  TEXT 14,26,char_name$(a)+"   Inventory"
+  norm
+  screen_counter=4
+  uline
+  TEXT 14,62,"Readied Items"
+  norm
+  FOR i=1 TO 8
+    IF inventory$(a,i)<>""
+      INC screen_counter
+      TEXT 14,screen_counter*18,LEFT$(inventory$(a,i),17)
+    ENDIF
+  NEXT i
+  ADD screen_counter,2
+  uline
+  TEXT 14,screen_counter*18,"Items in Belt"
+  norm
+  INC screen_counter
+  FOR i=9 TO 12
+    IF inventory$(a,i)<>""
+      INC screen_counter
+      TEXT 14,screen_counter*18-6,LEFT$(inventory$(a,i),17)
+    ENDIF
+  NEXT i
+  screen_counter=4
+  uline
+  TEXT 164,62,"Items in Pack"
+  norm
+  FOR i=13 TO 22
+    IF inventory$(a,i)<>""
+      INC screen_counter
+      TEXT 164,screen_counter*18,LEFT$(inventory$(a,i),17)
+    ENDIF
+  NEXT i
+  ADD screen_counter,2
+  TEXT 164,screen_counter*18,STR$(silver)+" Silver Nobles"
+  TEXT 164,(screen_counter+1)*18,STR$(gold)+" Gold Crowns"
+  wait
+RETURN
+> PROCEDURE compile_items(a)
+  FOR i=1 TO 22
+    IF inventory|(a,i,1)=0
+      inventory$(a,i)=""
+    ELSE
+      inventory$(a,i)=item$(inventory|(a,i,1),inventory|(a,i,2))
+      IF inventory|(a,i,3)<>0
+        IF inventory|(a,i,1)=4 AND inventory|(a,i,2)=8
+          inventory$(a,i)=inventory$(a,i)+" ("+STR$(inventory|(a,i,3))+")"
+        ELSE
+          inventory$(a,i)="*"+inventory$(a,i)
+        ENDIF
+      ENDIF
+    ENDIF
+  NEXT i
+RETURN
+'
+' *****  Special Encounter Procedures  *****
+'
+> PROCEDURE check_for_special(sx,sy,stim$)
+  is_special!=FALSE
+  IF special!(sx,sy)
+    FOR i=1 TO num_encounters
+      IF special_loc|(i,1)=sx AND special_loc|(i,2)=sy AND stim$=special$(i,2)
+        is_special!=TRUE
+        special_interpreter(i)
+      ENDIF
+    NEXT i
+  ENDIF
+  IF NOT is_special!
+    IF stim$="T"
+      write("No one there!",FALSE,FALSE,FALSE)
+    ELSE IF stim$="L"
+      w$="You see "+terrain$(terrain|(sx,sy))+"."
+      write(w$,FALSE,FALSE,FALSE)
+    ENDIF
+  ENDIF
+RETURN
+> PROCEDURE special_interpreter(q)
+  EVERY STOP
+  write("",0,0,0)
+  special_counter=5
+  exit_flag!=FALSE
+  REPEAT
+    IF special_counter>num_lines|(q)
+      exit_flag!=TRUE
+    ENDIF
+    interpret_line(special_counter)
+  UNTIL exit_flag!
+  write("",0,0,0)
+RETURN
+> PROCEDURE interpret_line(VAR spc)
+  command$=LEFT$(special$(q,spc),1)
+  SELECT command$
+  CASE "T"
+    talk(q,spc)
+    INC spc
+  CASE "C"
+    num_talks=VAL(RIGHT$(special$(q,spc),1))
+    conversation(num_talks,last_line)
+    spc=last_line
+  CASE "V"
+    v_talk(q,spc)
+    INC spc
+  CASE "G"
+    g=VAL(RIGHT$(special$(q,spc),1))
+    display_graphic(g)
+    INC spc
+  CASE "W"
+    write("",0,0,0)
+    write("(Press any key or click.)",0,0,0)
+    wait
+    INC spc
+  CASE "R"
+    draw_page
+    INC spc
+  ENDSELECT
+RETURN
+> PROCEDURE talk(q,line)
+  IF promptflag!=TRUE
+    promptflag!=FALSE
+    DEC text_counter
+  ENDIF
+  l=LEN(special$(q,line))-2
+  s$=RIGHT$(special$(q,line),l)
+  write(s$,FALSE,FALSE,FALSE)
+RETURN
+> PROCEDURE v_talk(q,line)
+  IF promptflag!=TRUE
+    promptflag!=FALSE
+    DEC text_counter
+  ENDIF
+  l=LEN(special$(q,line))-2
+  s$=RIGHT$(special$(q,line),l)
+  write(s$,TRUE,FALSE,FALSE)
+RETURN
+> PROCEDURE conversation(nt,VAR ll)
+  prompt$="~"
+  ll=special_counter
+  FOR i=1 TO nt+1
+    REPEAT
+      INC ll
+    UNTIL special$(q,ll)="END"
+  NEXT i
+  INC ll
+  REPEAT
+    inquiry$=@xinput$
+    EXIT IF UPPER$(inquiry$)="BYE"
+    p=special_counter+1
+    num_ends=0
+    z!=FALSE
+    REPEAT
+      IF UPPER$(inquiry$)=special$(q,p) AND special$(q,p)<>"END"
+        z!=TRUE
+        interpret_subclause(p)
+      ELSE IF special$(q,p)="END"
+        INC num_ends
+      ELSE IF LEFT$(special$(q,p),1)="C"
+        alert(RIGHT$(special$(q,p),1)+"has been added")
+        ADD nt,VAL(RIGHT$(special$(q,p),1))
+      ENDIF
+      INC p
+    UNTIL (z! OR num_ends=nt)
+    IF num_ends=nt AND UPPER$(inquiry$)<>"BYE"
+      interpret_subclause(p)
+    ENDIF
+  UNTIL UPPER$(inquiry$)="BYE"
+  prompt$=">"
+RETURN
+> PROCEDURE interpret_subclause(VAR clause_line)
+  DO
+    EXIT IF special$(q,clause_line)="END"
+    interpret_line(clause_line)
+  LOOP
+RETURN
+> PROCEDURE display_graphic(g)
+  CLOSE
+  OPEN "i",#1,"A:\pics\"+STR$(g)+".PUT"
+  pic$=INPUT$(LOF(#1),#1)
+  PUT 4,8,pic$
+  CLOSE
+RETURN
+'
+' ***** Sub-Subordinate Procedures ******
+'
+> PROCEDURE find_mouse(x,y,VAR r,c)
+  r=TRUNC((y-15)/27)+1
+  c=TRUNC((x-8)/28)+1
+RETURN
+> PROCEDURE check_mouse(row,col)
+  SELECT col
+  CASE 5
+    IF row=7 AND old_cursor<>5
+      old_cursor=5
+      DEFMOUSE mouse$(5)
+    ENDIF
+  CASE 6
+    SELECT row
+    CASE 6
+      IF old_cursor<>2
+        old_cursor=2
+        DEFMOUSE mouse$(2)
+      ENDIF
+    CASE 8
+      IF old_cursor<>4
+        old_cursor=4
+        DEFMOUSE mouse$(4)
+      ENDIF
+    DEFAULT
+      IF old_cursor<>1
+        old_cursor=1
+        DEFMOUSE mouse$(1)
+      ENDIF
+    ENDSELECT
+  CASE 7
+    IF row=7 AND old_cursor<>3
+      old_cursor=3
+      DEFMOUSE mouse$(3)
+    ENDIF
+  DEFAULT
+    IF old_cursor<>1
+      old_cursor=1
+      DEFMOUSE mouse$(1)
+    ENDIF
+  ENDSELECT
+RETURN
+> PROCEDURE freemem
+  write(STR$(FRE(0)),FALSE,FALSE,FALSE)
+RETURN
+> PROCEDURE wait
+  REPEAT
+  UNTIL INKEY$<>"" OR MOUSEK
+RETURN
+> PROCEDURE inkey_demo
+  DO
+    a$=INKEY$
+    IF LEN(a$)
+      PRINT ASC(RIGHT$(a$,1))
+    ENDIF
+  LOOP
+RETURN
+> PROCEDURE get_a_direction(VAR d)
+  write("Direction?",FALSE,FALSE,0)
+  prompt
+  REPEAT
+    k$=INKEY$
+  UNTIL k$="2" OR k$="4" OR k$="6" OR k$="8"
+  d=ASC(RIGHT$(k$,1))
+RETURN
+> PROCEDURE alert(text$)
+  GRAPHMODE 1
+  ~VQT_EXTENT(text$,n,n,width,n,n,n,n,n)
+  boxlen=width+8
+  x1=320-boxlen/2
+  GET x1-4,178,x1+boxlen+4,222,alert_buffer$
+  DEFFILL 0
+  PBOX x1-4,178,x1+boxlen+4,222
+  BOX x1,182,x1+boxlen,218
+  DEFLINE 1,2
+  BOX x1-4,178,x1+boxlen+4,222
+  tabulate=320-(width/2)
+  TEXT tabulate,204,text$
+  PAUSE 5
+  REPEAT
+    MOUSE x,y,k
+    key=ASC(INKEY$)
+  UNTIL ((k=1 OR k=2) AND (x>x1-4) AND (x<x1+boxlen+14) AND (y>178) AND (y<222)) OR key=13
+  @button_flash(x1,182,x1+boxlen,218)
+  REPEAT
+  UNTIL MOUSEK=0
+  @button_flash(x1,182,x1+boxlen,218)
+  PUT x1-4,178,alert_buffer$
+RETURN
+> PROCEDURE blank_menu_space
+  text_counter=0
+  GRAPHMODE 1
+  DEFFILL 0
+  PBOX 318,200,634,24*16
+RETURN
+> PROCEDURE coord
+  DEFMOUSE 5
+  REPEAT
+    MOUSE x,y,k
+    IF k
+      PRINT AT(30,20);x
+      PRINT AT(30,21);y
+    ENDIF
+  UNTIL k=2
+RETURN
+> PROCEDURE button_flash(x,y,x1,y1)
+  reverse(x,y,x1,y1)
+  REPEAT
+  UNTIL MOUSEK=FALSE
+  reverse(x,y,x1,y1)
+RETURN
+> PROCEDURE reverse(x2,y2,x3,y3)
+  BOUNDARY FALSE
+  GRAPHMODE 3
+  DEFFILL 1,2,8
+  PBOX x2,y2,x3,y3
+  GRAPHMODE 1
+RETURN
+> PROCEDURE prompt
+  cursor_status=1
+  DEC text_counter
+  write("",FALSE,TRUE,FALSE)
+  EVERY 20 GOSUB cursor_flash
+RETURN
+> PROCEDURE write(write$,centred!,prompt!,inp_length)
+  ' first split the write$ into 31-character strings
+  ' with a space at each's end
+  ' and then send them to the text_draw
+  '
+  EVERY STOP
+  IF promptflag!=TRUE
+    promptflag!=FALSE
+    DEC text_counter
+    write$=prompt$+write$
+  ENDIF
+  '
+  IF LEN(write$)<=40
+    text_draw(write$,centred!)
+  ELSE
+    l=LEN(write$)
+    z=0
+    DO
+      DEC l
+      INC z
+      IF MID$(write$,l,1)=" " AND l<=40
+        a1$=LEFT$(write$,LEN(write$)-z)
+        text_draw(a1$,centred!)
+        a2$=RIGHT$(write$,z)
+        text_draw(a2$,centred!)
+        EXIT IF z
+      ENDIF
+    LOOP
+  ENDIF
+  '
+  IF prompt!
+    promptflag!=TRUE
+    text_draw(prompt$,0)
+  ENDIF
+  '
+  IF inp_length
+    promptflag!=FALSE
+    PRINT AT(43,text_counter+13);
+    FORM INPUT inp_length AS whatever$
+  ENDIF
+  '
+RETURN
+> PROCEDURE text_draw(text$,centred!)
+  INC text_counter
+  DEFTEXT 1,0,0,12,face
+  '
+  IF centred!
+    ~VQT_EXTENT(text$,x1,null,x2,null,null,null,null,null)
+    width=(x2-x1)/2
+    x_pos=474-width
+  ELSE
+    x_pos=318
+  ENDIF
+  '
+  IF text_counter<11
+    TEXT x_pos,(text_counter+11)*18-2,text$
+  ELSE
+    DEC text_counter
+    GET 318,220,635,384,text_save$
+    PUT 318,202,text_save$
+    offset=@width(text$)
+    TEXT 318,376,SPACE$(52)
+    TEXT x_pos,376,text$
+  ENDIF
+  '
+RETURN
+> PROCEDURE clear_output_window
+  GRAPHMODE 1
+  DEFFILL 0
+  PBOX 4,15,308,384
+RETURN
+> PROCEDURE endit
+  EDIT
+RETURN
+> PROCEDURE nowhere
+  '  alert("You have reached Nowhere!!!!!")
+RETURN
+> PROCEDURE cursor_flash
+  INC cursor_status
+  IF cursor_status>7
+    cursor_status=1
+  ENDIF
+  IF cursor_status=5
+    cursor_status=6
+  ENDIF
+  PUT 326,(text_counter+10)*18+5,cursor$(cursor_status)
+  SHOWM
+RETURN
+> PROCEDURE get_output_window
+  GET 4,8,308,384,outwindow$
+RETURN
+> PROCEDURE put_output_window
+  PUT 4,8,outwindow$
+  CLR outwindow$
+RETURN
+> PROCEDURE check_text_counter
+  IF text_counter=>10
+    blank_menu_space
+    text_counter=0
+  ENDIF
+RETURN
+> PROCEDURE cursor_flash2
+  INC cursor_status2
+  IF cursor_status2>7
+    cursor_status2=1
+  ENDIF
+  IF cursor_status2=5
+    cursor_status2=6
+  ENDIF
+  PUT 326+w1,(text_counter+10)*18+5,cursor$(cursor_status2)
+RETURN
+'
+' ***** Text Alteration Procedures *****
+'
+> PROCEDURE light
+  DEFTEXT ,2,12
+RETURN
+> PROCEDURE uline
+  DEFTEXT ,8,12
+RETURN
+> PROCEDURE bold
+  DEFTEXT ,1,12
+RETURN
+> PROCEDURE norm
+  DEFTEXT ,0,12
+RETURN
+'
+' ***** Magic Spells *****
+'
+> PROCEDURE spells
+  IF potential=0
+    IF skill_flag!=FALSE
+      skill_potential=traits(3)
+    ENDIF
+    skill_flag!=TRUE
+    exit_spell_menu!=FALSE
+    get_character_sheet
+    good_selection!=TRUE
+    draw_spell_menu
+    which_level_displayed=1
+    spell_list(1)
+    which_spell=1
+    REPEAT
+      spell_menu_select
+    UNTIL exit_spell_menu!
+    quit_skills
+  ELSE
+    alert("You haven't used all of your potential!")
+  ENDIF
+RETURN
+> PROCEDURE spell_list(level)
+  clear_output_window
+  PRINT AT(3,2);skill_level$(level);" Magic Spells"
+  FOR i=1 TO num_spells(level)
+    PRINT AT(3,3+i);spell_name$(level,i)
+  NEXT i
+  PRINT AT(3,24);"POTENTIAL"
+  PRINT AT(16,24);skill_potential
+  IF skill_potential<>0
+    GRAPHMODE 0
+    DEFFILL 1
+    PBOX 160,370,160+skill_potential,382
+  ENDIF
+RETURN
+> PROCEDURE draw_spell_menu
+  blank_menu_space
+  write("Spell Menu",1,0,0)
+  write("**********",1,0,0)
+  blank_line
+  write("Alter spells ",1,0,0)
+  write("Return to character menu",1,0,0)
+  blank_line
+  blank_line
+  blank_line
+  blank_line
+  blank_line
+  reverse(374,(spell_menu_position+15)*16+1,578,(spell_menu_position+16)*16)
+RETURN
+> PROCEDURE spell_menu_select
+  MOUSE x,y,k
+  key$=INKEY$
+  IF LEN(key$)
+    key=ASC(RIGHT$(key$,1))
+    SELECT key
+    CASE 27
+      exit_spell_menu!=TRUE
+    CASE 72
+      spell_menu_position=@scroll_cursorbar(17,18,48,25,0,spell_menu_position)
+    CASE 80
+      spell_menu_position=@scroll_cursorbar(17,18,48,25,1,spell_menu_position)
+    CASE 13
+      SELECT spell_menu_position
+      CASE 1
+        spell_select
+      CASE 2
+        exit_spell_menu!=TRUE
+      ENDSELECT
+    ENDSELECT
+    '
+  ELSE IF k
+    button=@text_button(48,17,72,18,x,y,1)
+    IF button
+      SELECT button
+      CASE 2
+        exit_spell_menu!=TRUE
+      ENDSELECT
+    ELSE
+      button=@text_button(3,4,14,num_spells(1)+3,x,y,0)
+      IF button
+        IF k=2
+          learn_spell(button)
+        ELSE IF k=1
+          forget_spell(button)
+        ENDIF
+      ENDIF
+    ENDIF
+  ENDIF
+  '
+RETURN
+> PROCEDURE spell_select
+  exit_spell_selection!=FALSE
+  reverse(14,(which_spell-1)*16+49,114,(which_spell)*16+48)
+  REPEAT
+    key$=INKEY$
+    IF LEN(key$)
+      key=ASC(RIGHT$(key$,1))
+      SELECT key
+      CASE 27,13
+        exit_spell_selection!=TRUE
+      CASE 72
+        which_spell=@scroll_cursorbar(4,3+num_spells(1),3,12,0,which_spell)
+      CASE 80
+        which_spell=@scroll_cursorbar(4,3+num_spells(1),3,12,1,which_spell)
+      CASE 77
+        learn_spell(which_spell)
+      CASE 75
+        forget_spell(which_spell)
+      ENDSELECT
+    ENDIF
+  UNTIL exit_spell_selection!
+  reverse(14,(which_spell-1)*16+49,114,(which_spell)*16+48)
+RETURN
+> PROCEDURE learn_spell(which_spell)
+  IF spell_learned!(which_spell,1)=FALSE
+    IF skill_potential=>5
+      SUB skill_potential,5
+      PRINT AT(16,24);skill_potential;" "
+      DEFFILL 0
+      GRAPHMODE 0
+      PBOX 160+skill_potential,370,275,382
+      spell_learned!(which_spell,1)=TRUE
+      PRINT AT(17,which_spell+3);
+      OUT 5,8
+      INC num_spells_learned(1)
+    ELSE
+      alert("You don't have enough skill potential points!")
+    ENDIF
+  ENDIF
+RETURN
+> PROCEDURE forget_spell(which_spell)
+  IF spell_learned!(which_spell,1)=TRUE
+    ADD skill_potential,5
+    PRINT AT(16,24);skill_potential;" "
+    GRAPHMODE 0
+    DEFFILL 1
+    PBOX 160,370,160+skill_potential,382
+    spell_learned!(6,1)=FALSE
+    PRINT AT(17,which_spell+3);" "
+    DEC num_spells_learned(1)
+    spell_learned!(which_spell,1)=FALSE
+  ENDIF
+RETURN
+'
+' ******** Roster procedures *********
+'
+> PROCEDURE nuke_roster
+  '  DO
+  ' KILL "a:\chars\*.*"
+  ' OOP
+  OPEN "o",#1,"a:\chars\roster"
+  FOR i=1 TO 20
+    PRINT #1,""
+    PRINT #1,CHR$(0)
+  NEXT i
+  CLOSE #1
+RETURN
+> PROCEDURE print_roster
+  clear_output_window
+  PRINT AT(3,2);"Character Roster"
+  FOR i=1 TO 20
+    IF roster$(i)<>""
+      PRINT AT(3,3+i);roster$(i)
+    ELSE
+      PRINT AT(3,3+i);"< E M P T Y >"
+    ENDIF
+    IF party_member(i)>0
+      PRINT AT(26,3+i);"*";party_member(i)
+    ENDIF
+  NEXT i
+RETURN
+> PROCEDURE save_roster
+  OPEN "o",#1,"a:\chars\roster"
+  FOR i=1 TO 20
+    PRINT #1,roster$(i)
+    IF party_member(i)>0
+      PRINT #1,CHR$(party_member(i))
+    ELSE
+      PRINT #1,CHR$(0)
+    ENDIF
+  NEXT i
+  CLOSE #1
+RETURN
+> PROCEDURE save_party_file(which_party)
+  file$="a:\chars\p"+STR$(which_party)
+  party$=CHR$(1)                        !  which world
+  party$=party$+CHR$(20)+CHR$(20)       !  location
+  party$=party$+CHR$(0)                 !  food
+  party$=party$+CHR$(1)                 !  Day One
+  party$=party$+CHR$(1)                 !  Year One
+  party$=party$+CHR$(1)                 !  Morning
+  party$=party$+STRING$(5000,0)         !  five thousand blank encounters!
+  OPEN "o",#1,file$
+  PRINT #1,party$
+  CLOSE #1
+RETURN
+'
+' ***** Odds & Ends procedures *****
+'
+' ***** Data *****
+'
+mouse_data:
+' SWORD
+DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DATA 49152,40960,20480,10240,5120,2560,1280,641,322,172,92,40,124,110,135,259
+' UPARROW
+DATA 8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DATA 256,896,1984,4064,8176,16376,32764,65534,1984,1984,1984,1984,1984,1984,1984,1984
+' RIGHT ARROW
+DATA 8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DATA 128,192,224,240,248,32764,32766,32767,32766,32764,248,240,224,192,128,0
+' DOWN ARROW
+DATA 8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DATA 1984,1984,1984,1984,1984,1984,1984,1984,65534,32764,16376,8176,4064,1984,896,256
+' LEFT ARROW
+DATA 8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DATA 256,768,1792,3840,7936,16383,32767,65535,32767,16383,7936,3840,1792,768,256,0
+'
+race_data:
+'
+DATA Human,Elf,Dwarf,Hobbit
+DATA 30,30,30,30,15,35,45,25,45,20,10,45,10,45,35,30
+DATA Toughness,Charisma,Wealth
+DATA Iron Will,Magic Aff,Wealth
+DATA Toughness,Magic Res,Wealth
+DATA Awareness,R Poison,Wealth
+'
+skill_titles:
+'
+DATA Novice,Apprentice,Journeyman,Veteran,Expert,Master
+'
+skill_data:
+'
+' name
+' difficulty
+' 1=physical 0=mental
+'
+DATA 30
+DATA 15
+DATA Close Combat,1,1,30,Knife,1,1,30,Knife-Throw,1,1,0,Sword,2,1,45,Fencing,3,1,0,Flail,3,1,0
+DATA Spear,2,1,30,Axe/Mace,2,1,45,Axe Throw,3,1,0,Staff,3,1,60
+DATA Pole Arm,2,1,45
+DATA Bow,3,1,60,Crossbow,1,1,30,Fast-Draw,1,1,0,Shield,2,1,30,Stealth,2,1,30,Pickpocket,3,1,60,Monster Lore,3,0,0
+DATA Magic Lore,3,0,0,Magic,3,0,0,Hunting,2,1,45,First Aid,1,0,0,Search,3,0,45,Traps,3,0,0,Lockpicking,2,0,0,Alchemy,3,0,0
+DATA Interrogate,3,0,45,Appraisal,3,0,0,Tracking,2,0,60,Bartering,1,0,30
+'
+DATA Brawler,Knifer,Knife-Thrower,Swordsman,Fencer,Flailman
+DATA Spearman,Axeman,Axe Thrower,Staveman,Pikeman
+DATA Bowman,Crossbowman,null,null,of Stealth,Pickpocket
+DATA null,of Magic Lore,Spellweaver,Hunter,Medic,Searcher
+DATA Trapsman,Lockpicker,Alchemist,null,Appraiser,Tracker,Merchant
+'
+spell_data:
+'
+DATA 3
+DATA 11
+DATA 11
+DATA 10
+DATA Mage Bolt,Shield,Magic Torch,Wake,Ascension,Detect Magic,Stun,Armour
+DATA Accuracy,Find Trap,Heal
+DATA Sleep,Night Vision,Fear,Locksmith,Transference,Haste,Impact,Blink
+DATA Aura,Mage Spear,Turn Undead
+DATA Invisibility,Fireball,See Invisible,Paralyze,Astral Horde,Remove Trap
+DATA Skyseek,Mage Vigil,Cure Poison,Cure Disease
+'
+weapon_names:
+DATA 26,8,15,8
+DATA Dagger,0,Shortsword,0,Broadsword,0,2-Hand Sword,1,Rapier,0,Sabre,0,Horseman's Flail,0
+DATA Footman's Flail,0,Javelin,0,Spear,0,Mace,0,Morningstar,1,Hand Axe,0,Battle Axe,1
+DATA Staff,1,Pike,1,Halberd,1,Wand,0,Rod,0,Shortbow,1,Longbow,1,Light Crossbow,1
+DATA Heavy Crossbow,1,Buckler,0,Shield,0,Tower Shield,0
+armour_names:
+DATA Clothing,Leather,Leather Armour,Studded Armour,Chainmail,Scale Mail,Plate Mail,Cloak
+gems:
+DATA Amethyst,Diamond,Emerald,Garnet,Jade,Opal,Pearl,Sapphire,Topaz
+DATA Amulet,Pendant,Crown,Bracelet,Necklace,Ring
+DATA Lantern,Torch,Rope,Scroll,Lockpicks,Bandages,Potion,Quiver
+'
+icon_data:
+DATA 16
+DATA castle,0,trees,1,mountain,0,plains,1,tower,0,towne,0
+DATA sea,0,fighter,0,wall,0,floor,1,pillar,0,door,0
+DATA mage,0,sign,1,h_bridge,1,v_bridge,1
+DATA a castle,forest,mountains,plains,a tower,a towne,water,a fighting man
+DATA a wall,the floor,a pillar,a door,a magician,a sign,a bridge,a bridge
+'
+inventory_data:
+DATA 1,10,0,0
+DATA 4,2,1,0
+DATA 3,15,1,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 2,8,0,0
+DATA 2,6,0,0
+DATA 1,1,0,0
+DATA 1,1,0,0
+DATA 4,8,20,0
+DATA 0,0,0,0
+DATA 4,3,0,0
+DATA 4,5,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+DATA 0,0,0,0
+'
+' ***** Functions *****
+'
+FUNCTION xinput$
+  prompt
+  EVERY STOP
+  cursor_status2=1
+  w1=0
+  EVERY 20 GOSUB cursor_flash2
+  return$=""
+  DO
+    key=0
+    key$=INKEY$
+    IF LEN(key$)
+      key=ASC(RIGHT$(key$,1))
+      EXIT IF key=13
+      IF key=8
+        IF LEN(return$)=>1
+          EVERY STOP
+          PUT 326+w1,(text_counter+10)*18+5,cursor$(cursor_status2),0
+          SUB w1,@width(RIGHT$(return$,1))
+          DEFTEXT 0
+          TEXT 326+w1,(text_counter+11)*18-2,RIGHT$(return$,1)
+          DEFTEXT 1
+          EVERY 20 GOSUB cursor_flash2
+          return$=LEFT$(return$,LEN(return$)-1)
+        ENDIF
+      ELSE
+        EVERY STOP
+        TEXT 326+w1,(text_counter+11)*18-2,key$
+        ADD w1,@width(key$)
+        EVERY 20 GOSUB cursor_flash2
+        return$=return$+key$
+        cursor_status2=1
+      ENDIF
+    ENDIF
+  LOOP UNTIL key=13
+  EVERY STOP
+  PUT 326+w1,(text_counter+10)*18+5,cursor$(cursor_status2),0
+  INC text_counter
+  RETURN return$
+ENDFUNC
+'
+FUNCTION width(text$)
+  ~VQT_EXTENT(text$,n,n,width,n,n,n,n,n)
+  RETURN width
+ENDFUNC
+'
+FUNCTION get_piece$(x1,y1,x2,y2)
+  GET (8+(x1-1)*27),(15+(y1-1)*28),(7+(x2*27)),14+(y2)*28,return$
+  RETURN return$
+ENDFUNC
+'
+FUNCTION text_button(cursorx1,cursory1,cursorx2,cursory2,mx,my,not_allowed)
+  IF mx=>(cursorx1-1)*8 AND mx<=(cursorx2*8)
+    IF my=>(cursory1-1)*16 AND my<=(cursory2*16)
+      text_button=INT((my-((cursory1-1)*16))/16)+1
+      IF text_button<>not_allowed
+        button_flash((cursorx1-1)*8-2,(text_button-2+cursory1)*16+1,(cursorx2*8)+2,(text_button+cursory1-1)*16)
+        RETURN text_button
+      ELSE
+        RETURN 0
+      ENDIF
+    ELSE
+      RETURN 0
+    ENDIF
+  ELSE
+    RETURN 0
+  ENDIF
+ENDFUNC
+'
+FUNCTION scroll_cursorbar(top,bottom,left,width,down!,pos)
+  IF down!=TRUE
+    reverse((left-1)*8-2,(pos+top-2)*16+1,((left-1)*8)+width*8+2,(pos+top-1)*16)
+    INC pos
+    IF pos>bottom-top+1
+      pos=1
+    ENDIF
+    reverse((left-1)*8-2,(pos+top-2)*16+1,((left-1)*8)+width*8+2,(pos+top-1)*16)
+  ELSE
+    reverse((left-1)*8-2,(pos+top-2)*16+1,((left-1)*8)+width*8+2,(pos+top-1)*16)
+    DEC pos
+    IF pos<1
+      pos=bottom-top+1
+    ENDIF
+    reverse((left-1)*8-2,(pos+top-2)*16+1,((left-1)*8)+width*8+2,(pos+top-1)*16)
+  ENDIF
+  RETURN pos
+ENDFUNC
+FUNCTION convert_skill(skill_num,increment)
+  ADD increment,1
+  ADD skill_deci(skill_num),upordown
+  IF skill_deci(skill_num)<>0 AND skill_deci(skill_num) MOD 2=0
+    ADD increment,1
+    skill_deci(skill_num)=0
+  ENDIF
+  RETURN increment
+ENDFUNC
+FUNCTION select_roster_spot
+  reverse(14,(roster_spot-1)*16+49,194,(roster_spot)*16+48)
+  DO
+    MOUSE x,y,k
+    key$=INKEY$
+    IF LEN(key$)
+      key=ASC(RIGHT$(key$,1))
+      SELECT key
+      CASE 27
+        RETURN 0
+      CASE 72
+        roster_spot=@scroll_cursorbar(4,23,3,22,0,roster_spot)
+      CASE 80
+        roster_spot=@scroll_cursorbar(4,23,3,22,1,roster_spot)
+      CASE 13
+        RETURN roster_spot
+      ENDSELECT
+    ELSE IF k
+      button=@text_button(3,4,22,23,x,y,0)
+      IF button
+        RETURN button
+      ENDIF
+    ENDIF
+  LOOP
+ENDFUNC
+FUNCTION get_a_char
+  return=ASC(INPUT$(1,#1))
+  RETURN return
+ENDFUNC

@@ -1,0 +1,5 @@
+start%=TIMER
+@bmover
+seconds=(TIMER-start%)/200
+PRINT STR$(seconds)+" seconds to copy 4 bytes 10 thousand times."
+~INP(2)
