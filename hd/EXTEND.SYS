@@ -1,8 +1,0 @@
-;
-; Speedo Configuration File
-; Last modified on 20/1/2025 18:11
-;
-PATH = C:\FONTS
-BITCACHE = 0
-FSMCACHE = 39936,5
-WIDTHTABLES = 0

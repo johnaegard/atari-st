@@ -1,13 +1,63 @@
-; Last modified on 1/17/2025 16:00
-PATH = C:\DRIVERS
-1P SCREEN.SYS
-2P SCREEN.SYS
-3P SCREEN.SYS
-4P SCREEN.SYS
-5P SCREEN.SYS
-6P SCREEN.SYS
-7P SCREEN.SYS
-8P SCREEN.SYS
-9P SCREEN.SYS
-31 META.SYS
-61 MEMORY.SYS
+;
+; Sample-ASSIGN.SYS for NVDI
+;
+; The ASSIGN.SYS file is a list of the fonts and drivers available to
+; GDOS.  It has to be in the root directory of your boot disk.
+;
+PATH = C:\GEMSYS\                ;path for drivers and fonts
+
+01p SCREEN.SYS                   ;actual resolution
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+02p SCREEN.SYS                   ;ST-low (320*200)
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+03p SCREEN.SYS                   ;ST-mid (640*200)
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+04p SCREEN.SYS                   ;ST-high (640*400)
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+05p SCREEN.SYS                   ;Falcon 030
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+06p SCREEN.SYS                   ;TT-mid (640*480)
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+08p SCREEN.SYS                   ;TT-high (1280*960)
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
+
+09p SCREEN.SYS                   ;TT-low (320*480)
+s MONACO08.FNT                   ;Monaco    8 pts Systemfont
+s MONACO09.FNT                   ;Monaco    9 pts Systemfont
+s MONACO10.FNT                   ;Monaco   10 pts Systemfont
+s MONACO20.FNT                   ;Monaco   20 pts Systemfont
+BLUE10.FNT                       ;Big Blue 10 pts
