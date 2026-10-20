@@ -13,3 +13,4 @@ a.out
 bin/*
 .env
 .aider*
+falcon-hd/*.img

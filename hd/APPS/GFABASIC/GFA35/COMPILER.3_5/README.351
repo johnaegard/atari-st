@@ -1,0 +1,56 @@
+README zum GFA-BASIC Compiler 3.51
+
+Folgende Fehler sind beseitigt worden :
+
+EXEC 3,...
+     liefert nun als Rckgabewert wieder eine LONG Variable
+
+FOR a|=200 TO 280
+     Diese Schleife wird nun auch abweisend ignoriert.
+
+FULLW
+     Arbeitet nun auch ohne # korrekt.
+
+CLIP #n
+     Clipping auf Fensternummer wird nun richtig gesetzt.
+
+OPENW 0,0,365
+     Verschiebt nun den Nullpunkt der Grafikausgebe
+
+SELECT...CASE
+     Nun  wird  bei  SELECT  auch  ein  Lerrstring  ("")  richtig 
+     behandelt.
+
+LOCATE und LINE INPUT
+     Das  Fragezeichen  des INPUT wird nun bei  einem  ge”ffnetem 
+     Fenster an die Position des LOCATE gesetzt.
+
+DIM a(1,2,3)
+     Ein  Fehler  bei  drei- und  mehrdimensionalen  Feldern  ist 
+     bereinigt.
+
+x%>y% OR a%>b% XOR c%>d%
+     Bei  dieser  Kombination  wird  nun  auch  das  XOR  richtig 
+     bearbeitet.
+
+SHEL_WRITE
+     Arbeitet nun korrekt.
+
+STICK 0
+     Das   Umschalten  zwichen  Maus  und  Joystick  geht   jetzt 
+     einwandfrei.
+
+INSERT mit OPTION BASE 1
+     Nun werden auch Stringvariablen richtig bearbeitet.
+
+MAT MUL
+     Das dyadische Produkt zweier Vektoren, das eine nicht qudra-
+     tischen Matrix ergibt, erzeugt keine Fehlermeldung mehr.
+     Bei dem Produkt eines Vektors mit einer nicht  quadratischen 
+     Matrix wurde das letzte Scalarprodukt nicht berechnet.
+
+MAT DET & MAT INV & MAT QDET & MAT RANG
+     Diese Befehle arbeitete im compilierten Programm nicht immer 
+     bei  Aufruf in PROCEDUREN oder FUNCTIONEN mit  šbergabepara-
+     metern bzw. FOR...NEXT Schleifen.
+
